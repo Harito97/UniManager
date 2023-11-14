@@ -1,0 +1,19 @@
+
+Function
+    |___Manager Student (học sinh / sinh viên)
+    |___Manager Teacher (giảng viên)
+    |___Manager Grade of Student (điểm số của học sinh / sinh viên)
+    |___Manager Classroom (phòng học)
+    |___Manager Majors (ngành học / chương trình học)
+    |___Manager Subject (môn học / học phần)
+    |___Manager TKB (quản lý / đánh giá hiệu quả của các TKB cũ)
+    |___Xếp TKB mới phù hợp với nhu cầu của sinh viên (học liền mạch / hạn chế time ở trường); phù hợp sức khỏe giảng viên
+
+
+
+
+
+University Manager 
+    |___Student
+    |       |___ID
+    |       |___
