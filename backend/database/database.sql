@@ -1,4 +1,3 @@
-drop database csdl_web;
 create database csdl_web;
 use csdl_web;
 create table if not exists giang_vien(
