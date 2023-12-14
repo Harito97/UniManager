@@ -8,11 +8,12 @@ try:
     conn = mysql.connector.connect(
         host = host,
         user = user,
+        password = "ikari1001",
         database = database
     )
     
-    if conn.is_connected():
-        print("Connected successfully")
+    # if conn.is_connected():
+    #     print("Connected successfully")
     
     cursor = conn.cursor()
 except Exception as e:
