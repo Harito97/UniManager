@@ -1,35 +1,45 @@
 import React from "react";
+import { Form, Input, Button } from "antd";
 
 const Login = ({ handleForgot }) => {
+  // const onFinish = (e) => {
+  //   console.log(e);
+  // };
+
   return (
     <>
       <div className="p-5">
         <h1 className="mb-4 text-center text-2xl font-semibold text-gray-600">
           ĐĂNG NHẬP
         </h1>
-        <form action="" className="flex flex-col gap-4">
-          <div>
-            <label htmlFor="username" className="input-label">
-              Tên đăng nhập:
-            </label>
-            <input type="text" id="username" className="input" />
-          </div>
-          <div className="relative">
-            <label htmlFor="password" className="input-label">
-              Mật khẩu:
-            </label>
-            <input type="password" id="username" className="input" />
-          </div>
-        </form>
-        <button className="mt-7 block w-full rounded-full bg-blue-500 px-5 py-1 text-white hover:bg-blue-500/80">
-          Đăng nhập
-        </button>
-        <p
-          className="my-3 cursor-pointer text-center text-sm text-gray-500 hover:text-blue-500"
-          onClick={() => handleForgot()}
-        >
-          Quên mật khẩu?
-        </p>
+        <Form layout="vertical">
+          <Form.Item
+            label="Tên đăng nhập:"
+            name="username"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Mật khẩu:"
+            name="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="bg-blue-500">
+              Đăng nhập
+            </Button>
+            <Button
+              type="link"
+              htmlType="button"
+              onClick={() => handleForgot()}
+            >
+              Quên mật khẩu?
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </>
   );

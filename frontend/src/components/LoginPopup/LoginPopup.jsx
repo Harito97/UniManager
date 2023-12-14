@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import Background from "../../assets/background.jpg";
 import Login from "./Login";
 import Forgot from "./Forgot";
@@ -29,9 +30,18 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
   return (
     <>
       {loginPopup && (
-        <div
+        <motion.div
           ref={loginPopUpRef}
           className="fixed top-0 z-50 h-full w-full overflow-y-auto"
+          initial={{
+            scale: 0,
+          }}
+          animate={{
+            scale: 1,
+            transition: {
+              duration: 0.4,
+            },
+          }}
         >
           <div className="absolute left-1/2 top-1/2 w-[90%] -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white shadow-md sm:w-auto">
             <div>
@@ -47,7 +57,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );
