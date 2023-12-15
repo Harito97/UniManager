@@ -1,14 +1,15 @@
 import mysql.connector
 
-host = "localhost"
+host = "127.0.0.1"
 user = "root"
+password = ""
 database = "csdl_web"
 
 try:
     conn = mysql.connector.connect(
         host = host,
         user = user,
-        password = "ikari1001",
+        password = "",
         database = database
     )
     
