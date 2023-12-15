@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import Hero from "./components/Hero";
 import Background from "./assets/background.jpg";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
+import TeamSection from "./components/TeamSection";
 
 function App() {
   const [loginPopup, setLoginPopup] = useState(false);
@@ -22,12 +23,12 @@ function App() {
 
   return (
     <>
-      <div className={loginPopup ? "bg-black/30 blur-sm" : ""}>
-        <div style={bgImage}>
-          <NavBar toggleLoginPopup={toggleLoginPopup} />
-          <Hero toggleLoginPopup={toggleLoginPopup} />
-        </div>
+      <div style={bgImage}>
+        <NavBar toggleLoginPopup={toggleLoginPopup} />
+        <Hero toggleLoginPopup={toggleLoginPopup} />
       </div>
+      {/* <Backdrop toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} /> */}
+      <TeamSection />
       <LoginPopup toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} />
     </>
   );
