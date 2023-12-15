@@ -70,7 +70,7 @@ phong_samples = {
 }
 
 hp_tien_quyet_samples = {
-    hp_tien_quyet(ma_hp=f"HP{i}", hp_tien_quyet="")
+    hp_tien_quyet(ma_hp=f"HP{i}", hp_tien_quyet="") for i in range(1,6)
 }
 
 ct_hoc_samples = {
@@ -82,7 +82,7 @@ dang_ki_samples = {
 }
 
 sinh_vien_samples = {
-    sinh_vien(ma_sv=f"SV{i}", ho_ten=f"Sinh vien so {i}", gioi_tinh='Nam' if i % 2 == 0 else 'Nu', ngsinh=f'2003-0{i}-01',sdt=f'01234567{i}', email=f'sv{i}@example.com', gpa=4*random.random(), ma_nganh=f"Nganh{i}",nam_bat_dau=random.choice([1,2,3,4]),lop=f"Lop{i}",password="")
+    sinh_vien(ma_sv=f"SV{i}", ho_ten=f"Sinh vien so {i}", gioi_tinh='Nam' if i % 2 == 0 else 'Nu', ngsinh=f'2003-0{i}-01',sdt=f'01234567{i}', email=f'sv{i}@example.com', gpa=4*random.random(), ma_nganh=f"Nganh{i}",nam_bat_dau=random.choice([1,2,3,4]),lop=f"Lop{i}",password="") for i in range(1,6)
 }
 try:
     for sample in giang_vien_samples:
@@ -105,6 +105,3 @@ try:
         conn.commit()
 except Exception as e:
     print(f"Error{e}")
-    
-try:
-    for sample in 
