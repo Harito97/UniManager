@@ -1,5 +1,6 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 
 const Forgot = ({ handleForgot }) => {
   return (
@@ -14,7 +15,7 @@ const Forgot = ({ handleForgot }) => {
             name="username"
             rules={[{ required: true, message: "Please input your username!" }]}
           >
-            <Input />
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" className="bg-blue-500">

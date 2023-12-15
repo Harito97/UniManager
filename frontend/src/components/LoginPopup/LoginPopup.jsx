@@ -41,13 +41,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
             animate={{
               opacity: 1,
               transition: {
-                duration: 0.5,
-              },
-            }}
-            exit={{
-              opacity: 1,
-              transition: {
-                duration: 0.5,
+                duration: 0.3,
               },
             }}
             className="fixed top-0 h-full w-full bg-black/30 backdrop-blur-sm"
@@ -67,7 +61,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
               x: "-50%",
               y: "-50%",
               transition: {
-                duration: 0.5,
+                duration: 0.3,
               },
             }}
             className="fixed left-1/2 top-1/2 w-[90%] rounded-2xl bg-white shadow-md sm:w-auto"

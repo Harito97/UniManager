@@ -4,6 +4,7 @@ import Hero from "./components/Hero";
 import Background from "./assets/background.jpg";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import TeamSection from "./components/TeamSection";
+import Footer from "./components/Footer";
 
 function App() {
   const [loginPopup, setLoginPopup] = useState(false);
@@ -29,6 +30,7 @@ function App() {
       </div>
       {/* <Backdrop toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} /> */}
       <TeamSection />
+      <Footer />
       <LoginPopup toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} />
     </>
   );
