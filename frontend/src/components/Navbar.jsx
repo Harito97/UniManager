@@ -22,7 +22,7 @@ const DesktopMenus = [
 
 const NavBar = ({ toggleLoginPopup }) => {
   return (
-    <header className="fixed top-0 w-full bg-white/80 shadow-lg backdrop-blur-sm">
+    <header className="fixed top-0 z-30 w-full bg-white/80 shadow-lg backdrop-blur-sm">
       <div className="container">
         <nav className="flex items-center justify-between">
           <a href="#" className="text-3xl font-bold text-gray-800">

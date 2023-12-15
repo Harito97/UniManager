@@ -1,107 +1,86 @@
 from connector import *
-import random
+import pandas as pd
 from database_model import *
+import numpy as np
 
+df = pd.read_excel("TKB-HKI-2023-2024.xlsx", engine="openpyxl")
+danh_sach_hoc_phan = []
+hoc_phan_dict = dict()
+for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["Số\nTC"].fillna(2)[1:]):
+    if x not in hoc_phan_dict:
+        hoc_phan_dict[x] = 1
+        danh_sach_hoc_phan.append((x, y, z))
+# print(danh_sach_hoc_phan)
+# print(df["Số\nTC"].fillna(2).to_string())
+# print(len(danh_sach_hoc_phan))
 
-# print(element for element in danh_sach_hoc_phan if element[2] == "nan")
+try:
+    for element in danh_sach_hoc_phan:
+        values = (element[0], element[1], element[2])
+        cursor.execute("""
+                       INSERT INTO hoc_phan (ma_hp, ten_hp, so_tin)
+                       VALUES(%s, %s, %s)
+                       """, values)
+        conn.commit()
+except Exception as e:
+    print(f"Error: {e}")
+
+danh_sach_nganh = [
+    ('QHT01', 'Toán học'),
+    ('QHT02', 'Toán tin'),
+    ('QHT98', 'Khoa học máy tính và thông tin (*)(**)'),
+    ('QHT93', 'Khoa học dữ liệu (*)'),
+    ('QHT03', 'Vật lý học'),
+    ('QHT04', 'Khoa học vật liệu'),
+    ('QHT05', 'Công nghệ kỹ thuật hạt nhân'),
+    ('QHT94', 'Kỹ thuật điện tử và tin học'),
+    ('QHT06', 'Hóa học'),
+    ('QHT41', 'Hóa học(***)'),
+    ('QHT42', 'Công nghệ kỹ thuật hóa học(**)'),
+    ('QHT43', 'Hóa dược(**)'),
+    ('QHT08', 'Sinh học'),
+    ('QHT44', 'Công nghệ sinh học(**)'),
+    ('QHT10', 'Địa lý tự nhiên'),
+    ('QHT91', 'Khoa học thông tin địa không gian(*)'),
+    ('QHT12', 'Quản lý đất đai'),
+    ('QHT95', 'Quản lý phát triển đô thị và bất động sản'),
+    ('QHT13', 'Khoa học môi trường'),
+    ('QHT46', 'Công nghệ kỹ thuật môi trường(**)'),
+    ('QHT17', 'Hải dương học'),
+    ('QHT92', 'Tài nguyên và môi trường nước(*)'),
+    ('QHT18', 'Địa chất học'),
+    ('QHT20', 'Quản lý tài nguyên và môi trường'),
+    ('QHT97', 'Công nghệ quan trắc và giám sát tài nguyên môi trường(*)')
+]
+
 # try:
-#     for element in danh_sach_hoc_phan:
-#         values = (element[0], element[1], element[2])
+#     for element in danh_sach_nganh:
+#         values = (element[0], element[1])
 #         cursor.execute("""
-#                     INSERT INTO hoc_phan (ma_hp, ten_hp, so_tin)
-#                     values (%s, %s, %s)
-#                     ON DUPLICATE KEY UPDATE ma_hp = ma_hp;
+#                     INSERT into nganh
+#                     VALUES (%s, %s)
 #                     """, values)
 #         conn.commit()
 # except Exception as e:
 #     print(f"Error: {e}")
 
-giang_vien_samples = [
-    giang_vien(
-        ma_gv=f'GV{i}',
-        ho_ten=f'Giang Vien {i}',
-        gioi_tinh='Nam' if i % 2 == 0 else 'Nu',
-        luong=5000.0 + i * 1000,
-        ngsinh=f'1990-0{i}-01',
-        sdt=f'01234567{i}',
-        email=f'gv{i}@example.com',
-        dia_chi=f'{i} ABC Street, XYZ City',
-        ng_bat_dau=f'2022-0{i}-01',
-        ng_ket_thuc=f'2023-0{i}-01',
-        hoc_ham='Giao su' if i % 2 == 0 else 'Pho giao su',
-        hoc_vi='Tien si',
-        ma_bm=f'BM{i}',
-        password=f'password{i}',
-        quyen=i % 2
-    ) for i in range(1,6)
+danh_sach_phong = [
+    [(f'T3-P{i}', 80, f"Tòa T3 - Phòng số {i}") for i in range(1, 11)],
+    [(f'T4-P{i}', 80, f"Tòa T4 - Phòng số {i}") for i in range(1, 11)],
+    [(f'T5-P{i}', 120, f"Tòa T5 - Phòng số {i}") for i in range(1, 21)],
+    [(f'T2-P{i}', 80, f"Tòa T2 - Phòng số {i}") for i in range(1, 11)],
+    [(f'T1-P{i}', 80, f"Tòa T1 - Phòng số {i}") for i in range(1, 11)]
 ]
 
-nganh_samples = [
-    nganh(ma_nganh=f'N{i}', ten_nganh=f'Nganh {i}') for i in range(1,6)
-]
 
-lh_gv_samples = [
-    lh_gv(ma_lh=i, ma_gv=f'GV{i}') for i in range(1,6)
-]
-
-hoc_phan_samples = {
-    hoc_phan(ma_hp=f"HP{i}",ten_hp=f"HP{i}",so_tin=3,mo_ta="") for i in range(1,6)
-}
-
-gv_hp_samples = {
-    gv_hp(ma_gv=f"GV{i}", ma_hp=f"HP{i}") for i in range(1,6)
-    
-}
-
-chuong_trinh_samples = {
-    chuong_trinh(ma_ct=f"CT{i}", ma_nganh=f"Nganh{i}") for i in range(1,6)
-}
-
-lich_hoc_samples = {
-    lich_hoc(ma_lh=i, ma_hp=f"HP{i}", ma_lop=i, nam=i, ki=1) for i in range(1,6)
-}
-
-lh_thoi_gian_samples = {
-    lh_thoi_gian(ma_lh=i, thoi_gian="T2", phong=i, ma_gv=f"GV{i}") for i in range(1,6)
-}
-
-phong_samples = {
-    phong(phong=f"Phong{i}", suc_chua=100, mo_ta="") for i in range(1,6)
-}
-
-hp_tien_quyet_samples = {
-    hp_tien_quyet(ma_hp=f"HP{i}", hp_tien_quyet="") for i in range(1,6)
-}
-
-ct_hoc_samples = {
-    ct_hoc(ma_ct=f"CT{i}", ma_nganh=f"Nganh{i}",ma_hp=f"HP{i}",nam=i, ki=1) for i in range(1,6)
-}
-
-dang_ki_samples = {
-    dang_ky(ma_lh=i,ma_sv=f"SV{i}",diem_tx=10*random.random(), he_so_tx=0.2, diem_gk=10*random.random(), he_so_gk=0.2, diem_ck=10*random.random(), he_so_ck=0.6) for i in range(1,6)
-}
-
-sinh_vien_samples = {
-    sinh_vien(ma_sv=f"SV{i}", ho_ten=f"Sinh vien so {i}", gioi_tinh='Nam' if i % 2 == 0 else 'Nu', ngsinh=f'2003-0{i}-01',sdt=f'01234567{i}', email=f'sv{i}@example.com', gpa=4*random.random(), ma_nganh=f"Nganh{i}",nam_bat_dau=random.choice([1,2,3,4]),lop=f"Lop{i}",password="") for i in range(1,6)
-}
-try:
-    for sample in giang_vien_samples:
-        values = (sample.ma_gv, sample.ho_ten, sample.gioi_tinh, sample.luong, sample.ngsinh, sample.sdt, sample.email, sample.dia_chi, sample.ng_bat_dau, sample.ng_ket_thuc, sample.hoc_ham, sample.hoc_vi, sample.ma_bm, sample.password, sample.quyen)
-        cursor.execute("""
-                    INSERT INTO giang_vien
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, values)
-        conn.commit()
-except Exception as e:
-    print(f"Error: {e}")
-
-try:
-    for sample in nganh_samples:
-        values = (sample.ma_nganh, sample.ten_nganh)
-        cursor.execute("""
-                       INSERT INTO nganh
-                       VALUES (%s, %s)
-                       """, values)
-        conn.commit()
-except Exception as e:
-    print(f"Error{e}")
+# try:
+#     for row in danh_sach_phong:
+#         for element in row:
+#             values = (element[0], element[1], element[2])
+#             cursor.execute("""
+#                            INSERT INTO phong
+#                            VALUES (%s, %s, %s)
+#                            """, values)
+#             conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}") 
