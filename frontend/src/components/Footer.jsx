@@ -5,7 +5,7 @@ import Logo from "../assets/logo/logo.png";
 const Footer = () => {
   return (
     <>
-      <footer className="bg-gray-900">
+      <footer className="bg-white dark:bg-gray-900">
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col items-center text-center">
             <a href="#">

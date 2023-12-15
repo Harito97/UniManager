@@ -16,7 +16,7 @@ const Hero = ({ toggleLoginPopup }) => {
           <h1 className="text-center font-dancing text-4xl text-white sm:text-6xl md:w-[750px] md:text-8xl ">
             Trách nhiệm xã hội
           </h1>
-          <p className="text-white">
+          <p className="text-center text-white">
             {" "}
             Website Quản lý trường học về đăng ký môn học, giảng viên, sinh viên
             và điểm số

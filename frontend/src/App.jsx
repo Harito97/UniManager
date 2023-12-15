@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import Hero from "./components/Hero";
 import Background from "./assets/background.jpg";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
+import Features from "./components/Features";
 import TeamSection from "./components/TeamSection";
 import Footer from "./components/Footer";
 
@@ -29,6 +30,7 @@ function App() {
         <Hero toggleLoginPopup={toggleLoginPopup} />
       </div>
       {/* <Backdrop toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} /> */}
+      <Features />
       <TeamSection />
       <Footer />
       <LoginPopup toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} />

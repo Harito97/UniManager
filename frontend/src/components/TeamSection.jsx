@@ -44,7 +44,7 @@ const Members = [
 const TeamSection = () => {
   return (
     <>
-      <section className="bg-gray-900">
+      <section className="bg-white font-[sans-serif] dark:bg-gray-900">
         <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16 ">
           <div className="mx-auto mb-8 max-w-screen-sm text-center lg:mb-16">
             <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
@@ -53,7 +53,7 @@ const TeamSection = () => {
           </div>
           <div className="mb-6 grid gap-8 md:grid-cols-2 lg:mb-16">
             {Members.map((member) => (
-              <div className="items-center rounded-lg bg-gray-50 shadow dark:border-gray-700 dark:bg-gray-800 sm:flex">
+              <div className="items-center rounded-lg bg-gray-50 shadow hover:scale-105 dark:border-gray-700 dark:bg-gray-800 sm:flex">
                 <a href="#">
                   <img
                     className="w-full rounded-lg sm:rounded-none sm:rounded-l-lg"
