@@ -15,7 +15,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
   const loginImage = {
     backgroundImage: `url(${LoginImg})`,
     backgroundPosition: "center",
-    backgroundSize: "cover",
+    backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     height: "100%",
     width: "100%",
@@ -24,7 +24,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
   const forgotImage = {
     backgroundImage: `url(${ForgotImg})`,
     backgroundPosition: "center",
-    backgroundSize: "cover",
+    backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     height: "100%",
     width: "100%",
