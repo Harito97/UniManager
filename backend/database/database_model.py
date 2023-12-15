@@ -32,7 +32,7 @@ class gv_hp(BaseModel):
 class hoc_phan(BaseModel):
     ma_hp: str
     ten_hp: str
-    so_tin: str
+    so_tin: int
     mo_ta: str
     
 class chuong_trinh(BaseModel):
