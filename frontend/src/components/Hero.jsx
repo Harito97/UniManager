@@ -5,7 +5,7 @@ import { Button } from "antd";
 const Hero = ({ toggleLoginPopup }) => {
   return (
     <>
-      <main>
+      <main id="home">
         <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
           <h1 className="text-center font-dancing text-4xl text-white sm:text-6xl md:w-[750px] md:text-8xl ">
             Sáng tạo

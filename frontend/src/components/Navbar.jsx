@@ -1,18 +1,19 @@
 import React from "react";
 import HusLogo from "../assets/hus-logo.svg";
+import { Link } from "react-scroll";
 
 const DesktopMenus = [
   {
     name: "Home",
-    href: "#",
+    href: "home",
   },
   {
     name: "About",
-    href: "#",
+    href: "about",
   },
   {
     name: "Contact",
-    href: "#",
+    href: "contact",
   },
   {
     name: "Login",
@@ -37,8 +38,11 @@ const NavBar = ({ toggleLoginPopup }) => {
             <ul className="flex items-center justify-center gap-4">
               {DesktopMenus.map((menu) => (
                 <li>
-                  <a
-                    href={menu.href}
+                  <Link
+                    activeClass="active"
+                    smooth
+                    spy
+                    to={menu.href}
                     onClick={() => {
                       if (menu.name === "Login") {
                         toggleLoginPopup(true);
@@ -47,7 +51,7 @@ const NavBar = ({ toggleLoginPopup }) => {
                     className="inline-block select-none px-4 py-4 text-gray-700 hover:text-gray-900  dark:text-white"
                   >
                     {menu.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
