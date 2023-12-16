@@ -1,11 +1,29 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const Login = ({ handleForgot }) => {
-  // const onFinish = (e) => {
-  //   console.log(e);
-  // };
+
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/login', {
+        username: values.username,
+        password: values.password
+      });
+
+      if (response.data) {
+        window.location.href = "https://web.facebook.com/HusFanpage";
+      } 
+      
+      else {
+        alert("Tên đăng nhập hoặc mật khẩu không chính xác!");
+      }; 
+      
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -13,7 +31,7 @@ const Login = ({ handleForgot }) => {
         <h1 className="mb-4 text-center text-2xl font-semibold text-gray-600">
           ĐĂNG NHẬP
         </h1>
-        <Form layout="vertical">
+        <Form layout="vertical" onFinish = {onFinish}>
           <Form.Item
             label="Tên đăng nhập:"
             name="username"
