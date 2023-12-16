@@ -44,38 +44,38 @@ const Members = [
 const TeamSection = () => {
   return (
     <>
-      <section class="bg-white dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16 ">
-          <div class="mx-auto mb-8 max-w-screen-sm text-center lg:mb-16">
-            <h2 class="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+      <section className="bg-white font-[sans-serif] dark:bg-gray-900">
+        <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16 ">
+          <div className="mx-auto mb-8 max-w-screen-sm text-center lg:mb-16">
+            <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
               Our Team
             </h2>
           </div>
-          <div class="mb-6 grid gap-8 md:grid-cols-2 lg:mb-16">
+          <div className="mb-6 grid gap-8 md:grid-cols-2 lg:mb-16">
             {Members.map((member) => (
-              <div class="items-center rounded-lg bg-gray-50 shadow dark:border-gray-700 dark:bg-gray-800 sm:flex">
+              <div className="items-center rounded-lg bg-gray-50 shadow hover:scale-105 dark:border-gray-700 dark:bg-gray-800 sm:flex">
                 <a href="#">
                   <img
-                    class="w-full rounded-lg sm:rounded-none sm:rounded-l-lg"
+                    className="w-full rounded-lg sm:rounded-none sm:rounded-l-lg"
                     src={member.imgpath}
                   />
                 </a>
-                <div class="p-5">
-                  <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <div className="p-5">
+                  <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {member.name}
                   </h3>
-                  <span class="text-gray-500 dark:text-gray-400">
+                  <span className="text-gray-500 dark:text-gray-400">
                     {member.role}
                   </span>
-                  <p class="mb-4 mt-3 font-light text-gray-500 dark:text-gray-400">
+                  <p className="mb-4 mt-3 font-light text-gray-500 dark:text-gray-400">
                     {member.decs}
                   </p>
-                  <ul class="flex space-x-4 sm:mt-0">
+                  <ul className="flex space-x-4 sm:mt-0">
                     <li>
                       <a
                         href={member.fb}
                         target="_blank"
-                        class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                        className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
                       >
                         <FaFacebook />
                       </a>
@@ -84,7 +84,7 @@ const TeamSection = () => {
                       <a
                         href={member.gh}
                         target="_blank"
-                        class="text-gray-500 hover:text-gray-900 dark:hover:text-white"
+                        className="text-gray-500 hover:text-gray-900 dark:hover:text-white"
                       >
                         <FaGithub />
                       </a>

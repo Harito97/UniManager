@@ -22,10 +22,13 @@ const DesktopMenus = [
 
 const NavBar = ({ toggleLoginPopup }) => {
   return (
-    <header className="fixed top-0 z-30 w-full bg-white/80 shadow-lg backdrop-blur-sm">
+    <header className="fixed top-0 z-30 w-full bg-white/80 shadow-lg backdrop-blur-sm dark:bg-black/30">
       <div className="container">
         <nav className="flex items-center justify-between">
-          <a href="#" className="text-3xl font-bold text-gray-800">
+          <a
+            href="#"
+            className="text-3xl font-bold text-gray-800 dark:text-white"
+          >
             <img src={HusLogo} alt="Logo" className="mr-1 inline h-10" />
             HUS
           </a>
@@ -41,7 +44,7 @@ const NavBar = ({ toggleLoginPopup }) => {
                         toggleLoginPopup(true);
                       }
                     }}
-                    className="inline-block select-none px-4 py-4 text-gray-700 hover:text-gray-900"
+                    className="inline-block select-none px-4 py-4 text-gray-700 hover:text-gray-900  dark:text-white"
                   >
                     {menu.name}
                   </a>
@@ -56,7 +59,7 @@ const NavBar = ({ toggleLoginPopup }) => {
               <li>
                 <a
                   href="#"
-                  className="inline-block select-none px-4 py-4 text-xl font-semibold text-gray-700 hover:text-gray-900"
+                  className="inline-block select-none px-4 py-4 text-xl font-semibold text-gray-700 hover:text-gray-900 dark:text-white"
                   onClick={() => {
                     toggleLoginPopup(true);
                   }}
