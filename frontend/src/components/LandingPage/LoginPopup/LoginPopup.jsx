@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import LoginImg from "../../assets/login.webp";
-import ForgotImg from "../../assets/forgot.webp";
+import LoginImg from "../../../assets/login.webp";
+import ForgotImg from "../../../assets/forgot.webp";
 import Login from "./Login";
 import Forgot from "./Forgot";
 

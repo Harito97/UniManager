@@ -1,10 +1,10 @@
 import React from "react";
 import { FaFacebook } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
-import HaiAva from "../assets/avatar/Hai.jpg";
-import DAAva from "../assets/avatar/DA.jpg";
-import DucAva from "../assets/avatar/Duc.jpg";
-import ThangAva from "../assets/avatar/Thang.jpg";
+import HaiAva from "../../assets/avatar/Hai.jpg";
+import DAAva from "../../assets/avatar/DA.jpg";
+import DucAva from "../../assets/avatar/Duc.jpg";
+import ThangAva from "../../assets/avatar/Thang.jpg";
 
 const Members = [
   {

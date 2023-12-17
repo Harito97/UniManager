@@ -1,5 +1,5 @@
 import React from "react";
-import HusLogo from "../assets/hus-logo.svg";
+import HusLogo from "../../assets/hus-logo.svg";
 import { Link } from "react-scroll";
 
 const DesktopMenus = [

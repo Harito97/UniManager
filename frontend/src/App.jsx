@@ -1,39 +1,18 @@
 import React, { useState } from "react";
-import NavBar from "./components/NavBar";
-import Hero from "./components/Hero";
-import Background from "./assets/background.jpg";
-import LoginPopup from "./components/LoginPopup/LoginPopup";
-import Features from "./components/Features";
-import TeamSection from "./components/TeamSection";
-import Footer from "./components/Footer";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Student from "./pages/Student";
 
 function App() {
-  const [loginPopup, setLoginPopup] = useState(false);
-
-  const toggleLoginPopup = () => {
-    setLoginPopup(!loginPopup);
-  };
-
-  const bgImage = {
-    backgroundImage: `url(${Background})`,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    height: "100vh",
-    width: "100%",
-  };
-
   return (
     <>
-      <div style={bgImage}>
-        <NavBar toggleLoginPopup={toggleLoginPopup} />
-        <Hero toggleLoginPopup={toggleLoginPopup} />
-      </div>
-      {/* <Backdrop toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} /> */}
-      <Features />
-      <TeamSection />
-      <Footer />
-      <LoginPopup toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/student" element={<Student />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
