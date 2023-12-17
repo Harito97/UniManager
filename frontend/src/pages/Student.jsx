@@ -4,6 +4,7 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
   PoweroffOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { Layout, Button, Dropdown } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
@@ -11,7 +12,8 @@ import Sider from "antd/es/layout/Sider";
 
 import { Route, Routes } from "react-router-dom";
 // import { Dashboard, Map } from "../pages";
-// import Sidebar from "./Sidebar";
+import Sidebar from "../components/Dashboard/Sidebar";
+import Dashboard from "../components/Dashboard/Dashboard";
 // import { useContentContext } from "../providers/ContentContext";
 
 const Main = () => {
@@ -28,8 +30,13 @@ const Main = () => {
   // Navigation Menu Options
   const items = [
     {
-      label: "Logout",
+      label: "Profile",
       key: "1",
+      icon: <SettingOutlined />,
+    },
+    {
+      label: "Logout",
+      key: "2",
       icon: <PoweroffOutlined />,
     },
   ];
@@ -62,7 +69,7 @@ const Main = () => {
         collapsed={collapsed}
         style={{ background: "#EBEBEB" }}
       >
-        {/* <Sidebar /> */}
+        <Sidebar />
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: "white" }}>
@@ -80,6 +87,7 @@ const Main = () => {
                 zIndex: 999,
               }}
             />
+
             <Dropdown.Button
               menu={menuProps}
               icon={<UserOutlined />}
@@ -90,16 +98,16 @@ const Main = () => {
           </div>
         </Header>
 
-        <Content className="m-[24px] h-full overflow-scroll rounded-md bg-white p-[24px]">
-          {/* <Routes>
-            <Route exact path="/" element={<Dashboard />} />
-            <Route exact path="/dashboard" element={<Dashboard />} />
-            <Route exact path="/map" element={<Map />} />
-          </Routes> */}
+        <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
+          <Dashboard />
         </Content>
         <Footer className="pt-0 text-center">
           Copyright 2023 © ALL RIGHTS RESERVED. Design by{" "}
-          <a href="https://github.com/Harito97/UniManager" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/Harito97/UniManager"
+            target="_blank"
+            rel="noreferrer"
+          >
             HADT Team
           </a>
         </Footer>
