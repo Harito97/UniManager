@@ -6,7 +6,7 @@ import { FaMobileAlt } from "react-icons/fa";
 const Features = () => {
   return (
     <>
-      <div class="bg-white font-[sans-serif] text-[#333] dark:bg-gray-900">
+      <div class="bg-white font-[sans-serif] text-[#333] dark:bg-gray-900" id="about">
         <div class="mx-auto max-w-6xl px-4 py-16">
           <h2 class="mb-16 text-center text-4xl font-extrabold text-gray-900 dark:text-white">
             Discover Our Features

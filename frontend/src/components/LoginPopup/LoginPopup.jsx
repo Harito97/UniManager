@@ -44,7 +44,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
                 duration: 0.3,
               },
             }}
-            className="fixed top-0 h-full w-full bg-black/30 backdrop-blur-sm"
+            className="fixed top-0 z-30 h-full w-full bg-black/30 backdrop-blur-sm"
             onClick={() => {
               toggleLoginPopup(false);
               setShowForgot(false);
@@ -64,7 +64,7 @@ const LoginPopup = ({ toggleLoginPopup, loginPopup }) => {
                 duration: 0.3,
               },
             }}
-            className="fixed left-1/2 top-1/2 w-[90%] rounded-2xl bg-white shadow-md sm:w-auto"
+            className="fixed left-1/2 top-1/2 z-40 w-[90%] rounded-2xl bg-white shadow-md sm:w-auto"
           >
             <div className="relative grid grid-cols-1 items-center gap-4 sm:w-[600px] sm:grid-cols-2 md:w-[700px]">
               {/* Login Form section */}

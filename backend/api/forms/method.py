@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import mysql.connector
 from datetime import date
 
+from fastapi.middleware.cors import CORSMiddleware
+
 class GIANGVIEN(BaseModel):
     ma_gv: str | None = None
     ho_ten: str | None = None
@@ -844,3 +846,11 @@ async def delete_record(ma_lh: int, ma_sv: str):
         return e
     
 
+# Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
