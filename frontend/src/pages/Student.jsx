@@ -10,10 +10,12 @@ import { Layout, Button, Dropdown } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { Dashboard, Map } from "../pages";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Dashboard from "../components/Dashboard/Dashboard";
+import Calendar from "../components/Dashboard/Calendar";
+
 // import { useContentContext } from "../providers/ContentContext";
 
 const Main = () => {
@@ -42,12 +44,11 @@ const Main = () => {
   ];
 
   const handleMenuClick = (e) => {
-    // if (e.key === "1") {
-    //   //Logout
-    //   openSuccessNotification("Logged Out!", "Logout Success!");
-    //   localStorage.clear();
-    //   window.location.replace("/login");
-    // }
+    if (e.key === "2") {
+      //Logout
+      localStorage.clear();
+      window.location.replace("/");
+    }
   };
 
   const menuProps = {
@@ -99,7 +100,12 @@ const Main = () => {
         </Header>
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
-          <Dashboard />
+          <Routes>
+            <Route exact path="/" element={<Dashboard />} />
+            <Route exact path="/dashboard" element={<Dashboard />} />
+            <Route exact path="/calendar" element={<Calendar />} />
+          </Routes>
+          {/* <Dashboard /> */}
         </Content>
         <Footer className="pt-0 text-center">
           Copyright 2023 © ALL RIGHTS RESERVED. Design by{" "}

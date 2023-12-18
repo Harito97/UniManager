@@ -4,8 +4,9 @@ import {
   UserOutlined,
   FileOutlined,
   FileDoneOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
-import { Space, Table, Tag } from "antd";
+import { Space, Table, Badge, Dropdown } from "antd";
 
 const columns = [
   {
@@ -38,10 +39,33 @@ const columns = [
     dataIndex: "he4",
     key: "he4",
   },
+];
+
+const expand_columns = [
   {
-    title: "Chi tiết",
-    dataIndex: "",
-    key: "",
+    title: "STT",
+    dataIndex: "stt",
+    key: "stt",
+  },
+  {
+    title: "Bản chất kỳ thi",
+    dataIndex: "type",
+    key: "type",
+  },
+  {
+    title: "Hệ số",
+    dataIndex: "he_so",
+    key: "he_so",
+  },
+  {
+    title: "Lần thi",
+    dataIndex: "lan",
+    key: "lan",
+  },
+  {
+    title: "Điểm",
+    dataIndex: "diem",
+    key: "diem",
   },
 ];
 
@@ -76,7 +100,46 @@ const data = [
   },
 ];
 
+const expand_data = [
+  {
+    key: "1",
+    stt: 1,
+    type: "Thi cuối kì",
+    he_so: 0.6,
+    lan: 1,
+    diem: 10,
+  },
+  {
+    key: "2",
+    stt: 2,
+    type: "Giữa kì",
+    he_so: 0.2,
+    lan: 1,
+    diem: 10,
+  },
+  {
+    key: "3",
+    stt: 3,
+    type: "Thường xuyên",
+    he_so: 0.2,
+    lan: 1,
+    diem: 10,
+  },
+];
+
+const expandedRowRender = () => {
+  return (
+    <Table
+      columns={expand_columns}
+      dataSource={expand_data}
+      size="small"
+      pagination={false}
+    />
+  );
+};
+
 const Dashboard = () => {
+  console.log("Dashboard component rendered");
   return (
     <>
       <div className="flex w-full flex-col gap-5">
@@ -139,17 +202,26 @@ const Dashboard = () => {
             loading={false}
             className="w-2/3 shadow-lg max-lg:w-full"
           >
-            <Table columns={columns} dataSource={data} />
+            <Table
+              columns={columns}
+              expandable={{ expandedRowRender, defaultExpandedRowKeys: ["0"] }}
+              dataSource={data}
+              size="small"
+            />
           </Card>
           <Card
             hoverable={true}
             loading={false}
             className="w-1/3 shadow-lg max-lg:w-full"
           >
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur nobis cupiditate, excepturi optio molestiae impedit deserunt officiis, ratione ab dolores maiores expedita, esse modi consectetur nulla eos reprehenderit dolorum porro?</p>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Aspernatur nobis cupiditate, excepturi optio molestiae impedit
+              deserunt officiis, ratione ab dolores maiores expedita, esse modi
+              consectetur nulla eos reprehenderit dolorum porro?
+            </p>
           </Card>
         </div>
-        
       </div>
     </>
   );
