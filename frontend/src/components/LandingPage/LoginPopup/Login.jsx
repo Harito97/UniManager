@@ -12,12 +12,13 @@ const Login = ({ handleForgot }) => {
   //     });
 
   //     if (response.data) {
-  //       window.location.href = "https://web.facebook.com/HusFanpage";
+  //       window.location.href = "http://localhost:5173/student/";
   //     }
 
   //     else {
   //       alert("Tên đăng nhập hoặc mật khẩu không chính xác!");
   //     };
+  //     // console.log(response.data);
 
   //   } catch (error) {
   //     console.error(error);
