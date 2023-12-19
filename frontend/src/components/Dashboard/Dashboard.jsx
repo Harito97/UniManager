@@ -7,6 +7,14 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 import { Space, Table, Badge, Dropdown } from "antd";
+import axios from "axios";
+
+// const response = await axios.post('http://127.0.0.1:8001/grade');
+
+// const columns = response.data.columns;
+// const expand_columns = response.data.expand_columns;
+// const data = response.data.data;
+// const expand_data = response.data.expand_data;
 
 const columns = [
   {

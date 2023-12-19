@@ -7,6 +7,8 @@ import mysql.connector
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+from fastapi import Cookie
+
 
 from typing import Dict
 
@@ -23,7 +25,7 @@ password = ""
 database = "csdl_web"
 
 connect = mysql.connector.connect(host = host, user = user, password = password, database = database)
-cursor = connect.cursor()
+cursor = connect.cursor(dictionary=True)
 
 
 class User(BaseModel):
@@ -41,7 +43,10 @@ def login(user: User, request: Request):
     data = cursor.fetchall()
 
     for account in data:
-        if user.username == account[0] and user.password == account[1]:
+        if user.username == account["ma_sv"] and user.password == account["pass_word"]:
+            # response = RedirectResponse(url="http://localhost:5173/student")
+            # response.set_cookie(key="logged_in", value=True)
+            # response.set_cookie(key="username", value="user123")
             return True
     return False
 
@@ -54,6 +59,8 @@ async def forgot_password(request: ForgotPassword):
 
     cursor.execute("select ho_ten, email, pass_word from sinh_vien where ma_sv = " + request.username)
     data = cursor.fetchall()
+
+    ho_ten, email, pass_word = data[0]['ho_ten'], data[0]['email'], data[0]['pass_word']
 
     if len(data) == 0:
         return False
@@ -76,12 +83,12 @@ async def forgot_password(request: ForgotPassword):
     fastMail = FastMail(conf)
 
     # Tạo nội dung email
-    email_content = f"Dear {data[0][0]}. Your password is: {data[0][2]} <br> Please do not disclose login information to others!"
+    email_content = f"Dear {ho_ten}. Your password is: {pass_word} <br> Please do not disclose login information to others!"
 
     # Gửi email
     message = MessageSchema(
         subject="Retrieve Your Higher Education Portal Login Password",
-        recipients=[data[0][1]],
+        recipients=[email],
         body=email_content,
         subtype=MessageType.html,
     )
@@ -89,8 +96,6 @@ async def forgot_password(request: ForgotPassword):
 
     return True
 
-
-    
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
