@@ -6,7 +6,9 @@ import {
   CalendarOutlined,
   SolutionOutlined,
   BarsOutlined,
-  DownOutlined,
+  AppstoreAddOutlined,
+  FileTextOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import Logo from "../../assets/hus-logo.svg";
 
@@ -17,10 +19,14 @@ const Sidebar = () => {
   useEffect(() => {}, []);
 
   const selectedKey = () => {
-    if (path === "student/dashboard") {
+    if (path === "/student/dashboard") {
       return "1";
-    } else if (path === "student/calendar") {
+    } else if (path === "/student/calendar") {
       return "2";
+    } else if (path === "/student/register") {
+      return "3";
+    } else if (path === "/student/exam") {
+      return "4";
     } else {
       return "1";
     }
@@ -47,9 +53,33 @@ const Sidebar = () => {
             icon: <CalendarOutlined />,
             label: <Link to="/student/calendar">Lịch</Link>,
           },
-          { key: "3", icon: <SolutionOutlined />, label: <a>Đăng ký học</a> },
-          { key: "4", icon: <BarsOutlined />, label: <a>Lịch thi</a> },
-          { key: "5", icon: <DownOutlined />, label: <a>Khác</a> },
+          {
+            key: "3",
+            icon: <SolutionOutlined />,
+            label: <Link to="/student/register">Đăng ký học</Link>,
+          },
+          {
+            key: "4",
+            icon: <BarsOutlined />,
+            label: <Link to="/student/exam">Lịch thi</Link>,
+          },
+          {
+            key: "5",
+            icon: <AppstoreAddOutlined />,
+            label: <Link>Khác</Link>,
+            children: [
+              {
+                key: "5.1",
+                icon: <FileTextOutlined />,
+                label: <Link>Biểu mẫu</Link>,
+              },
+              {
+                key: "5.2",
+                icon: <QuestionCircleOutlined />,
+                label: <Link>Hỗ trợ</Link>,
+              },
+            ],
+          },
         ]}
       />
     </>

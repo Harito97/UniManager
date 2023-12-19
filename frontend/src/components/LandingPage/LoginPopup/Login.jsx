@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -29,6 +29,12 @@ const Login = ({ handleForgot }) => {
     localStorage.setItem("token", "testtoken");
     window.location.replace("/student");
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      window.location.replace("/student");
+    }
+  }, []);
 
   return (
     <>
