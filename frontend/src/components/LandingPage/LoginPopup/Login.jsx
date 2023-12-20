@@ -27,9 +27,9 @@ const Login = ({ handleForgot }) => {
 
   // Để test đã, sẽ sửa sau :>>
   const onFinish = (values) => {
-    // localStorage.setItem("token", "testtoken");
-    // window.location.replace("/student");
-    console.log(values);
+    localStorage.setItem("token", "testtoken");
+    window.location.replace("/student");
+    // console.log(values);
   };
 
   useEffect(() => {
