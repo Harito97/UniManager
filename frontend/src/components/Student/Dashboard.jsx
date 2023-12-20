@@ -13,7 +13,7 @@ import axios from "axios";
 
 // const columns = response.data.columns;
 // const expand_columns = response.data.expand_columns;
-// const data = response.data.data;
+// const data = response.data.data;       // dữ liệu này là dữ liệu cho các kì học. Ví dụ: data[0] là kì 1 năm nhất
 // const expand_data = response.data.expand_data;
 
 const columns = [
