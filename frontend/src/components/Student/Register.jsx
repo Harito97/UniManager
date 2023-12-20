@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Button, Table } from "antd";
 
 const columns = [
-  { title: "Môn học", dataIndex: "ten_hp" },
-  { title: "TC", dataIndex: "so_tin" },
-  { title: "Lớp môn học", dataIndex: "ma_hp_lop" }, // ma_hp + " " + ma_lop
-  { title: "Tổng SV", dataIndex: "so_sv" },
-  { title: "Đã ĐK", dataIndex: "da_dk" },
-  { title: "Giáo viên", dataIndex: "ten_gv" },
-  { title: "Lịch học", dataIndex: "lich_hoc" },
+  { title: "Môn học", dataIndex: "ten_hp", width: 300},
+  { title: "TC", dataIndex: "so_tin", width: 50 },
+  { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
+  { title: "Tổng SV", dataIndex: "so_sv", width: 70 },
+  { title: "Đã ĐK", dataIndex: "da_dk", width: 60 },
+  { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
+  { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
 ];
 
 // Data mẫu
@@ -17,6 +17,7 @@ for (let i = 0; i < 100; i++) {
   data.push({
     key: i, //Lấy là mã lịch học theo database
     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
+    ma_hp_lop: "MAT3385 1",
     so_tin: 3,
     so_sv: 30,
     da_dk: 0,
@@ -55,6 +56,7 @@ const Register = () => {
           dataSource={data}
           scroll={{ y: 320 }}
           pagination={false}
+          size="small"
         />
         <div
           style={{

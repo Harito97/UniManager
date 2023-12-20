@@ -146,7 +146,7 @@ async def sendGrade(request: Request):
         for element in data:
             element['he10'] = round(element['he10'],1)
         data_ki.append(data)
-
+        
 
     expand_data = [
         {

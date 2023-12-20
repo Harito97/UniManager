@@ -13,7 +13,7 @@ import axios from "axios";
 
 // const columns = response.data.columns;
 // const expand_columns = response.data.expand_columns;
-// const data = response.data.data;
+// const data = response.data.data;       // dữ liệu này là dữ liệu cho các kì học. Ví dụ: data[0] là kì 1 năm nhất
 // const expand_data = response.data.expand_data;
 
 const columns = [
@@ -77,69 +77,213 @@ const expand_columns = [
   },
 ];
 
-// Example
-const data = [
+// Data mẫu, sau sẽ dùng api để lấy
+const semesters = [
   {
-    key: "1",
-    ma_hp: "MAT3507",
-    ten_hp: "Cơ sở dữ liệu",
-    so_tin: "4",
-    he10: 8.4,
-    diem: "B+",
-    he4: 3.5,
+    ki: 1,
+    nam: 2022,
+    data: [
+      {
+        ma_hp: "MAT3507",
+        ten_hp: "Cơ sở dữ liệu",
+        so_tin: "4",
+        he10: 8.4,
+        diem: "B+",
+        he4: 3.5,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+      {
+        ma_hp: "MAT3372",
+        ten_hp: "Các thành phần phần mềm",
+        so_tin: "4",
+        he10: 10,
+        diem: "A+",
+        he4: 4.0,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+      {
+        ma_hp: "MAT2503",
+        ten_hp: "Giải tích 3",
+        so_tin: "4",
+        he10: 9.3,
+        diem: "A+",
+        he4: 4.0,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+    ],
   },
   {
-    key: "2",
-    ma_hp: "MAT3372",
-    ten_hp: "Các thành phần phần mềm",
-    so_tin: "4",
-    he10: 10,
-    diem: "A+",
-    he4: 4.0,
-  },
-  {
-    key: "3",
-    ma_hp: "MAT2503",
-    ten_hp: "Giải tích 3",
-    so_tin: "4",
-    he10: 9.3,
-    diem: "A+",
-    he4: 4.0,
+    ki: 2,
+    nam: 2022,
+    data: [
+      {
+        ma_hp: "MAT3507",
+        ten_hp: "Cơ sở dữ liệu",
+        so_tin: "4",
+        he10: 8.4,
+        diem: "B+",
+        he4: 3.5,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+      {
+        ma_hp: "MAT3372",
+        ten_hp: "Các thành phần phần mềm",
+        so_tin: "4",
+        he10: 10,
+        diem: "A+",
+        he4: 4.0,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+      {
+        ma_hp: "MAT2503",
+        ten_hp: "Giải tích 3",
+        so_tin: "4",
+        he10: 9.3,
+        diem: "A+",
+        he4: 4.0,
+        expand: [
+          {
+            stt: 1,
+            type: "Thi cuối kì",
+            he_so: 0.6,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 2,
+            type: "Giữa kì",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+          {
+            stt: 3,
+            type: "Thường xuyên",
+            he_so: 0.2,
+            lan: 1,
+            diem: 10,
+          },
+        ],
+      },
+    ],
   },
 ];
 
-const expand_data = [
-  {
-    key: "1",
-    stt: 1,
-    type: "Thi cuối kì",
-    he_so: 0.6,
-    lan: 1,
-    diem: 10,
-  },
-  {
-    key: "2",
-    stt: 2,
-    type: "Giữa kì",
-    he_so: 0.2,
-    lan: 1,
-    diem: 10,
-  },
-  {
-    key: "3",
-    stt: 3,
-    type: "Thường xuyên",
-    he_so: 0.2,
-    lan: 1,
-    diem: 10,
-  },
-];
-
-const expandedRowRender = () => {
+const expandedRowRender = (record) => {
   return (
     <Table
       columns={expand_columns}
-      dataSource={expand_data}
+      dataSource={record.expand}
       size="small"
       pagination={false}
     />
@@ -147,7 +291,6 @@ const expandedRowRender = () => {
 };
 
 const Dashboard = () => {
-  console.log("Dashboard component rendered");
   return (
     <>
       <div className="flex w-full flex-col gap-5">
@@ -208,14 +351,28 @@ const Dashboard = () => {
           <Card
             hoverable={true}
             loading={false}
-            className="w-2/3 shadow-lg max-lg:w-full"
+            className="w-2/3 overflow-auto shadow-lg max-lg:w-full"
           >
-            <Table
-              columns={columns}
-              expandable={{ expandedRowRender, defaultExpandedRowKeys: ["0"] }}
-              dataSource={data}
-              size="small"
-            />
+            {semesters.map((semester) => (
+              <>
+                <h1 className="pb-5 text-xl font-bold">
+                  KÌ {semester.ki} NĂM {semester.nam} - {semester.nam + 1}
+                </h1>
+                <div className="pb-5">
+                  <Table
+                    rowKey={(record) => record.ma_hp}
+                    columns={columns}
+                    expandable={{
+                      expandedRowRender: (record) => expandedRowRender(record),
+                      // defaultExpandedRowKeys: ["0"],
+                    }}
+                    dataSource={semester.data}
+                    pagination={false}
+                    size="small"
+                  />
+                </div>
+              </>
+            ))}
           </Card>
           <Card
             hoverable={true}
