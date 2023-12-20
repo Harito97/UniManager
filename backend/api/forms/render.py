@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -8,9 +8,6 @@ import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi import Cookie
-
-
-from typing import Dict
 
 
 app = FastAPI()
@@ -38,16 +35,16 @@ class ForgotPassword(BaseModel):
 
 
 @app.post("/login")
-def login(user: User, request: Request):
-    cursor.execute("select ma_sv, pass_word from sinh_vien")
+def login(user: User, response: Response):
+
+    cursor.execute("select ma_sv, pass_word from sinh_vien where ma_sv = \"{}\" and pass_word = \"{}\"".format(user.username, user.password))
     data = cursor.fetchall()
 
-    for account in data:
-        if user.username == account["ma_sv"] and user.password == account["pass_word"]:
-            # response = RedirectResponse(url="http://localhost:5173/student")
-            # response.set_cookie(key="logged_in", value=True)
-            # response.set_cookie(key="username", value="user123")
-            return True
+    if len(data) == 1:
+        # response = RedirectResponse(url="http://localhost:5173/student")
+        response.set_cookie(key="logged_in", value=True)
+        response.set_cookie(key="username", value=user.username)
+        return True
     return False
 
 
