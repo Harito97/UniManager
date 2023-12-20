@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Select } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -59,6 +59,16 @@ const Login = ({ handleForgot }) => {
             <Input.Password
               prefix={<LockOutlined className="site-form-item-icon" />}
             />
+          </Form.Item>
+          <Form.Item label="Tôi là:" name="type" rules={[{ required: true }]}>
+            <Select
+              defaultValue="student"
+              options={[
+                { value: "student", label: "Sinh viên" },
+                { value: "teacher", label: "Giảng viên" },
+                { value: "admin", label: "Admin" },
+              ]}
+            ></Select>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" className="bg-blue-500">
