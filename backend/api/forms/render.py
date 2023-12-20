@@ -37,7 +37,7 @@ class ForgotPassword(BaseModel):
 @app.post("/login")
 def login(user: User, response: Response):
 
-    cursor.execute("select ma_sv, pass_word from sinh_vien where ma_sv = \"{}\" and pass_word = \"{}\"".format(user.username, user.password))
+    cursor.execute("select access_level from user where username = \"{}\" and pass_word = \"{}\"".format(user.username, user.password))
     data = cursor.fetchall()
 
     if len(data) == 1:

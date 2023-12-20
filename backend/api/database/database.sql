@@ -1,14 +1,14 @@
 insert into giang_vien(ma_gv, ho_ten, gioi_tinh, luong, ngsinh, sdt, email, dia_chi, ng_bat_dau, ng_ket_thuc, hoc_ham, hoc_vi, ma_bm, password, quyen) 
 values 
-("21002100", "Nguyễn Văn A", "Nam", 2000.0, "2003-02-01", "0123456799", "nguyenvana@gmail.com", "Hà Nội", "2020-02-01", "2030-02-01", "A", "B", "2003", "2003", 0), 
+("21002100", "Nguyễn Văn A", "Nam", 2000.0, "2003-02-01", "0123456799", "nguyenvana@gmail.com", "Hà Nội", "2020-02-01", "2030-02-01", "A", "B", "2003"), 
  
-("21002110", "Nguyễn Văn B", "Nữ", 2100.0, "2002-03-02", "0123442229", "nguyenvanb@gmail.com", "Đà Nẵng", "2020-03-02", "2030-03-02", "B", "C", "2002", "2002", 0),
+("21002110", "Nguyễn Văn B", "Nữ", 2100.0, "2002-03-02", "0123442229", "nguyenvanb@gmail.com", "Đà Nẵng", "2020-03-02", "2030-03-02", "B", "C", "2002"),
  
-("21002120", "Nguyễn Văn C", "Nam", 2200.0, "2003-04-03", "0123799333", "nguyenvanc@gmail.com", "Vũng Tàu", "2020-04-03", "2030-04-03", "C", "D", "2001", "2001", 0),
+("21002120", "Nguyễn Văn C", "Nam", 2200.0, "2003-04-03", "0123799333", "nguyenvanc@gmail.com", "Vũng Tàu", "2020-04-03", "2030-04-03", "C", "D", "2001"),
  
-("21002130", "Nguyễn Văn D", "Nam", 2500.0, "2003-05-04", "0123139333", "nguyenvand@gmail.com", "TP HCM", "2020-05-04", "2030-05-04", "D", "E", "2000", "2000", 0),
+("21002130", "Nguyễn Văn D", "Nam", 2500.0, "2003-05-04", "0123139333", "nguyenvand@gmail.com", "TP HCM", "2020-05-04", "2030-05-04", "D", "E", "2000"),
 
-("21002140", "Nguyễn Văn E", "Nữ", 3200.0, "2003-06-05", "0119303333", "nguyenvane@gmail.com", "Hà Nội", "2020-06-05", "2030-06-05", "E", "F", "1999", "1999", 1);
+("21002140", "Nguyễn Văn E", "Nữ", 3200.0, "2003-06-05", "0119303333", "nguyenvane@gmail.com", "Hà Nội", "2020-06-05", "2030-06-05", "E", "F", "1999");
 
 
 insert into nganh(ma_nganh, ten_nganh) 
@@ -31,15 +31,15 @@ values
 
 insert into sinh_vien(ma_sv, ho_ten, gioi_tinh, ngsinh, sdt, email, gpa, ma_nganh, nam_bat_dau, lop, pass_word) 
 values 
-("21002500", "Nguyễn Văn AB", "Nam", "2003-02-01", "0123456799", "nguyenvanab@gmail.com", 3.20, "MAT", "2020", "A5", "2003"), 
+("21002500", "Nguyễn Văn AB", "Nam", "2003-02-01", "0123456799", "nguyenvanab@gmail.com", 3.20, "MAT", "2020", "A5"), 
  
-("21002510", "Nguyễn Văn BC", "Nữ", "2002-03-02", "0123424229", "nguyenvanbc@gmail.com", 3.31, "PHY", "2021", "A4", "2002"),
+("21002510", "Nguyễn Văn BC", "Nữ", "2002-03-02", "0123424229", "nguyenvanbc@gmail.com", 3.31, "PHY", "2021", "A4"),
  
-("21002520", "Nguyễn Văn CD", "Nam", "2001-04-03", "0129320429", "nguyenvancd@gmail.com", 3.42, "PHI", "2022", "A4", "2001"),
+("21002520", "Nguyễn Văn CD", "Nam", "2001-04-03", "0129320429", "nguyenvancd@gmail.com", 3.42, "PHI", "2022", "A4"),
  
-("21002530", "Nguyễn Văn DE", "Nam", "2000-05-04", "0129320495", "nguyenvande@gmail.com", 3.53, "MAT", "2019", "A5", "2000"),
+("21002530", "Nguyễn Văn DE", "Nam", "2000-05-04", "0129320495", "nguyenvande@gmail.com", 3.53, "MAT", "2019", "A5"),
 
-("21002540", "Nguyễn Văn EF", "Nữ", "1999-06-05", "0129322529", "nguyenvanef@gmail.com", 3.60, "GEO", "2018", "A4", "1999");
+("21002540", "Nguyễn Văn EF", "Nữ", "1999-06-05", "0129322529", "nguyenvanef@gmail.com", 3.60, "GEO", "2018", "A4");
 
 
 insert into hoc_phan(ma_hp, ten_hp, so_tin, mo_ta)
@@ -122,6 +122,23 @@ values
 (4, "21002530", 10.0, 0.2, 7.0, 0.2, 9.0, 0.6),
 (5, "21002540", 8.5, 0.2, 9.5, 0.2, 10.0, 0.6);
 
+
+insert into sv_hp(ma_hp, ma_sv, so_lan_hoc)
+values 
+("MAT3514","21002500", 1),
+("MAT3507", "21002510", 2),
+("PHY1103", "21002520", 1),
+("HIS1001", "21002530", 2),
+("POL1001", "21002540", 1);
+
+
+insert into user(username, pass_word, access_level)
+values
+("21002500", "2003", "admin"),
+("21002510", "2003", "user"),
+("21002520", "2003", "user"),
+("21002530", "2003", "user"),
+("21002540", "2003", "user");
 
 
 
