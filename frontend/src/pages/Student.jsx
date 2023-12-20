@@ -14,7 +14,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { Dashboard, Map } from "../pages";
 import Sidebar from "../components/Student/Sidebar";
 import Dashboard from "../components/Student/Dashboard";
-import Calendar from "../components/Student/Calendar";
+import MyCalendar from "../components/Student/MyCalendar";
 import Register from "../components/Student/Register";
 import Exam from "../components/Student/Exam";
 
@@ -105,7 +105,7 @@ const Main = () => {
           <Routes>
             <Route exact path="/" element={<Dashboard />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
-            <Route exact path="/calendar" element={<Calendar />} />
+            <Route exact path="/calendar" element={<MyCalendar />} />
             <Route exact path="/register" element={<Register />} />
             <Route exact path="/exam" element={<Exam />} />
           </Routes>
