@@ -98,51 +98,54 @@ async def sendGrade(request: Request):
         },
     ]
 
-    statement = """
-                    with dk as (
-                    select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
-                    from dang_ky 
-                    where ma_sv = '21002510'
-                    )
-                    select 
-                        row_number() over () as 'key',
-                        lh.ma_hp,
-                        hp.ten_hp,
-                        hp.so_tin,
-                        dk.total_score as he10,
-                        case
-                            when dk.total_score < 4.0 then 'F'
-                            when dk.total_score <= 4.9 then 'D'
-                            when dk.total_score <= 5.4 then 'D+'
-                            when dk.total_score <= 6.4 then 'C'
-                            when dk.total_score <= 6.9 then 'C+'
-                            when dk.total_score <= 7.9 then 'B'
-                            when dk.total_score <= 8.4 then 'B+'
-                            when dk.total_score <= 8.9 then 'A'
-                            else 'A+'
-                        end as diem,
-                        case
-                            when dk.total_score < 4.0 then 0
-                            when dk.total_score <= 4.9 then 1
-                            when dk.total_score <= 5.4 then 1.5
-                            when dk.total_score <= 6.4 then 2
-                            when dk.total_score <= 6.9 then 2.5
-                            when dk.total_score <= 7.9 then 3
-                            when dk.total_score <= 8.4 then 3.5
-                            when dk.total_score <= 8.9 then 3.7
-                            else 4
-                        end as he4
-                    from
-                        hoc_phan hp
-                        join lich_hoc lh on lh.ma_hp = hp.ma_hp
-                        join dk on dk.ma_lh = lh.ma_lh;
-                """
+    data_ki = []
 
-    cursor.execute(statement)
-    data = cursor.fetchall()
+    for i in range(8):
 
-    for element in data:
-        element['he10'] = round(element['he10'],1)
+        statement = f"""
+                        with dk as (
+                        select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
+                        from dang_ky 
+                        where ma_sv = '21002510'
+                        )
+                        select 
+                            row_number() over () as 'key',
+                            lh.ma_hp,
+                            hp.ten_hp,
+                            hp.so_tin,
+                            dk.total_score as he10,
+                            case
+                                when dk.total_score < 4.0 then 'F'
+                                when dk.total_score <= 4.9 then 'D'
+                                when dk.total_score <= 5.4 then 'D+'
+                                when dk.total_score <= 6.4 then 'C'
+                                when dk.total_score <= 6.9 then 'C+'
+                                when dk.total_score <= 7.9 then 'B'
+                                when dk.total_score <= 8.4 then 'B+'
+                                when dk.total_score <= 8.9 then 'A'
+                                else 'A+'
+                            end as diem,
+                            case
+                                when dk.total_score < 4.0 then 0
+                                when dk.total_score <= 4.9 then 1
+                                when dk.total_score <= 5.4 then 1.5
+                                when dk.total_score <= 6.4 then 2
+                                when dk.total_score <= 6.9 then 2.5
+                                when dk.total_score <= 7.9 then 3
+                                when dk.total_score <= 8.4 then 3.5
+                                when dk.total_score <= 8.9 then 3.7
+                                else 4
+                            end as he4
+                        from
+                            hoc_phan hp, lich_hoc lh, dk
+                        where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ki = {i}
+                    """
+
+        cursor.execute(statement)
+        data = cursor.fetchall()
+        for element in data:
+            element['he10'] = round(element['he10'],1)
+        data_ki.append(data)
 
 
     expand_data = [
@@ -173,7 +176,7 @@ async def sendGrade(request: Request):
     ]
 
 
-    return {"columns": columns, "expand_columns": expand_columns, "data": data, "expand_data": expand_data}
+    return {"columns": columns, "expand_columns": expand_columns, "data": data_ki, "expand_data": expand_data}
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend

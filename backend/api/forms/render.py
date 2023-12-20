@@ -83,7 +83,38 @@ async def forgot_password(request: ForgotPassword):
     fastMail = FastMail(conf)
 
     # Tạo nội dung email
-    email_content = f"Dear {ho_ten}. Your password is: {pass_word} <br> Please do not disclose login information to others!"
+    email_content = f"""
+                        <html>
+                        <head>
+                            <style>
+                            body {{
+                                font-family: Arial, sans-serif;
+                            }}
+                            .container {{
+                                max-width: 600px;
+                                margin: 0 auto;
+                                padding: 20px;
+                                background-color: #f2f2f2;
+                            }}
+                            .message {{
+                                margin-bottom: 20px;
+                                padding: 10px;
+                                background-color: #fff;
+                                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                            }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                            <div class="message">
+                                <h2>Dear {ho_ten},</h2>
+                                <p>Your password is: {pass_word}</p>
+                                <p>Please do not disclose login information to others!</p>
+                            </div>
+                            </div>
+                        </body>
+                        </html>
+                    """
 
     # Gửi email
     message = MessageSchema(
