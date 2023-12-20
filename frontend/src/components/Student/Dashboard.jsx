@@ -80,7 +80,8 @@ const expand_columns = [
 // Data mẫu, sau sẽ dùng api để lấy
 const semesters = [
   {
-    ten_hk: "Kì 1 năm 2022 - 2023",
+    ki: 1,
+    nam: 2022,
     data: [
       {
         ma_hp: "MAT3507",
@@ -178,7 +179,8 @@ const semesters = [
     ],
   },
   {
-    ten_hk: "Kì 2 năm 2022 - 2023",
+    ki: 2,
+    nam: 2022,
     data: [
       {
         ma_hp: "MAT3507",
@@ -353,7 +355,9 @@ const Dashboard = () => {
           >
             {semesters.map((semester) => (
               <>
-                <h1 className="pb-5 font-bold">{semester.ten_hk}</h1>
+                <h1 className="pb-5 text-xl font-bold">
+                  KÌ {semester.ki} NĂM {semester.nam} - {semester.nam + 1}
+                </h1>
                 <div className="pb-5">
                   <Table
                     rowKey={(record) => record.ma_hp}
