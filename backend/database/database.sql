@@ -69,6 +69,7 @@ create table if not exists lh_thoi_gian(
 	ma_lh int not null,
     thoi_gian varchar(15) not null,
     phong varchar(5) not null,
+    so_sinh_vien int not null,
     primary key (ma_lh, thoi_gian)
 );
 
