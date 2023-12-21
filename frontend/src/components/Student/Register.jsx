@@ -35,7 +35,7 @@ const registered_table = [
         onConfirm={() => handleDelete(record.key)}
         okButtonProps={{ className: "bg-blue-500" }}
       >
-        <DeleteOutlined className="text-red-500"/>
+        <DeleteOutlined className="text-red-500" />
       </Popconfirm>
     ),
   },
@@ -43,9 +43,9 @@ const registered_table = [
 
 // Data mẫu môn học theo ngành
 // Lấy bằng cách lấy bảng lịch học theo ngành, năm và kì hiện tại
-const data_major = [];
+const dataMajor = [];
 for (let i = 100; i < 200; i++) {
-  data_major.push({
+  dataMajor.push({
     ma_lh: i,
     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
     ma_hp_lop: "MAT3385 1",
@@ -73,11 +73,13 @@ for (let i = 1; i <= 100; i++) {
   });
 }
 
-// Data môn sinh viên đã đăng kí trong kì này
-// Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
-const registered_data = [{ ma_lh: 1 }, { ma_lh: 2 }];
-
 const Register = () => {
+  // Data môn sinh viên đã đăng kí trong kì này
+  // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
+  const [registeredData, setRegisteredData] = useState([
+    { ma_lh: 1 },
+    { ma_lh: 2 },
+  ]);
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -93,19 +95,29 @@ const Register = () => {
   const onTableChange = (value) => {
     if (value === 1) {
       setShowAllCourses(false);
-      console.log(1);
     } else {
       setShowAllCourses(true);
-      console.log(2);
     }
   };
-  const onSelectChange = (newSelectedRowKeys) => {
+  const onChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
+  const onSelect = (record, selected) => {
+    if (selected) {
+      // const newRecord = {}
+      setRegisteredData([...registeredData, record]);
+    } else {
+      const updateRegisteredData = registeredData.filter(
+        (item) => item.ma_lh !== record.ma_lh,
+      );
+      setRegisteredData(updateRegisteredData);
+    }
+  };
   const rowSelection = {
     selectedRowKeys,
-    onChange: onSelectChange,
+    onSelect: onSelect,
+    onChange: onChange,
     hideSelectAll: true,
   };
   const hasSelected = selectedRowKeys.length > 0;
@@ -143,7 +155,7 @@ const Register = () => {
             rowKey={(record) => record.ma_lh}
             rowSelection={rowSelection}
             columns={courses_table}
-            dataSource={data_major}
+            dataSource={dataMajor}
             scroll={{ y: 320 }}
             pagination={false}
             size="small"
@@ -173,7 +185,7 @@ const Register = () => {
         <Table
           rowKey={(record) => record.ma_lh}
           columns={registered_table}
-          dataSource={registered_data}
+          dataSource={registeredData}
           pagination={false}
           size="small"
         />
