@@ -52,8 +52,9 @@ const columns = [
 const expand_columns = [
   {
     title: "STT",
-    dataIndex: "stt",
+    dataIndex: "index",
     key: "stt",
+    render: (text, record, index) => index + 1,
   },
   {
     title: "Bản chất kỳ thi",
@@ -92,21 +93,18 @@ const semesters = [
         he4: 3.5,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
@@ -123,21 +121,18 @@ const semesters = [
         he4: 4.0,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
@@ -154,21 +149,18 @@ const semesters = [
         he4: 4.0,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
@@ -191,21 +183,18 @@ const semesters = [
         he4: 3.5,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
@@ -222,21 +211,18 @@ const semesters = [
         he4: 4.0,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
@@ -253,21 +239,18 @@ const semesters = [
         he4: 4.0,
         expand: [
           {
-            stt: 1,
             type: "Thi cuối kì",
             he_so: 0.6,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 2,
             type: "Giữa kì",
             he_so: 0.2,
             lan: 1,
             diem: 10,
           },
           {
-            stt: 3,
             type: "Thường xuyên",
             he_so: 0.2,
             lan: 1,
