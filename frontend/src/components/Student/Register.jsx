@@ -111,12 +111,17 @@ const Register = () => {
   };
   const onSelect = (record, selected) => {
     if (selected) {
-      // const newRecord = {}
-      setRegisteredData([...registeredData, record]);
+      const newRecord = { ...record };
+      newRecord.status = true;
+      // console.log(newRecord);
+      // console.log(record.status);
+
+      setRegisteredData([...registeredData, newRecord]);
     } else {
       const updateRegisteredData = registeredData.filter(
         (item) => item.ma_lh !== record.ma_lh,
       );
+      //TODO: Check nếu không có thuộc tính status, thêm vào mảng để xoá
       setRegisteredData(updateRegisteredData);
     }
   };
@@ -176,6 +181,11 @@ const Register = () => {
           dataSource={registeredData}
           pagination={false}
           size="small"
+          rowClassName={(record) => {
+            if (record.status !== undefined) {
+              return "bg-blue-200"
+            }
+          }}
         />
         <div className="flex justify-end">
           <Button
