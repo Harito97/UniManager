@@ -12,35 +12,6 @@ const courses_table = [
   { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
 ];
 
-const registered_table = [
-  {
-    title: "STT",
-    dataIndex: "index",
-    render: (text, record, index) => index + 1,
-    width: 50,
-  },
-  { title: "Môn học", dataIndex: "ten_hp", width: 300 },
-  { title: "TC", dataIndex: "so_tin", width: 50 },
-  { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
-  { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
-  { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
-  { title: "Kiểu đăng kí", dataIndex: "type", width: 200 },
-  {
-    title: "Huỷ",
-    dataIndex: "delete",
-    width: 100,
-    render: (_, record) => (
-      <Popconfirm
-        title="Bạn có chắc chắn muốn xoá?"
-        onConfirm={() => handleDelete(record.key)}
-        okButtonProps={{ className: "bg-blue-500" }}
-      >
-        <DeleteOutlined className="text-red-500" />
-      </Popconfirm>
-    ),
-  },
-];
-
 // Data mẫu môn học theo ngành
 // Lấy bằng cách lấy bảng lịch học theo ngành, năm và kì hiện tại
 const dataMajor = [];
@@ -80,6 +51,41 @@ const Register = () => {
     { ma_lh: 1 },
     { ma_lh: 2 },
   ]);
+  const registered_table = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      render: (text, record, index) => index + 1,
+      width: 50,
+    },
+    { title: "Môn học", dataIndex: "ten_hp", width: 300 },
+    { title: "TC", dataIndex: "so_tin", width: 50 },
+    { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
+    { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
+    { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
+    { title: "Kiểu đăng kí", dataIndex: "type", width: 200 },
+    {
+      title: "Huỷ",
+      dataIndex: "delete",
+      width: 100,
+      render: (_, record) => (
+        <Popconfirm
+          title="Bạn có chắc chắn muốn xoá?"
+          onConfirm={() => handleDelete(record)}
+          okButtonProps={{ className: "bg-blue-500" }}
+        >
+          <DeleteOutlined className="text-red-500" />
+        </Popconfirm>
+      ),
+    },
+  ];
+
+  const handleDelete = (record) => {
+    const updateRegisteredData = registeredData.filter(
+      (item) => item.ma_lh !== record.ma_lh,
+    );
+    setRegisteredData(updateRegisteredData);
+  };
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -161,24 +167,6 @@ const Register = () => {
             size="small"
           />
         )}
-        <div>
-          <Button
-            type="primary"
-            onClick={start}
-            disabled={!hasSelected}
-            loading={loading}
-            className="bg-blue-500"
-          >
-            Đăng kí
-          </Button>
-          <span
-            style={{
-              marginLeft: 8,
-            }}
-          >
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
-          </span>
-        </div>
         <h1 className="text-xl font-bold">
           Danh sách môn đã đăng kí hoặc chọn
         </h1>
@@ -189,6 +177,17 @@ const Register = () => {
           pagination={false}
           size="small"
         />
+        <div className="flex justify-end">
+          <Button
+            type="primary"
+            onClick={start}
+            disabled={!hasSelected}
+            loading={loading}
+            className="bg-blue-500"
+          >
+            Ghi nhận
+          </Button>
+        </div>
       </div>
     </>
   );
