@@ -8,6 +8,7 @@ import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi import Cookie
+import uvicorn
 
 
 app = FastAPI()
@@ -35,7 +36,7 @@ class ForgotPassword(BaseModel):
 
 
 @app.post("/login")
-def login(user: User, response: Response):
+async def login(user: User, response: Response):
 
     cursor.execute("select access_level from user where username = \"{}\" and pass_word = \"{}\"".format(user.username, user.password))
     data = cursor.fetchall()
@@ -133,3 +134,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("render:app", port=8000)
