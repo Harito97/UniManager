@@ -8,14 +8,12 @@ create table if not exists giang_vien(
     luong decimal(8,2) not null,
     ngsinh date not null,
     sdt varchar(10) not null,
-    email varchar(50) not null,
     dia_chi varchar(50) not null,
     ng_bat_dau date not null,
     ng_ket_thuc date,
     hoc_ham varchar(10),
     hoc_vi varchar(10),
     ma_bm varchar(8),
-    username varchar(100) not null,
     primary key (ma_gv)
 );
 
@@ -114,7 +112,6 @@ create table if not exists sinh_vien(
     gioi_tinh varchar(3) not null,
     ngsinh date not null,
     sdt varchar(10) not null,
-    email varchar(50) not null,
     gpa decimal(2,2) not null,
     ma_nganh varchar(8) not null,
     nam_bat_dau int not null,
