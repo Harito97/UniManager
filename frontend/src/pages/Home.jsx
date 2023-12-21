@@ -1,4 +1,4 @@
-import React, { useState,  useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/LandingPage/Navbar";
 import Hero from "../components/LandingPage/Hero";
 import Background from "../assets/background.jpg";
@@ -13,6 +13,12 @@ function Home() {
   const toggleLoginPopup = () => {
     setLoginPopup(!loginPopup);
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      window.location.replace("/student");
+    }
+  }, []);
 
   const bgImage = {
     backgroundImage: `url(${Background})`,

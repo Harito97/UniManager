@@ -32,12 +32,6 @@ const Login = ({ handleForgot }) => {
     // console.log(values);
   };
 
-  useEffect(() => {
-    if (localStorage.getItem("token") !== null) {
-      window.location.replace("/student");
-    }
-  }, []);
-
   return (
     <>
       <div className="p-5">
