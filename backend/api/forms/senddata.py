@@ -36,7 +36,6 @@ cursor = connect.cursor(dictionary=True)
 
 @app.post("/grade")
 async def sendGrade(request: Request):
-    # user = get_student_info()
     columns = [
         {
             "title": "Mã môn học",
@@ -98,7 +97,7 @@ async def sendGrade(request: Request):
         },
     ]
 
-    data_ki = []
+    data_sum_grade = []
 
     for i in range(8):
 
@@ -145,8 +144,22 @@ async def sendGrade(request: Request):
         data = cursor.fetchall()
         for element in data:
             element['he10'] = round(element['he10'],1)
-        data_ki.append(data)
-        
+        data_sum_grade.append(data)
+    
+    data_component_grade = []
+
+    for i in range(8):
+
+        statement = f"""
+                        select lh.ma_hp, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
+                        from hoc_phan hp, lich_hoc lh, dang_ky dk
+                        where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {i}
+                    """
+        cursor.execute(statement)
+        data = cursor.fetchall()
+        data_component_grade.append(data)
+
+    
 
     expand_data = [
         {
@@ -176,7 +189,7 @@ async def sendGrade(request: Request):
     ]
 
 
-    return {"columns": columns, "expand_columns": expand_columns, "data": data_ki, "expand_data": expand_data}
+    return {"columns": columns, "expand_columns": expand_columns, "data": data_sum_grade, "expand_data": expand_data}
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend

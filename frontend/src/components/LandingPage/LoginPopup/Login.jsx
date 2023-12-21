@@ -29,6 +29,7 @@ const Login = ({ handleForgot }) => {
   const onFinish = (values) => {
     localStorage.setItem("token", "testtoken");
     window.location.replace("/student");
+    // console.log(values);
   };
 
   useEffect(() => {
@@ -60,7 +61,12 @@ const Login = ({ handleForgot }) => {
               prefix={<LockOutlined className="site-form-item-icon" />}
             />
           </Form.Item>
-          <Form.Item label="Tôi là:" name="type" rules={[{ required: true }]}>
+          <Form.Item
+            initialValue={"student"}
+            label="Tôi là:"
+            name="type"
+            rules={[{ required: true }]}
+          >
             <Select
               defaultValue="student"
               options={[
