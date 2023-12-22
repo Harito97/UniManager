@@ -87,16 +87,16 @@ danh_sach_phong = [
 #     for item in danh_sach_phong:
 #         phong,suc_chua,mo_ta = item[0], item[1], item[2]
 #         file.write(f'{phong},{suc_chua},{mo_ta}\n')
-# # try:
-# #     for row in danh_sach_phong:
-# #         for element in row:
-# #             cursor.execute("""
-# #                            INSERT INTO phong
-# #                            VALUES (%s, %s, %s)
-# #                            """, element)
-# #             conn.commit()
-# # except Exception as e:
-# #     print(f"Error: {e}") 
+# try:
+#     for row in danh_sach_phong:
+#         for element in row:
+#             cursor.execute("""
+#                            INSERT INTO phong
+#                            VALUES (%s, %s, %s)
+#                            """, element)
+#             conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}") 
 
 danh_sach_hoc_phan_tien_quyet = [
     ("PHI1006", ""),
@@ -298,61 +298,10 @@ danh_sach_ten_giang_vien = [
     "Do Van Hung",
     "Nguyen Thi Mai Lan",
     "Trinh Van Tung",
-    "Nguyen Van Tien"
+    "Nguyen Van Tien",
+    "Nguyen Ha Khanh Linh"
 ]
 
-danh_sach_dia_chi = [
-    "15 Nguyen Van Cu, Hoan Kiem, Hanoi",
-    "42 Tran Hung Dao, Hoan Kiem, Hanoi",
-    "78 Ba Trieu, Hai Ba Trung, Hanoi",
-    "23 Le Van Luong, Thanh Xuan, Hanoi",
-    "56 Kim Ma, Ba Dinh, Hanoi",
-    "37 Cau Giay, Cau Giay, Hanoi",
-    "91 Ton Duc Thang, Dong Da, Hanoi",
-    "8 Nguyen Trai, Thanh Xuan, Hanoi",
-    "19 Quan Thanh, Ba Dinh, Hanoi",
-    "64 Tran Phu, Hoan Kiem, Hanoi",
-    "30 Lang Ha, Dong Da, Hanoi",
-    "53 Ngo Quyen, Hoan Kiem, Hanoi",
-    "14 Xa Dan, Dong Da, Hanoi",
-    "45 Thuy Khue, Tay Ho, Hanoi",
-    "72 Thai Ha, Dong Da, Hanoi",
-    "27 Dai Co Viet, Hai Ba Trung, Hanoi",
-    "39 Pham Hung, Nam Tu Liem, Hanoi",
-    "10 Hoang Dieu, Ba Dinh, Hanoi",
-    "21 Le Duan, Hai Ba Trung, Hanoi",
-    "48 Pho Hue, Hoan Kiem, Hanoi",
-    "33 De La Thanh, Dong Da, Hanoi",
-    "50 Kim Lien, Dong Da, Hanoi",
-    "18 Yen Phu, Tay Ho, Hanoi",
-    "63 Giang Vo, Ba Dinh, Hanoi",
-    "55 Tran Duy Hung, Cau Giay, Hanoi",
-    "12 Ho Tung Mau, Hoan Kiem, Hanoi",
-    "26 Thanh Nien, Tay Ho, Hanoi",
-    "41 Chu Van An, Tay Ho, Hanoi",
-    "74 Nguyen Chi Thanh, Dong Da, Hanoi",
-    "29 Hai Ba Trung, Hoan Kiem, Hanoi",
-    "36 Kham Thien, Dong Da, Hanoi",
-    "82 Nguyen Khanh Toan, Cau Giay, Hanoi",
-    "17 Quang Trung, Hoan Kiem, Hanoi",
-    "23 Lang Ha, Dong Da, Hanoi",
-    "47 Hang Bai, Hoan Kiem, Hanoi",
-    "68 Thanh Cong, Ba Dinh, Hanoi",
-    "91 Hoang Hoa Tham, Ba Dinh, Hanoi",
-    "32 Le Thanh Nghi, Hai Ba Trung, Hanoi",
-    "59 Pho Duc Chinh, Ba Dinh, Hanoi",
-    "27 Tran Thai Tong, Cau Giay, Hanoi",
-    "45 Nguyen Phong Sac, Cau Giay, Hanoi",
-    "84 Quang Trung, Hai Ba Trung, Hanoi",
-    "22 Ton That Tung, Dong Da, Hanoi",
-    "14 Nui Truc, Ba Dinh, Hanoi",
-    "39 Trung Yen, Cau Giay, Hanoi",
-    "73 Le Lai, Hoan Kiem, Hanoi",
-    "51 Trang Tien, Hoan Kiem, Hanoi",
-    "62 Thanh Nien, Tay Ho, Hanoi",
-    "20 Quoc Tu Giam, Dong Da, Hanoi",
-    "58 Kim Lien, Dong Da, Hanoi"
-]
 
 def generate_student_names(count):
     first_names = ["Nguyen", "Tran", "Le", "Pham", "Hoang", "Vo", "Ngo", "Do", "Luong", "Truong", "Dang", "Mai", "Bui"]
@@ -369,7 +318,6 @@ def generate_student_names(count):
 
     return student_names
 
-# Generate 200 student names
 danh_sach_ten_sinh_vien = generate_student_names(200)
 
 def generate_hanoi_addresses(count):
@@ -384,20 +332,21 @@ def generate_hanoi_addresses(count):
 
     hanoi_addresses = []
     for _ in range(count):
-        address = f"{random.choice(random.choice(streets))}, {random.choice(districts)}, Hanoi"
+        address = f"{random.choice(streets)}, {random.choice(districts)}, Hanoi"
         hanoi_addresses.append(address)
 
     return hanoi_addresses
 
 # Generate 200 Hanoi addresses
-danh_sach_dia_chi_sinh_vien = generate_hanoi_addresses(200)
+danh_sach_dia_chi_giang_vien = generate_hanoi_addresses(50)
 
 def generate_random_phone_number():
     phone_number = "0" + str(random.randint(9, 9))  # Random first digit
-    phone_number += "".join([str(random.randint(0, 9)) for _ in range(9)])  # Random remaining 9 digits
+    phone_number += "".join([str(random.randint(0, 9)) for _ in range(8)])  # Random remaining 9 digits
     return phone_number
 
-danh_sach_sdt = [generate_random_phone_number() for _ in range(50)]
+danh_sach_sdt_giang_vien = [generate_random_phone_number() for _ in range(50)]
+danh_sach_sdt_sinh_vien = [generate_random_phone_number() for _ in range(200)]
 
 def generate_random_dates(start_date, end_date, count):
     date_list = []
@@ -418,12 +367,28 @@ end_date2 = datetime(1980, 12, 31)
 danh_sach_ngsinh_giang_vien = generate_random_dates(start_date2, end_date2, 50)
 
 danh_sach_giang_vien = [
-    
+    (f'GV_{i+1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 50)
 ]
 
+# print(danh_sach_giang_vien)
+
+# try:
+#     for element in danh_sach_giang_vien:
+#         cursor.execute("""
+#                        INSERT INTO giang_vien
+#                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                        """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
+
+danh_sach_ma_nganh = [i for i in danh_sach_nganh]
+
 danh_sach_sinh_vien = [
-    
+    (f'SV_{i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], round(random.random() * 4.0, 1), random.choice(danh_sach_ma_nganh), 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
 ]
+
+# print(danh_sach_sinh_vien)
 
 danh_sach_lich_hoc = [
     (1, '')
