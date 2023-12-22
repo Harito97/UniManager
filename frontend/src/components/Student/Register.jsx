@@ -7,8 +7,8 @@ const courses_table = [
   { title: "TC", dataIndex: "so_tin", width: 50 },
   { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
   { title: "Tổng SV", dataIndex: "so_sv", width: 70 },
-  { title: "Đã ĐK", dataIndex: "da_dk", width: 60 },
-  { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
+  { title: "Đã ĐK", dataIndex: "da_dk", width: 60}, //TODO: render bằng cách select count bảng đăng kí theo năm, kì, mã lịch học
+  { title: "Giáo viên", dataIndex: "ten_gv", width: 100, render: (_, record) => {return record.ten_gv.map((n) => (<p>{n}</p>))}},
   {
     title: "Lịch học",
     dataIndex: "lich_hoc",
@@ -34,8 +34,7 @@ for (let i = 100; i < 200; i++) {
     ma_hp_lop: `MAT3385 ${i}`,
     so_tin: 3,
     so_sv: 30,
-    da_dk: 0,
-    ten_gv: "Vũ Tiến Dũng",
+    ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
     lich_hoc: [
       { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
       { thu: "T5", bd: 6, kt: 10, phong: "PM" },
@@ -54,8 +53,7 @@ for (let i = 1; i <= 100; i++) {
     ma_hp_lop: "PHI1006 " + i,
     so_tin: 3,
     so_sv: 30,
-    da_dk: 0,
-    ten_gv: "",
+    ten_gv: [],
     lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
     disabled: false,
   });
@@ -66,7 +64,10 @@ const Register = () => {
   const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
   // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
-  const [registeredData, setRegisteredData] = useState([]);
+  const [registeredData, setRegisteredData] = useState([{lich_hoc: [
+    { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
+    { thu: "T5", bd: 6, kt: 10, phong: "PM" },
+  ],}]);
   const registered_table = [
     {
       title: "STT",
