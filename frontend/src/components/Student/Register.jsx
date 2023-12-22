@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Select, Popconfirm } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -9,30 +9,46 @@ const courses_table = [
   { title: "Tổng SV", dataIndex: "so_sv", width: 70 },
   { title: "Đã ĐK", dataIndex: "da_dk", width: 60 },
   { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
-  { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
+  {
+    title: "Lịch học",
+    dataIndex: "lich_hoc",
+    width: 200,
+    render: (_, record) => {
+      const time_data = record.lich_hoc;
+      return time_data.map((t) => (
+        <p>
+          {t.thu}-({t.bd}-{t.kt})-{t.phong}
+        </p>
+      ));
+    },
+  },
 ];
 
 // Data mẫu môn học theo ngành
 // Lấy bằng cách lấy bảng lịch học theo ngành, năm và kì hiện tại
-const dataMajor = [];
+const data1 = [];
 for (let i = 100; i < 200; i++) {
-  dataMajor.push({
+  data1.push({
     ma_lh: i,
     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
-    ma_hp_lop: "MAT3385 1",
+    ma_hp_lop: `MAT3385 ${i}`,
     so_tin: 3,
     so_sv: 30,
     da_dk: 0,
     ten_gv: "Vũ Tiến Dũng",
-    lich_hoc: "T4-(4-5)-103T4 CN-(1-5)-Phòng máy",
+    lich_hoc: [
+      { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
+      { thu: "T5", bd: 6, kt: 10, phong: "PM" },
+    ],
+    disabled: false,
   });
 }
 
 // Data mẫu toàn trường
 // Lấy bằng cách lấy bảng lịch học theo năm, kì hiện tại
-const data = [];
+const data2 = [];
 for (let i = 1; i <= 100; i++) {
-  data.push({
+  data2.push({
     ma_lh: i,
     ten_hp: "Triết học Marx-Lenin",
     ma_hp_lop: "PHI1006 " + i,
@@ -40,17 +56,17 @@ for (let i = 1; i <= 100; i++) {
     so_sv: 30,
     da_dk: 0,
     ten_gv: "",
-    lich_hoc: "T4-(3-5)-103T4",
+    lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
+    disabled: false,
   });
 }
 
 const Register = () => {
+  const [dataMajor, setDataMajor] = useState(data1);
+  const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
   // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
-  const [registeredData, setRegisteredData] = useState([
-    { ma_lh: 1 },
-    { ma_lh: 2 },
-  ]);
+  const [registeredData, setRegisteredData] = useState([]);
   const registered_table = [
     {
       title: "STT",
@@ -62,7 +78,19 @@ const Register = () => {
     { title: "TC", dataIndex: "so_tin", width: 50 },
     { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
     { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
-    { title: "Lịch học", dataIndex: "lich_hoc", width: 200 },
+    {
+      title: "Lịch học",
+      dataIndex: "lich_hoc",
+      width: 200,
+      render: (_, record) => {
+        const time_data = record.lich_hoc;
+        return time_data.map((t) => (
+          <p>
+            {t.thu}-({t.bd}-{t.kt})-{t.phong}
+          </p>
+        ));
+      },
+    },
     { title: "Kiểu đăng kí", dataIndex: "type", width: 200 },
     {
       title: "Huỷ",
@@ -85,18 +113,23 @@ const Register = () => {
       (item) => item.ma_lh !== record.ma_lh,
     );
     setRegisteredData(updateRegisteredData);
+    const updateSelectedRowKeys = selectedRowKeys.filter(
+      (item) => item !== record.ma_lh,
+    );
+    setSelectedRowKeys(updateSelectedRowKeys);
   };
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
   const start = () => {
-    setLoading(true);
-    // TODO
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
+    // setLoading(true);
+    // // TODO
+    // // ajax request after empty completing
+    // setTimeout(() => {
+    //   setSelectedRowKeys([]);
+    //   setLoading(false);
+    // }, 1000);
+    console.log(dataMajor[0]);
   };
   const onTableChange = (value) => {
     if (value === 1) {
@@ -126,12 +159,62 @@ const Register = () => {
     }
   };
   const rowSelection = {
-    selectedRowKeys,
     onSelect: onSelect,
     onChange: onChange,
     hideSelectAll: true,
+    getCheckboxProps: (record) => ({ disabled: record.disabled }),
+    selectedRowKeys: selectedRowKeys,
   };
   const hasSelected = selectedRowKeys.length > 0;
+
+  const checkBoxDisabled = (data1) => {
+    for (let i = 0; i < registeredData.length; i++) {
+      const data2 = registeredData[i].lich_hoc;
+      for (let j = 0; j < data1.length; j++) {
+        for (let k = 0; k < data2.length; k++) {
+          if (checkIfOverlapping(data1[j], data2[k])) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  };
+
+  const checkIfOverlapping = (o1, o2) => {
+    if (o1.thu === o2.thu) {
+      return (
+        (o1.bd >= o2.bd && o1.bd <= o2.kt) || (o1.kt >= o2.bd && o1.kt <= o2.kt)
+      );
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    console.log("Độ dài mảng đã thay đổi: ", registeredData.length);
+    // dataMajor.forEach((obj) => {
+    //   obj.disabled = checkBoxDisabled(obj.lich_hoc);
+    // });
+    // data.forEach((obj) => {
+    //   obj.disabled = checkBoxDisabled(obj.lich_hoc);
+    // });
+    const newDataMajor = [...dataMajor];
+    for (let i = 0; i < newDataMajor.length; i++) {
+      newDataMajor[i] = {
+        ...newDataMajor[i],
+        disabled: checkBoxDisabled(newDataMajor[i].lich_hoc),
+      };
+    }
+    setDataMajor(newDataMajor);
+    const newDataAll = [...dataAll];
+    for (let i = 0; i < newDataAll.length; i++) {
+      newDataAll[i] = {
+        ...newDataAll[i],
+        disabled: checkBoxDisabled(newDataAll[i].lich_hoc),
+      };
+    }
+    setDataAll(newDataAll);
+  }, [registeredData]);
 
   return (
     <>
@@ -155,10 +238,15 @@ const Register = () => {
             rowKey={(record) => record.ma_lh}
             rowSelection={rowSelection}
             columns={courses_table}
-            dataSource={data}
+            dataSource={dataAll}
             scroll={{ y: 320 }}
             pagination={false}
             size="small"
+            rowClassName={(record) => {
+              if (record.disabled) {
+                return "bg-yellow-200";
+              }
+            }}
           />
         ) : (
           // Môn học theo ngành
@@ -170,6 +258,11 @@ const Register = () => {
             scroll={{ y: 320 }}
             pagination={false}
             size="small"
+            rowClassName={(record) => {
+              if (record.disabled) {
+                return "bg-yellow-200";
+              }
+            }}
           />
         )}
         <h1 className="text-xl font-bold">
@@ -183,7 +276,7 @@ const Register = () => {
           size="small"
           rowClassName={(record) => {
             if (record.status !== undefined) {
-              return "bg-blue-200"
+              return "bg-blue-200";
             }
           }}
         />
