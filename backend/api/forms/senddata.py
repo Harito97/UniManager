@@ -8,8 +8,7 @@ import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Cookie
 import datetime
-
-import render
+import uvicorn
 
 
 app = FastAPI()
@@ -111,11 +110,10 @@ async def sendGrade(request: Request):
         
         for semester in range(1, 3):
 
-
             statement = f"""
                             select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp
-                            where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {semester} and lh.nam = {year} and sv_hp.ma_hp = hp.ma_hp and sv_hp.ma_sv = dk.ma_sv
+                            where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {semester} and lh.nam = {year} and sv_hp.ma_hp = hp.ma_hp and sv_hp.ma_sv = dk.ma_sv and dk.ma_sv = '21002500'
                         """
             
             cursor.execute(statement)
@@ -216,6 +214,36 @@ async def sendGrade(request: Request):
     return {"columns": columns, "expand_columns": expand_columns, "data": data}
 
 
+@app.post("/register_subject")
+async def sendSubject():
+    statement = f"""
+                    select 
+                        hp.ten_hp as "Môn học", 
+                        hp.so_tin as "TC", 
+                        concat(lh.ma_hp, ' ', lh.ma_lop) as "Lớp môn học", 
+                        lh_tg.so_sinh_vien as "Tổng SV",  
+                        case
+                            when hp.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = '21002500' and dk.ma_lh = lh.ma_lh) then 1
+                            else 0
+                        end as "Đã ĐK",
+                        gv.ho_ten as "Giáo viên",
+                        json_objectagg(lh_tg.thoi_gian) as "Lịch học"
+
+                    from hoc_phan hp, lich_hoc lh, lh_thoi_gian lh_tg, dang_ky dk, giang_vien gv
+
+                    where hp.ma_hp = lh.ma_hp and lh.ma_lh = lh_tg.ma_lh and gv.ma_gv = lh_tg.ma_gv
+                    
+                    group by hp.ten_hp
+                    order by hp.ten_hp;
+
+                """
+
+
+@app.post("/register_subject")
+async def sendSubjectMajor():
+    return 0
+
+
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
     CORSMiddleware,
@@ -224,3 +252,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("senddata:app", port=8001)
