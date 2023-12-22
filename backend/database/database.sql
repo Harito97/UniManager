@@ -11,9 +11,6 @@ create table if not exists giang_vien(
     dia_chi varchar(50) not null,
     ng_bat_dau date not null,
     ng_ket_thuc date,
-    hoc_ham varchar(10),
-    hoc_vi varchar(10),
-    ma_bm varchar(8),
     primary key (ma_gv)
 );
 
@@ -33,13 +30,6 @@ create table if not exists lh_gv(
 	ma_lh int not null,
     ma_gv varchar(8) not null,
     primary key (ma_lh, ma_gv)
-);
-
-create table if not exists khoa(
-	ma_khoa varchar(8) not null,
-    ten_khoa varchar(50) not null unique,
-    truong_khoa varchar(8) not null,
-    primary key (ma_khoa)
 );
 
 create table if not exists hoc_phan(
@@ -128,7 +118,7 @@ create table if not exists sv_hp(
 );
 
 create table if not exists user(
-	username varchar(100) not null,
+	username varchar(8) not null,
     pass_word varchar(50) not null,
     email varchar(100) not null,
     access_level varchar(5) not null,
@@ -161,3 +151,6 @@ add constraint FK_ma_phg foreign key (phong) references phong(phong);
 alter table sv_hp
 add constraint FK_sv_hp1 foreign key (ma_hp) references hoc_phan(ma_hp),
 add constraint FK_sv_hp2 foreign key (ma_sv) references sinh_vien(ma_sv);
+alter table user
+add constraint FK_username_masv foreign key (username) references sinh_vien(ma_sv),
+add constraint FK_username_magv foreign key (username) references giang_vien(ma_gv);
