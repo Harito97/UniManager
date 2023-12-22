@@ -55,7 +55,15 @@ async def forgot_password(request: ForgotPassword):
     # Sau đó, bạn có thể tạo mật khẩu mới và lưu vào cơ sở dữ liệu
     # Sau khi tạo mật khẩu mới, gửi email chứa mật khẩu mới đến người dùng
 
-    cursor.execute("select ho_ten, email, pass_word from sinh_vien where ma_sv = " + request.username)
+    cursor.execute(f"""
+                        select 
+                            case 
+                                when {request.username} in (select ma_sv from sinh_vien) then (select ho_ten from sinh_vien where ma_sv = {request.username})
+                                else (select ho_ten from giang_vien where ma_gv = {request.username})
+                            end as ho_ten,
+                            email, pass_word from user where username = {request.username}
+                   """)
+
     data = cursor.fetchall()
 
     ho_ten, email, pass_word = data[0]['ho_ten'], data[0]['email'], data[0]['pass_word']
