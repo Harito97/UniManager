@@ -113,6 +113,10 @@ const Register = () => {
       (item) => item.ma_lh !== record.ma_lh,
     );
     setRegisteredData(updateRegisteredData);
+    const updateSelectedRowKeys = selectedRowKeys.filter(
+      (item) => item !== record.ma_lh,
+    );
+    setSelectedRowKeys(updateSelectedRowKeys);
   };
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -155,11 +159,11 @@ const Register = () => {
     }
   };
   const rowSelection = {
-    selectedRowKeys,
     onSelect: onSelect,
     onChange: onChange,
     hideSelectAll: true,
     getCheckboxProps: (record) => ({ disabled: record.disabled }),
+    selectedRowKeys: selectedRowKeys,
   };
   const hasSelected = selectedRowKeys.length > 0;
 
@@ -238,6 +242,11 @@ const Register = () => {
             scroll={{ y: 320 }}
             pagination={false}
             size="small"
+            rowClassName={(record) => {
+              if (record.disabled) {
+                return "bg-yellow-200";
+              }
+            }}
           />
         ) : (
           // Môn học theo ngành
