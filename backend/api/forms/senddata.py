@@ -153,8 +153,10 @@ async def sendGrade(request: Request):
 
             statement = f"""
                             select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
-                            from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp
-                            where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {semester} and lh.nam = {year} and sv_hp.ma_hp = hp.ma_hp and sv_hp.ma_sv = dk.ma_sv
+                            from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
+                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and 
+                                hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
+                                (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
             
             cursor.execute(statement)
@@ -219,8 +221,10 @@ async def sendGrade(request: Request):
                                     else 4
                                 end as he4
                             from
-                                hoc_phan hp, lich_hoc lh, dk
-                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ki = {semester} and lh.nam = {year}
+                                hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
+                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and 
+                                hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
+                                (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
 
             cursor.execute(statement)
