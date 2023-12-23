@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 import mysql.connector
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -59,6 +59,7 @@ async def verify_user(request: Request):
 
 @app.post("/login")
 async def login(user: User, response: Response):
+<<<<<<< HEAD
     
     try:
         cursor.execute("select * from user where username = \"{}\"".format(user.username))
@@ -82,6 +83,20 @@ async def login(user: User, response: Response):
 async def log_out(response: Response):
     response.delete_cookie("token")
     return {"Status": True}
+=======
+
+    cursor.execute(f"select access_level from user where username = \"{user.username}\" and pass_word = \"{user.password}\"")
+    data = cursor.fetchall()
+
+    if len(data) == 1:
+        # response = RedirectResponse(url="http://localhost:5173/student")
+        response.set_cookie(key="logged_in", value="true")
+        response.set_cookie(key="username", value=user.username)
+        return {'message':'successful'}
+    else:
+        raise HTTPException(status_code=401, detail="Đăng nhập không hợp lệ")
+
+>>>>>>> 8a1c6f7f06c60ad06a7e43b9c0b29016a690a7ad
 
 @app.post("/forgot_password")
 async def forgot_password(request: ForgotPassword):
@@ -168,10 +183,20 @@ async def forgot_password(request: ForgotPassword):
     return True
 
 
+origins = origins = [  
+    "*"
+]
+
+
+
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
     CORSMiddleware,
+<<<<<<< HEAD
     allow_origins=["http://localhost:5173"],  
+=======
+    allow_origins=origins,  
+>>>>>>> 8a1c6f7f06c60ad06a7e43b9c0b29016a690a7ad
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

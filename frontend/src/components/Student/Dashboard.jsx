@@ -9,11 +9,19 @@ import {
 import { Space, Table, Badge, Dropdown } from "antd";
 import axios from "axios";
 
-// const response = await axios.post('http://127.0.0.1:8001/grade');
 
-// const columns = response.data.columns;
-// const expand_columns = response.data.expand_columns;
-// const semesters = response.data.data;       // Dữ liệu điểm số
+const responseOverView = await axios.post('http://127.0.0.1:8001/overview');
+
+const tong_so_tin = responseOverView.data.tong_so_tin;
+const tong_so_tin_tich_luy = responseOverView.data.tong_so_tin_tich_luy;
+const gpa = responseOverView.data.gpa;
+
+
+// const responseGrade = await axios.post('http://127.0.0.1:8001/grade');
+
+// const columns = responseGrade.data.columns;
+// const expand_columns = responseGrade.data.expand_columns;
+// const semesters = responseGrade.data.data;       // Dữ liệu điểm số
 
 const columns = [
   {
@@ -285,7 +293,7 @@ const Dashboard = () => {
             <div className="flex flex-col items-center justify-center ">
               <div className="flex w-full flex-row justify-between">
                 <div className="text-3xl font-bold text-black xl:text-5xl">
-                  100
+                  {tong_so_tin}
                 </div>
                 <FileOutlined className="flex rounded-full bg-[#2944df] p-4 text-2xl text-white hover:shadow-xl xl:text-3xl" />
               </div>
@@ -302,7 +310,7 @@ const Dashboard = () => {
             <div className="flex flex-col items-center justify-center ">
               <div className="flex w-full flex-row justify-between">
                 <div className="text-3xl font-bold text-black xl:text-5xl">
-                  100
+                  {tong_so_tin_tich_luy}
                 </div>
                 <FileDoneOutlined className="flex rounded-full bg-[#1aaa6e] p-4 text-2xl text-white hover:shadow-xl xl:text-3xl" />
               </div>
@@ -319,7 +327,7 @@ const Dashboard = () => {
             <div className="flex flex-col items-center justify-center ">
               <div className="flex w-full flex-row justify-between">
                 <div className="text-3xl font-bold text-black xl:text-5xl">
-                  3.60
+                  {gpa}
                 </div>
                 <UserOutlined className="flex rounded-full bg-[#b36f16] p-4 text-2xl text-white hover:shadow-xl xl:text-3xl" />
               </div>
