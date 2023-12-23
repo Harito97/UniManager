@@ -59,20 +59,20 @@ danh_sach_nganh = [
 #         ma_nganh,ten_nganh = item
 #         file1.write(f"{ma_nganh},{ten_nganh}\n")
 
-# # with open('hoc_phan_tien_quyet.csv', 'w') as file2:
-# #     file2.write("Ma_HP,HP_Tien_quyet\n")
-# #     for item in danh_sach_hoc_phan_tien_quyet:
-# #         ma_hp, hp_tien_quyet = item
-# #         file2.write(f"{ma_hp},{hp_tien_quyet}\n")
-# # try:
-# #     for element in danh_sach_nganh:
-# #         cursor.execute("""
-# #                     INSERT into nganh
-# #                     VALUES (%s, %s)
-# #                     """, element)
-# #         conn.commit()
-# # except Exception as e:
-# #     print(f"Error: {e}")
+# with open('hoc_phan_tien_quyet.csv', 'w') as file2:
+#     file2.write("Ma_HP,HP_Tien_quyet\n")
+#     for item in danh_sach_hoc_phan_tien_quyet:
+#         ma_hp, hp_tien_quyet = item
+#         file2.write(f"{ma_hp},{hp_tien_quyet}\n")
+# try:
+#     for element in danh_sach_nganh:
+#         cursor.execute("""
+#                     INSERT into nganh
+#                     VALUES (%s, %s)
+#                     """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
 
 danh_sach_phong = [
     [(f'T3-P{i}', 80, f"Tòa T3 - Phòng số {i}") for i in range(1, 11)],
@@ -246,10 +246,31 @@ danh_sach_chuong_trinh = [
 #         file3.write(f"{ma_ct},{ma_nganh}\n")
         
 danh_sach_chuong_trinh_hoc = [
-    ('KCT_01', 'QHT01', 'POL1001', 1, 1),
+    ('KCT_01', 'QHT01', 'PHI1006', 1, 1),
     ('KCT_01', 'QHT01', 'PEC1008', 1, 2),
     ('KCT_01', 'QHT01', 'HIS1001', 1, 1),
-    ('KCT_01', 'QHT01', '')
+    ('KCT_01', 'QHT01', 'POL1001', 1, 2),
+    ('KCT_01', 'QHT01', 'PHI1002', 1, 2),
+    ('KCT_01', 'QHT01', 'INM1000', 1, 1),
+    ('KCT_01', 'QHT01', 'HIS1056', 1, 1),
+    ('KCT_01', 'QHT01', 'GEO1050', 1, 1),
+    ('KCT_01', 'QHT01', 'THL1057', 1, 1),
+    ('KCT_01', 'QHT01', 'MAT1060', 1, 1),
+    ('KCT_01', 'QHT01', 'PHY1070', 1, 1),
+    ('KCT_01', 'QHT01', 'PHY1020', 1, 1),
+    ('KCT_01', 'QHT01', 'MAT1076', 1, 2),
+    ('KCT_01', 'QHT01', 'PHY1059', 1, 2),
+    ('KCT_01', 'QHT01', 'MAT2300', 1, 1),
+    ('KCT_01', 'QHT01', 'MAT2301', 1, 2),
+    ('KCT_01', 'QHT01', 'MAT2302', 1, 2),
+    ('KCT_01', 'QHT01', 'MAT2303', 2, 1),
+    ('KCT_01', 'QHT01', 'MAT2304', 2, 2),
+    ('KCT_01', 'QHT01', 'MAT2314', 2, 2),
+    ('KCT_01', 'QHT01', 'MAT2306', 2, 2),
+    ('KCT_01', 'QHT01', 'MAT2307', 2, 2),
+    ('KCT_01', 'QHT01', 'MAT2308', 2, 2),
+    ('KCT_01', 'QHT01', 'MAT2407', 3, 1),
+    
 ]
 
 danh_sach_ten_giang_vien = [
@@ -388,16 +409,16 @@ danh_sach_giang_vien = [
 danh_sach_ma_nganh = [i for i in danh_sach_nganh]
 
 danh_sach_sinh_vien = [
-    (f'SV_{i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], round(random.random() * 4.0, 1), random.choice(danh_sach_ma_nganh)[0], 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
+    (f'{21000000 + i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], random.choice(danh_sach_ma_nganh)[0], 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
 ]
 
-print(danh_sach_sinh_vien)
+# print(danh_sach_sinh_vien)
 
 # try:
 #     for element in danh_sach_sinh_vien:
 #         cursor.execute("""
 #                        INSERT INTO sinh_vien
-#                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 #                        """, element)
 #         conn.commit()
 # except Exception as e:
