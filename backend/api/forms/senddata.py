@@ -23,8 +23,9 @@ connect = mysql.connector.connect(host = host, user = user, password = password,
 cursor = connect.cursor(dictionary=True)
 
 
+
 # @app.get("/student")
-# def get_student_info(logged_in: bool = Cookie(default=False), username: str = Cookie(default=None)):
+# def get_student_info(logged_in: bool = Cookie(), username: str = Cookie(None)):
 #     if logged_in:
 #         # Người dùng đã đăng nhập, bạn có thể thực hiện các thao tác để lấy thông tin sinh viên từ nguồn dữ liệu của bạn
 #         # Ví dụ: truy vấn cơ sở dữ liệu hoặc đọc từ tệp tin
@@ -34,8 +35,45 @@ cursor = connect.cursor(dictionary=True)
 #         raise HTTPException(status_code=401, detail="Not authenticated")
 
 
+# # Định nghĩa biến toàn cục
+# @app.middleware("http")
+# async def add_global_variable(request: Request, call_next):
+#     request.state.my_variable = request.cookies.get("username")
+#     response = await call_next(request)
+#     return response
+
+
+@app.post("/overview")
+async def sendOverView(request: Request):
+
+    logged_in = request.cookies.get("logged_in")
+    username = request.cookies.get("username")
+
+    cursor.execute(f"""select sum(hp.so_tin) as tin
+                   from hoc_phan hp, lich_hoc lh, dang_ky dk
+                   where ma_sv = "21002500" and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
+    
+    tong_so_tin = cursor.fetchall()[0]["tin"]
+
+    cursor.execute(f"""select sum(hp.so_tin) as tin
+                   from hoc_phan hp, lich_hoc lh, dang_ky dk
+                   where ma_sv = '21002500' and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
+                         dk.diem_tx * dk.he_so_tx + dk.diem_gk * dk.he_so_gk + dk.diem_ck * dk.he_so_ck >= 4""")
+
+    tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
+
+    cursor.execute(f"""select gpa from sinh_vien where ma_sv = '21002500'""")
+    gpa = cursor.fetchall()[0]["gpa"]
+
+    return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
+
+
 @app.post("/grade")
 async def sendGrade(request: Request):
+
+    # logged_in = request.cookies.get("logged_in")
+    # username = request.cookies.get("username")
+
     columns = [
         {
             "title": "Mã môn học",
@@ -99,6 +137,8 @@ async def sendGrade(request: Request):
 
     current_year = datetime.datetime.now().year
 
+    # username = request.cookies.get("username")
+
     cursor.execute("select nam_bat_dau from sinh_vien where ma_sv = '21002510'")
     nam_bat_dau = cursor.fetchall()[0]["nam_bat_dau"]
 
@@ -110,10 +150,11 @@ async def sendGrade(request: Request):
         
         for semester in range(1, 3):
 
+
             statement = f"""
                             select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp
-                            where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {semester} and lh.nam = {year} and sv_hp.ma_hp = hp.ma_hp and sv_hp.ma_sv = dk.ma_sv and dk.ma_sv = '21002500'
+                            where dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and lh.ki = {semester} and lh.nam = {year} and sv_hp.ma_hp = hp.ma_hp and sv_hp.ma_sv = dk.ma_sv
                         """
             
             cursor.execute(statement)
@@ -210,7 +251,6 @@ async def sendGrade(request: Request):
         for semester in range(1,3):
             data.append({"ki": semester, "nam": year, "data": data_sum_grade[year-2021][semester-1]})
 
-
     return {"columns": columns, "expand_columns": expand_columns, "data": data}
 
 
@@ -251,6 +291,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+
 )
 
 

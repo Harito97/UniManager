@@ -3,6 +3,8 @@ import { Form, Input, Button, Select } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useContentContext } from "../../Notification/ContentContext";
 import axios from "axios";
+import Cookies from "js-cookie";
+
 
 const Login = ({ handleForgot }) => {
   const { openSuccessNotification } = useContentContext();
@@ -14,7 +16,9 @@ const Login = ({ handleForgot }) => {
   //       password: values.password
   //     });
 
-  //     if (response.data) {
+  //     if (response.data!=null) {
+  //       Cookies.set("logged_in", true);
+  //       Cookies.set("username", values.username);
   //       window.location.href = "http://localhost:5173/student/";
   //     }
 
