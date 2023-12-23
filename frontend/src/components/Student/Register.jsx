@@ -5,10 +5,26 @@ import { DeleteOutlined } from "@ant-design/icons";
 const courses_table = [
   { title: "Môn học", dataIndex: "ten_hp", width: 300 },
   { title: "TC", dataIndex: "so_tin", width: 50 },
-  { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
+  {
+    title: "Lớp môn học",
+    dataIndex: "ma_hp_lop",
+    width: 100,
+    render: (_, record) => (
+      <p>
+        {record.ma_hp} {record.ma_lop}
+      </p>
+    ),
+  }, // ma_hp + " " + ma_lop
   { title: "Tổng SV", dataIndex: "so_sv", width: 70 },
-  { title: "Đã ĐK", dataIndex: "da_dk", width: 60 },
-  { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
+  { title: "Đã ĐK", dataIndex: "da_dk", width: 60 }, //TODO: render bằng cách select count bảng đăng kí theo năm, kì, mã lịch học
+  {
+    title: "Giáo viên",
+    dataIndex: "ten_gv",
+    width: 100,
+    render: (_, record) => {
+      return record.ten_gv.map((n) => <p>{n}</p>);
+    },
+  },
   {
     title: "Lịch học",
     dataIndex: "lich_hoc",
@@ -31,11 +47,11 @@ for (let i = 100; i < 200; i++) {
   data1.push({
     ma_lh: i,
     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
-    ma_hp_lop: `MAT3385 ${i}`,
+    ma_hp: "MAT3385",
+    ma_lop: i,
     so_tin: 3,
     so_sv: 30,
-    da_dk: 0,
-    ten_gv: "Vũ Tiến Dũng",
+    ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
     lich_hoc: [
       { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
       { thu: "T5", bd: 6, kt: 10, phong: "PM" },
@@ -51,11 +67,11 @@ for (let i = 1; i <= 100; i++) {
   data2.push({
     ma_lh: i,
     ten_hp: "Triết học Marx-Lenin",
-    ma_hp_lop: "PHI1006 " + i,
+    ma_hp: "PHI1006 ",
+    ma_lop: i,
     so_tin: 3,
     so_sv: 30,
-    da_dk: 0,
-    ten_gv: "",
+    ten_gv: [],
     lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
     disabled: false,
   });
@@ -66,7 +82,12 @@ const Register = () => {
   const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
   // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
-  const [registeredData, setRegisteredData] = useState([]);
+  const [registeredData, setRegisteredData] = useState([
+    {
+      ma_lh: 400,
+      lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
+    },
+  ]);
   const registered_table = [
     {
       title: "STT",
@@ -109,6 +130,11 @@ const Register = () => {
   ];
 
   const handleDelete = (record) => {
+    if (record.status === undefined) {
+      const newDeSelected = [...deSelected, record.ma_lh];
+      console.log("Deselected changed: ", newDeSelected);
+      setDeSelected(newDeSelected);
+    }
     const updateRegisteredData = registeredData.filter(
       (item) => item.ma_lh !== record.ma_lh,
     );
@@ -119,17 +145,20 @@ const Register = () => {
     setSelectedRowKeys(updateSelectedRowKeys);
   };
   const [showAllCourses, setShowAllCourses] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
+  const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
   const start = () => {
-    // setLoading(true);
-    // // TODO
-    // // ajax request after empty completing
-    // setTimeout(() => {
-    //   setSelectedRowKeys([]);
-    //   setLoading(false);
-    // }, 1000);
-    console.log(dataMajor[0]);
+    setLoading(true);
+    // TODO
+    // ajax request after empty completing
+    setTimeout(() => {
+      console.log(selectedRowKeys);
+      console.log(deSelected);
+      setSelectedRowKeys([]);
+      setDeSelected([]);
+      setLoading(false);
+    }, 1000);
   };
   const onTableChange = (value) => {
     if (value === 1) {
@@ -166,6 +195,7 @@ const Register = () => {
     selectedRowKeys: selectedRowKeys,
   };
   const hasSelected = selectedRowKeys.length > 0;
+  const hasDeSelected = deSelected.length > 0;
 
   const checkBoxDisabled = (data1) => {
     for (let i = 0; i < registeredData.length; i++) {
@@ -284,7 +314,7 @@ const Register = () => {
           <Button
             type="primary"
             onClick={start}
-            disabled={!hasSelected}
+            disabled={!(hasSelected || hasDeSelected)}
             loading={loading}
             className="bg-blue-500"
           >

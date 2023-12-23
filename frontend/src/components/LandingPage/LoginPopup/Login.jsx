@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { useContentContext } from "../../Notification/ContentContext";
 import axios from "axios";
 
 const Login = ({ handleForgot }) => {
+  const { openSuccessNotification } = useContentContext();
+
   // const onFinish = async (values) => {
   //   try {
   //     const response = await axios.post('http://127.0.0.1:8000/login', {
@@ -28,6 +31,7 @@ const Login = ({ handleForgot }) => {
   // Để test đã, sẽ sửa sau :>>
   const onFinish = (values) => {
     localStorage.setItem("token", "testtoken");
+    openSuccessNotification("Đăng nhập thành công!", "Chào mừng quay trở lại");
     window.location.replace("/student");
     // console.log(values);
   };
@@ -62,7 +66,6 @@ const Login = ({ handleForgot }) => {
             rules={[{ required: true }]}
           >
             <Select
-              defaultValue="student"
               options={[
                 { value: "student", label: "Sinh viên" },
                 { value: "teacher", label: "Giảng viên" },
