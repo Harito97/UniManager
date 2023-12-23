@@ -50,18 +50,12 @@ create table if not exists lich_hoc(
 	ma_lh int not null auto_increment,
     ma_hp varchar(10) not null,
     ma_lop int not null,
-    nam int not null,
-    ki int,
+    so_luong int not null,
+    thoi_gian json not null,
+    ma_hk INT not null,
     primary key (ma_lh)
 );
 
-create table if not exists lh_thoi_gian(
-	ma_lh int not null,
-    thoi_gian varchar(15) not null,
-    phong varchar(5) not null,
-    so_sinh_vien int not null,
-    primary key (ma_lh, thoi_gian)
-);
 
 create table if not exists phong(
 	phong varchar(20) not null,
@@ -119,38 +113,63 @@ create table if not exists sv_hp(
 
 create table if not exists user(
 	username varchar(8) not null,
-    pass_word varchar(50) not null,
+    pass_word binary not null,
     email varchar(100) not null,
     access_level varchar(5) not null,
     primary key (username)
 );
 
+create table if not exists hoc_ki(
+    ma_hk INT not null,
+    ng_bat_dau date not null,
+    ng_ket_thuc date not null,
+    primary key (ma_hk)
+);
+
+create table if not exists dot_dki(
+    dot INT not null,
+    ma_hk INT not null,
+    ng_bat_dau date not null,
+    ng_ket_thuc date not null,
+    primary key (dot, ma_hk)
+);
+
 alter table lh_gv
 add constraint FK_ma_gv_lh foreign key (ma_gv) references giang_vien(ma_gv),
 add constraint FK_ma_lh_gv foreign key (ma_lh) references lich_hoc(ma_lh);
+
 alter table gv_hp 
 add constraint FK_ma_gv_hp foreign key (ma_gv) references giang_vien(ma_gv),
 add constraint FK_ma_hp_gv foreign key (ma_hp) references hoc_phan(ma_hp);
+
 alter table chuong_trinh
 add constraint FK_ma_nganh foreign key(ma_nganh) references nganh(ma_nganh);
+
 alter table lich_hoc
-add constraint FK_ma_hp foreign key (ma_hp) references hoc_phan(ma_hp);
+add constraint FK_ma_hp foreign key (ma_hp) references hoc_phan(ma_hp),
+add constraint FK_lh_hk foreign key (ma_hk) references hoc_ki(ma_hk);
+
 alter table hp_tien_quyet
 add constraint FK_ma_hp_mh foreign key (ma_hp) references hoc_phan(ma_hp);
+
 alter table chuong_trinh_hoc
 add constraint FK_ct_hoc foreign key (ma_ct, ma_nganh) references chuong_trinh(ma_ct, ma_nganh),
 add constraint FK_hp_ct foreign key (ma_hp) references hoc_phan(ma_hp);
+
 alter table dang_ky
 add constraint FK_ma_lh_dk foreign key (ma_lh) references lich_hoc(ma_lh),
 add constraint FK_ma_sv_dk foreign key (ma_sv) references sinh_vien(ma_sv);
+
 alter table sinh_vien
 add constraint FK_ma_nganh_sv foreign key (ma_nganh) references nganh(ma_nganh);
-alter table lh_thoi_gian
-add constraint FK_ma_lh_tg foreign key (ma_lh) references lich_hoc(ma_lh),
-add constraint FK_ma_phg foreign key (phong) references phong(phong);
+
 alter table sv_hp
 add constraint FK_sv_hp1 foreign key (ma_hp) references hoc_phan(ma_hp),
 add constraint FK_sv_hp2 foreign key (ma_sv) references sinh_vien(ma_sv);
+
 alter table user
 add constraint FK_username_masv foreign key (username) references sinh_vien(ma_sv),
 add constraint FK_username_magv foreign key (username) references giang_vien(ma_gv);
+
+alter table dot_dki
+add constraint FK_hk_dot_dki foreign key (ma_hk) references hoc_ki(ma_hk);

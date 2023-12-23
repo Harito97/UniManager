@@ -246,7 +246,10 @@ danh_sach_chuong_trinh = [
 #         file3.write(f"{ma_ct},{ma_nganh}\n")
         
 danh_sach_chuong_trinh_hoc = [
-    ('KCT_01', '')
+    ('KCT_01', 'QHT01', 'POL1001', 1, 1),
+    ('KCT_01', 'QHT01', 'PEC1008', 1, 2),
+    ('KCT_01', 'QHT01', 'HIS1001', 1, 1),
+    ('KCT_01', 'QHT01', '')
 ]
 
 danh_sach_ten_giang_vien = [
@@ -376,7 +379,7 @@ danh_sach_giang_vien = [
 #     for element in danh_sach_giang_vien:
 #         cursor.execute("""
 #                        INSERT INTO giang_vien
-#                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 #                        """, element)
 #         conn.commit()
 # except Exception as e:
@@ -385,11 +388,23 @@ danh_sach_giang_vien = [
 danh_sach_ma_nganh = [i for i in danh_sach_nganh]
 
 danh_sach_sinh_vien = [
-    (f'SV_{i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], round(random.random() * 4.0, 1), random.choice(danh_sach_ma_nganh), 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
+    (f'SV_{i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], round(random.random() * 4.0, 1), random.choice(danh_sach_ma_nganh)[0], 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
 ]
+
+print(danh_sach_sinh_vien)
+
+# try:
+#     for element in danh_sach_sinh_vien:
+#         cursor.execute("""
+#                        INSERT INTO sinh_vien
+#                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                        """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
 
 # print(danh_sach_sinh_vien)
 
 danh_sach_lich_hoc = [
-    (1, '')
+    ('LH-')
 ]
