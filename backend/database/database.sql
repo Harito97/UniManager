@@ -1,4 +1,4 @@
-drop database csdl_web;
+drop database if exists csdl_web;
 create database csdl_web;
 use csdl_web;
 create table if not exists giang_vien(
@@ -56,7 +56,6 @@ create table if not exists lich_hoc(
     primary key (ma_lh)
 );
 
-
 create table if not exists phong(
 	phong varchar(20) not null,
     suc_chua int not null,
@@ -97,10 +96,9 @@ create table if not exists sinh_vien(
     gioi_tinh varchar(3) not null,
     ngsinh date not null,
     sdt varchar(10) not null,
-    gpa decimal(2,2) not null,
     ma_nganh varchar(8) not null,
     nam_bat_dau int not null,
-    lop varchar(3) not null,
+    lop varchar(5) not null,
     primary key (ma_sv)
 );
 
@@ -113,9 +111,9 @@ create table if not exists sv_hp(
 
 create table if not exists user(
 	username varchar(8) not null,
-    pass_word binary not null,
+    pass_word binary(60) not null,
     email varchar(100) not null,
-    access_level varchar(5) not null,
+    access_level varchar(2) not null,
     primary key (username)
 );
 
@@ -173,3 +171,5 @@ add constraint FK_username_magv foreign key (username) references giang_vien(ma_
 
 alter table dot_dki
 add constraint FK_hk_dot_dki foreign key (ma_hk) references hoc_ki(ma_hk);
+
+select * from hoc_phan where ma_hp = 'PHY1059';
