@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Loading from "./pages/Loading"
+import Loading from "./pages/Loading";
 import Home from "./pages/Home";
 import Student from "./pages/Student";
 import Teacher from "./pages/Teacher";
 import Admin from "./pages/Admin";
-import Dashboard from "./components/Student/Dashboard";
-import MyCalendar from "./components/Student/MyCalendar";
+import StudentDashboard from "./components/Student/Dashboard";
+import StudentCalendar from "./components/Student/MyCalendar";
+import TeacherDashboard from "./components/Teacher/Dashboard";
+import TeacherCalendar from "./components/Teacher/MyCalendar";
+import Manager from "./components/Teacher/Manager";
 import NotFound from "./pages/404";
 import Register from "./components/Student/Register";
 import Exam from "./components/Student/Exam";
@@ -34,7 +37,7 @@ function App() {
     });
 
   if (loading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
@@ -44,9 +47,17 @@ function App() {
           <Route path="/" element={<Home />} />
           {level === "SV" ? (
             <Route path="/student/" element={<Student />}>
-              <Route exact path="/student/" element={<Dashboard />} />
-              <Route exact path="/student/dashboard" element={<Dashboard />} />
-              <Route exact path="/student/calendar" element={<MyCalendar />} />
+              <Route exact path="/student/" element={<StudentDashboard />} />
+              <Route
+                exact
+                path="/student/dashboard"
+                element={<StudentDashboard />}
+              />
+              <Route
+                exact
+                path="/student/calendar"
+                element={<StudentCalendar />}
+              />
               <Route exact path="/student/register" element={<Register />} />
               <Route exact path="/student/exam" element={<Exam />} />
             </Route>
@@ -54,7 +65,20 @@ function App() {
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "GV" ? (
-            <Route path="/teacher/" element={<Teacher />}></Route>
+            <Route path="/teacher/" element={<Teacher />}>
+              <Route exact path="/teacher/" element={<TeacherDashboard />} />
+              <Route
+                exact
+                path="/teacher/dashboard"
+                element={<TeacherDashboard />}
+              />
+              <Route exact path="/teacher/classes" element={<Manager />} />
+              <Route
+                exact
+                path="/teacher/calendar"
+                element={<TeacherCalendar />}
+              />
+            </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}

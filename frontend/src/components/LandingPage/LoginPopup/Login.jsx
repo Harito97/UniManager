@@ -61,20 +61,6 @@ const Login = ({ handleForgot }) => {
               prefix={<LockOutlined className="site-form-item-icon" />}
             />
           </Form.Item>
-          <Form.Item
-            initialValue={"student"}
-            label="Tôi là:"
-            name="type"
-            rules={[{ required: true }]}
-          >
-            <Select
-              options={[
-                { value: "student", label: "Sinh viên" },
-                { value: "teacher", label: "Giảng viên" },
-                { value: "admin", label: "Admin" },
-              ]}
-            ></Select>
-          </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" className="bg-blue-500">
               Đăng nhập
