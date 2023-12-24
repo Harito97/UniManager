@@ -24,7 +24,13 @@ const NotFound = () => {
   }, [timeLeft]);
 
   useEffect(() => {
-    if (path === "/" || path === "/student/dashboard" || path === "/student/calendar") {
+    if (
+      path === "/student" ||
+      path === "/student/dashboard" ||
+      path === "/student/calendar" ||
+      path === "/teacher" ||
+      path === "/admin"
+    ) {
       setText("Sorry, you are not authorized to access this page.");
       setCode("403");
     } else {

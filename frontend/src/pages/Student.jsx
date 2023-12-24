@@ -20,7 +20,7 @@ import Exam from "../components/Student/Exam";
 
 // import { useContentContext } from "../providers/ContentContext";
 
-const Main = () => {
+const Student = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   // let { openSuccessNotification } = useContentContext();
@@ -126,4 +126,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Student;
