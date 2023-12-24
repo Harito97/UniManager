@@ -262,10 +262,12 @@ async def sendGrade(request: Request):
 async def sendSubject():
     statement = f"""
                     select 
-                        hp.ten_hp as "Môn học", 
-                        hp.so_tin as "TC", 
-                        concat(lh.ma_hp, ' ', lh.ma_lop) as "Lớp môn học", 
-                        lh_tg.so_sinh_vien as "Tổng SV",  
+                        lh.ma_lh as "ma_lh"
+                        hp.ten_hp as "ten_hp", 
+                        hp.ma_hp as "ma_hp,
+                        lh.ma_lop as "ma_lop",
+                        hp.so_tin as "so_tin", 
+                        lh.so_luong as "so_sv",  
                         case
                             when hp.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = '21002500' and dk.ma_lh = lh.ma_lh) then 1
                             else 0
