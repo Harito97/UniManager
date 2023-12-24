@@ -159,17 +159,15 @@ add constraint FK_ma_lh_dk foreign key (ma_lh) references lich_hoc(ma_lh),
 add constraint FK_ma_sv_dk foreign key (ma_sv) references sinh_vien(ma_sv);
 
 alter table sinh_vien
-add constraint FK_ma_nganh_sv foreign key (ma_nganh) references nganh(ma_nganh);
+add constraint FK_ma_nganh_sv foreign key (ma_nganh) references nganh(ma_nganh),
+add constraint FK_ma_sv_user foreign key (ma_sv) references user(username);
+
+alter table giang_vien
+add constraint FK_ma_gv_user foreign key (ma_gv) references user(username);
 
 alter table sv_hp
 add constraint FK_sv_hp1 foreign key (ma_hp) references hoc_phan(ma_hp),
 add constraint FK_sv_hp2 foreign key (ma_sv) references sinh_vien(ma_sv);
 
-alter table user
-add constraint FK_username_masv foreign key (username) references sinh_vien(ma_sv),
-add constraint FK_username_magv foreign key (username) references giang_vien(ma_gv);
-
 alter table dot_dki
 add constraint FK_hk_dot_dki foreign key (ma_hk) references hoc_ki(ma_hk);
-
-select * from hoc_phan where ma_hp = 'PHY1059';
