@@ -44,7 +44,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home level={level}/>} />
           {level === "SV" ? (
             <Route path="/student/" element={<Student />}>
               <Route exact path="/student/" element={<StudentDashboard />} />

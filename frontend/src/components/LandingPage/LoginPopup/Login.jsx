@@ -19,7 +19,7 @@ const Login = ({ handleForgot }) => {
         if (res.data.Status) {
           openSuccessNotification(
             "Đăng nhập thành công!",
-            `Chào mừng quay trở lại ${values.username}`,
+            `Welcome Back ${values.username}`,
           );
           setTimeout(() => {
             const level = res.data.level;
