@@ -9,7 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi import Cookie
 import uvicorn
-
+import bcrypt
+import jwt
 
 app = FastAPI()
 
@@ -17,13 +18,23 @@ app = FastAPI()
 
 # templates = Jinja2Templates(directory="")
 
-host = "127.0.0.1"
+host = "localhost"
 user = "root"
-password = ""
 database = "csdl_web"
+SECURITY_ALGORITHM = 'HS256'
+SECRET_KEY = 'super-secret-key'
 
-connect = mysql.connector.connect(host = host, user = user, password = password, database = database)
-cursor = connect.cursor(dictionary=True)
+try:
+    conn = mysql.connector.connect(
+        host=host,
+        user=user,
+        database=database
+    )
+
+    cursor = conn.cursor(dictionary=True)
+
+except Exception as e:
+    print("Lỗi: ", e)
 
 
 class User(BaseModel):
@@ -35,20 +46,42 @@ class ForgotPassword(BaseModel):
     username: str
 
 
+@app.get("/")
+async def verify_user(request: Request):
+    if "token" in request.cookies:
+        token = request.cookies["token"]
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
+        return {"Status": True, "decoded": decoded}
+    else:
+        return {"Status": False, "Error": "Bạn chưa đăng nhập"}
+    
+    
+
 @app.post("/login")
 async def login(user: User, response: Response):
-
-    cursor.execute(f"select access_level from user where username = \"{user.username}\" and pass_word = \"{user.password}\"")
-    data = cursor.fetchall()
-
-    if len(data) == 1:
-        # response = RedirectResponse(url="http://localhost:5173/student")
-        response.set_cookie(key="logged_in", value="true")
-        response.set_cookie(key="username", value=user.username)
-        return {'message':'successful'}
-    else:
-        raise HTTPException(status_code=401, detail="Đăng nhập không hợp lệ")
-
+    
+    try:
+        cursor.execute("select * from user where username = \"{}\"".format(user.username))
+        data = cursor.fetchall()
+        if (len(data) > 0):
+            pwd_bytes = user.password.encode('utf-8')
+            check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
+            if (check_pwd):
+                print({"username": data[0]["username"], "access_level": data[0]["access_level"]})
+                token = jwt.encode({"username": data[0]["username"], "access_level": data[0]["access_level"]}, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
+                response.set_cookie(key = "token", value = token, httponly=True)
+                return {"Status": True, "level": data[0]["access_level"]}
+            else:
+                return {"Status": False, "Error": "Mật khẩu không chính xác"}
+        else:
+            return {"Status": False, "Error": f"Không tồn tại username {user.username}"}
+    except Exception as e:
+        return {"Error": e}
+    
+@app.get("/logout")
+async def log_out(response: Response):
+    response.delete_cookie("token")
+    return {"Status": True}
 
 @app.post("/forgot_password")
 async def forgot_password(request: ForgotPassword):
@@ -135,9 +168,7 @@ async def forgot_password(request: ForgotPassword):
     return True
 
 
-origins = origins = [  
-    "*"
-]
+origins = origins = ["http://localhost:5173"]
 
 
 

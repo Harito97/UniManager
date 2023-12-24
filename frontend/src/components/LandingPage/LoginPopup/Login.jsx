@@ -5,39 +5,37 @@ import { useContentContext } from "../../Notification/ContentContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-
 const Login = ({ handleForgot }) => {
-  const { openSuccessNotification } = useContentContext();
-
-  // const onFinish = async (values) => {
-  //   try {
-  //     const response = await axios.post('http://127.0.0.1:8000/login', {
-  //       username: values.username,
-  //       password: values.password
-  //     });
-
-  //     if (response.data!=null) {
-  //       Cookies.set("logged_in", true);
-  //       Cookies.set("username", values.username);
-  //       window.location.href = "http://localhost:5173/student/";
-  //     }
-
-  //     else {
-  //       alert("Tên đăng nhập hoặc mật khẩu không chính xác!");
-  //     };
-  //     // console.log(response.data);
-
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // Để test đã, sẽ sửa sau :>>
-  const onFinish = (values) => {
-    localStorage.setItem("token", "testtoken");
-    openSuccessNotification("Đăng nhập thành công!", "Chào mừng quay trở lại");
-    window.location.replace("/student");
-    // console.log(values);
+  axios.defaults.withCredentials = true;
+  const { openSuccessNotification, openErrorNotification } =
+    useContentContext();
+  const onFinish = async (values) => {
+    await axios
+      .post("http://localhost:8000/login", {
+        username: values.username,
+        password: values.password,
+      })
+      .then((res) => {
+        if (res.data.Status) {
+          openSuccessNotification(
+            "Đăng nhập thành công!",
+            `Chào mừng quay trở lại ${values.username}`,
+          );
+          setTimeout(() => {
+            const level = res.data.level;
+            if (level === "SV") {
+              window.location.replace("/student");
+            } else if (level === "GV") {
+              window.location.replace("/teacher");
+            } else {
+              window.location.replace("/admin");
+            }
+          }, 1000);
+        } else {
+          openErrorNotification("Lỗi", res.data.Error);
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (

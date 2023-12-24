@@ -10,11 +10,15 @@ import { Space, Table, Badge, Dropdown } from "antd";
 import axios from "axios";
 
 
-const responseOverView = await axios.post('http://127.0.0.1:8001/overview');
+// const responseOverView = await axios.post('http://127.0.0.1:8001/overview');
 
-const tong_so_tin = responseOverView.data.tong_so_tin;
-const tong_so_tin_tich_luy = responseOverView.data.tong_so_tin_tich_luy;
-const gpa = responseOverView.data.gpa;
+// const tong_so_tin = responseOverView.data.tong_so_tin;
+// const tong_so_tin_tich_luy = responseOverView.data.tong_so_tin_tich_luy;
+// const gpa = responseOverView.data.gpa;
+
+const tong_so_tin = 1;
+const tong_so_tin_tich_luy= 2
+const gpa = 3
 
 
 // const responseGrade = await axios.post('http://127.0.0.1:8001/grade');
