@@ -168,20 +168,14 @@ async def forgot_password(request: ForgotPassword):
     return True
 
 
-origins = origins = [  
-    "*"
-]
+origins = origins = ["http://localhost:5173"]
 
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
     CORSMiddleware,
-<<<<<<< HEAD
-    allow_origins=["http://localhost:5173"],  
-=======
     allow_origins=origins,  
->>>>>>> 8a1c6f7f06c60ad06a7e43b9c0b29016a690a7ad
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
