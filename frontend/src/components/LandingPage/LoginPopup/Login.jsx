@@ -5,7 +5,6 @@ import { useContentContext } from "../../Notification/ContentContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-
 const Login = ({ handleForgot }) => {
   axios.defaults.withCredentials = true;
   const { openSuccessNotification, openErrorNotification } =
@@ -22,11 +21,21 @@ const Login = ({ handleForgot }) => {
             "Đăng nhập thành công!",
             `Chào mừng quay trở lại ${values.username}`,
           );
+          setTimeout(() => {
+            const level = res.data.level;
+            if (level === "SV") {
+              window.location.replace("/student");
+            } else if (level === "GV") {
+              window.location.replace("/teacher");
+            } else {
+              window.location.replace("/admin");
+            }
+          }, 1000);
         } else {
           openErrorNotification("Lỗi", res.data.Error);
         }
       })
-      .catch(err => console.log(err))
+      .catch((err) => console.log(err));
   };
 
   return (

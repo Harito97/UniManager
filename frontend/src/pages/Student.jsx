@@ -17,10 +17,12 @@ import Dashboard from "../components/Student/Dashboard";
 import MyCalendar from "../components/Student/MyCalendar";
 import Register from "../components/Student/Register";
 import Exam from "../components/Student/Exam";
+import axios from "axios";
 
 // import { useContentContext } from "../providers/ContentContext";
 
 const Student = () => {
+  axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
 
   // let { openSuccessNotification } = useContentContext();
@@ -48,7 +50,7 @@ const Student = () => {
   const handleMenuClick = (e) => {
     if (e.key === "2") {
       //Logout
-      localStorage.clear();
+      axios.get("http://localhost:8000/logout");
       window.location.replace("/");
     }
   };

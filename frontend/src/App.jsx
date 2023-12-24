@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Loading from "./pages/Loading"
 import Home from "./pages/Home";
 import Student from "./pages/Student";
 import Teacher from "./pages/Teacher";
@@ -24,8 +25,8 @@ function App() {
       if (res.data.Status) {
         setUser(res.data.decoded.username);
         setLevel(res.data.decoded.access_level);
-        setLoading(false);
       }
+      setLoading(false);
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -33,7 +34,7 @@ function App() {
     });
 
   if (loading) {
-    return <div></div>;
+    return <Loading/>;
   }
 
   return (

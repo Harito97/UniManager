@@ -70,7 +70,7 @@ async def login(user: User, response: Response):
                 print({"username": data[0]["username"], "access_level": data[0]["access_level"]})
                 token = jwt.encode({"username": data[0]["username"], "access_level": data[0]["access_level"]}, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
                 response.set_cookie(key = "token", value = token, httponly=True)
-                return {"Status": True}
+                return {"Status": True, "level": data[0]["access_level"]}
             else:
                 return {"Status": False, "Error": "Mật khẩu không chính xác"}
         else:
