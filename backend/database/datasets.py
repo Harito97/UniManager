@@ -4,7 +4,7 @@ from database_model import *
 import random
 from datetime import datetime, timedelta
 
-df = pd.read_excel("./backend/database/TKB-HKI-2023-2024.xlsx", engine="openpyxl")
+df = pd.read_excel("TKB-HKI-2023-2024.xlsx", engine="openpyxl")
 danh_sach_hoc_phan = []
 hoc_phan_dict = dict()
 for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["Số\nTC"].fillna(2)[1:]):
@@ -239,40 +239,45 @@ danh_sach_chuong_trinh = [
     ('KCT_97', 'QHT97')   
 ]
 
-# with open('chuong_trinh.csv', 'w') as file3:
+# with open('danh_sach_chuong_trinh.csv', 'w') as file3:
 #     file3.write("ma_ct,ma_nganh\n")
 #     for item in danh_sach_chuong_trinh:
 #         ma_ct, ma_nganh = item
 #         file3.write(f"{ma_ct},{ma_nganh}\n")
         
 danh_sach_chuong_trinh_hoc = [
-    ('KCT_01', 'QHT01', 'PHI1006', 1, 1),
-    ('KCT_01', 'QHT01', 'PEC1008', 1, 2),
-    ('KCT_01', 'QHT01', 'HIS1001', 1, 1),
-    ('KCT_01', 'QHT01', 'POL1001', 1, 2),
-    ('KCT_01', 'QHT01', 'PHI1002', 1, 2),
-    ('KCT_01', 'QHT01', 'INM1000', 1, 1),
-    ('KCT_01', 'QHT01', 'HIS1056', 1, 1),
-    ('KCT_01', 'QHT01', 'GEO1050', 1, 1),
-    ('KCT_01', 'QHT01', 'THL1057', 1, 1),
-    ('KCT_01', 'QHT01', 'MAT1060', 1, 1),
-    ('KCT_01', 'QHT01', 'PHY1070', 1, 1),
-    ('KCT_01', 'QHT01', 'PHY1020', 1, 1),
-    ('KCT_01', 'QHT01', 'MAT1076', 1, 2),
-    ('KCT_01', 'QHT01', 'PHY1059', 1, 2),
-    ('KCT_01', 'QHT01', 'MAT2300', 1, 1),
-    ('KCT_01', 'QHT01', 'MAT2301', 1, 2),
-    ('KCT_01', 'QHT01', 'MAT2302', 1, 2),
-    ('KCT_01', 'QHT01', 'MAT2303', 2, 1),
-    ('KCT_01', 'QHT01', 'MAT2304', 2, 2),
-    ('KCT_01', 'QHT01', 'MAT2314', 2, 2),
-    ('KCT_01', 'QHT01', 'MAT2306', 2, 2),
-    ('KCT_01', 'QHT01', 'MAT2307', 2, 2),
-    ('KCT_01', 'QHT01', 'MAT2308', 2, 2),
-    ('KCT_01', 'QHT01', 'MAT2407', 3, 1),
-    
+    ('KCT_01', 'QHT01', 'PHI1006', '1', '1'),
+    ('KCT_01', 'QHT01', 'PEC1008', '1', '2'),
+    ('KCT_01', 'QHT01', 'HIS1001', '1', '1'),
+    ('KCT_01', 'QHT01', 'POL1001', '1', '2'),
+    ('KCT_01', 'QHT01', 'PHI1002', '1', '2'),
+    ('KCT_01', 'QHT01', 'INM1000', '1', '1'),
+    ('KCT_01', 'QHT01', 'HIS1056', '1', '1'),
+    ('KCT_01', 'QHT01', 'GEO1050', '1', '1'),
+    ('KCT_01', 'QHT01', 'THL1057', '1', '1'),
+    ('KCT_01', 'QHT01', 'MAT1060', '1', '1'),
+    ('KCT_01', 'QHT01', 'PHY1070', '1', '1'),
+    ('KCT_01', 'QHT01', 'PHY1020', '1', '1'),
+    ('KCT_01', 'QHT01', 'MAT1076', '1', '2'),
+    ('KCT_01', 'QHT01', 'PHY1059', '1', '2'),
+    ('KCT_01', 'QHT01', 'MAT2300', '1', '1'),
+    ('KCT_01', 'QHT01', 'MAT2301', '1', '2'),
+    ('KCT_01', 'QHT01', 'MAT2302', '1', '2'),
+    ('KCT_01', 'QHT01', 'MAT2303', '2', '1'),
+    ('KCT_01', 'QHT01', 'MAT2304', '2', '2'),
+    ('KCT_01', 'QHT01', 'MAT2314', '2', '2'),
+    ('KCT_01', 'QHT01', 'MAT2306', '2', '2'),
+    ('KCT_01', 'QHT01', 'MAT2307', '2', '2'),
+    ('KCT_01', 'QHT01', 'MAT2308', '2', '2'),
+    ('KCT_01', 'QHT01', 'MAT2407', '3', '1')
 ]
 
+with open('danh_sach_chuong_trinh_hoc.csv', 'w') as file1:
+    file1.write('ma_chuong_trinh,ma_nganh,ma_hp,nam,ki\n')
+    for item in danh_sach_chuong_trinh_hoc:
+        ma_ct, ma_nganh, ma_hp, nam, ki = item
+        file1.write(f'{ma_ct},{ma_nganh},{ma_hp},{nam},{ki}\n')
+        
 danh_sach_ten_giang_vien = [
     "Nguyen Thanh Hoa",
     "Tran Minh Duc",
@@ -426,6 +431,3 @@ danh_sach_sinh_vien = [
 
 # print(danh_sach_sinh_vien)
 
-danh_sach_lich_hoc = [
-    ('LH-')
-]
