@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import mysql.connector
 from datetime import date
+import bcrypt
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -107,6 +108,13 @@ class DANGKY(BaseModel):
     he_so_gk: float | None = None
     diem_ck: float | None = None
     he_so_ck: float | None = None
+
+
+class USER(BaseModel):
+    username: str | None = None
+    pass_word: str | None = None
+    email: str | None = None
+    access_level: str | None = None
 
 
 app = FastAPI()
@@ -844,6 +852,24 @@ async def delete_record(ma_lh: int, ma_sv: str):
         return {"message": f"Record with ID {ma_lh, ma_sv} has been deleted", "deleted": deleted_record}
     except Exception as e:
         return e
+    
+
+# POST: create a new record for a table
+@app.post("/post_user")
+async def create_records(newRecord: USER):
+
+    try:
+        cursor.execute("insert into user(username, pass_word, email, access_level)\
+                        values (%s, %s, %s, %s)", (newRecord.username, 
+                                                                        bcrypt.hashpw(newRecord.pass_word.encode('utf8'), bcrypt.gensalt()),
+                                                                        newRecord.email, 
+                                                                        newRecord.access_level))
+        
+        connect.commit()
+        return {"message": "Record created successfully", "Record": newRecord}
+    except Exception as e:
+        return e
+    
     
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
