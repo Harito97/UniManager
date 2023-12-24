@@ -59,7 +59,6 @@ async def verify_user(request: Request):
 
 @app.post("/login")
 async def login(user: User, response: Response):
-<<<<<<< HEAD
     
     try:
         cursor.execute("select * from user where username = \"{}\"".format(user.username))
@@ -83,20 +82,6 @@ async def login(user: User, response: Response):
 async def log_out(response: Response):
     response.delete_cookie("token")
     return {"Status": True}
-=======
-
-    cursor.execute(f"select access_level from user where username = \"{user.username}\" and pass_word = \"{user.password}\"")
-    data = cursor.fetchall()
-
-    if len(data) == 1:
-        # response = RedirectResponse(url="http://localhost:5173/student")
-        response.set_cookie(key="logged_in", value="true")
-        response.set_cookie(key="username", value=user.username)
-        return {'message':'successful'}
-    else:
-        raise HTTPException(status_code=401, detail="Đăng nhập không hợp lệ")
-
->>>>>>> 8a1c6f7f06c60ad06a7e43b9c0b29016a690a7ad
 
 @app.post("/forgot_password")
 async def forgot_password(request: ForgotPassword):
