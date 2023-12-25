@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Dashboard = () => {
+const Dashboard = ({user}) => {
   return (
     <div>Dashboard</div>
   )

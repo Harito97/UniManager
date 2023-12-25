@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Manager = () => {
+const Manager = ({user}) => {
   return (
     <div>Manager</div>
   )

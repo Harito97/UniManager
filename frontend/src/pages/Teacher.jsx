@@ -20,7 +20,7 @@ import axios from "axios";
 
 // import { useContentContext } from "../providers/ContentContext";
 
-const Teacher = () => {
+const Teacher = ({user}) => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
 
@@ -104,10 +104,10 @@ const Teacher = () => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard />} />
-            <Route exact path="/dashboard" element={<Dashboard />} />
-            <Route exact path="/classes" element={<Manager />} />
-            <Route exact path="/calendar" element={<MyCalendar />} />
+            <Route exact path="/" element={<Dashboard user={user}/>} />
+            <Route exact path="/dashboard" element={<Dashboard user={user}/>} />
+            <Route exact path="/classes" element={<Manager user={user}/>} />
+            <Route exact path="/calendar" element={<MyCalendar user={user}/>} />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

@@ -44,9 +44,9 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home level={level}/>} />
+          <Route path="/" element={<Home level={level} />} />
           {level === "SV" ? (
-            <Route path="/student/" element={<Student />}>
+            <Route path="/student/" element={<Student user={user} />}>
               <Route exact path="/student/" element={<StudentDashboard />} />
               <Route
                 exact
@@ -65,7 +65,7 @@ function App() {
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "GV" ? (
-            <Route path="/teacher/" element={<Teacher />}>
+            <Route path="/teacher/" element={<Teacher user={user}/>}>
               <Route exact path="/teacher/" element={<TeacherDashboard />} />
               <Route
                 exact
@@ -83,7 +83,7 @@ function App() {
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "AD" ? (
-            <Route path="/admin/" element={<Admin />}></Route>
+            <Route path="/admin/" element={<Admin user={user}/>}></Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}

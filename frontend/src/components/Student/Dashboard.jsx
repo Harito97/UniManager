@@ -284,7 +284,7 @@ const expandedRowRender = (record) => {
   );
 };
 
-const Dashboard = () => {
+const Dashboard = ({user}) => {
   return (
     <>
       <div className="flex w-full flex-col gap-5">

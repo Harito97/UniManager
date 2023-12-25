@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MyCalendar = () => {
+const MyCalendar = ({user}) => {
   return (
     <div>MyCalendar</div>
   )
