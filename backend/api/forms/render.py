@@ -23,6 +23,7 @@ user = "root"
 database = "csdl_web"
 SECURITY_ALGORITHM = 'HS256'
 SECRET_KEY = 'super-secret-key'
+db_status = False
 
 try:
     conn = mysql.connector.connect(
@@ -32,6 +33,7 @@ try:
     )
 
     cursor = conn.cursor(dictionary=True)
+    db_status = True
 
 except Exception as e:
     print("Lỗi: ", e)
@@ -59,7 +61,8 @@ async def verify_user(request: Request):
     
 @app.post("/login")
 async def login(user: User, response: Response):
-    
+    if not db_status:
+        return {"Status": False, "Error": "Không thể kết nối với CSDL"}
     try:
         cursor.execute("select * from user where username = \"{}\"".format(user.username))
         data = cursor.fetchall()
@@ -88,7 +91,6 @@ async def forgot_password(request: ForgotPassword):
     # Truy vấn cơ sở dữ liệu để lấy thông tin người dùng dựa trên username (tùy thuộc vào cách bạn cài đặt)
     # Sau đó, bạn có thể tạo mật khẩu mới và lưu vào cơ sở dữ liệu
     # Sau khi tạo mật khẩu mới, gửi email chứa mật khẩu mới đến người dùng
-
     cursor.execute(f"""
                         select 
                             case 

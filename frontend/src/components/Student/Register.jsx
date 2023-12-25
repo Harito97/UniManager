@@ -80,7 +80,7 @@ for (let i = 1; i <= 100; i++) {
   });
 }
 
-const Register = () => {
+const Register = ({user}) => {
   const [dataMajor, setDataMajor] = useState(data1);
   const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
