@@ -861,21 +861,23 @@ async def create_records(newRecord: USER):
     try:
         cursor.execute("insert into user(username, pass_word, email, access_level)\
                         values (%s, %s, %s, %s)", (newRecord.username, 
-                                                                        bcrypt.hashpw(newRecord.pass_word.encode('utf8'), bcrypt.gensalt()),
-                                                                        newRecord.email, 
-                                                                        newRecord.access_level))
-        
+                                                bcrypt.hashpw(newRecord.pass_word.encode('utf8'), bcrypt.gensalt()),
+                                                newRecord.email, 
+                                                newRecord.access_level))
+
         connect.commit()
         return {"message": "Record created successfully", "Record": newRecord}
     except Exception as e:
         return e
     
-    
+
+origins = origins = ["http://localhost:5173"]
+
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=origins,  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -9,6 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Cookie
 import datetime
 import uvicorn
+import jwt
+from jwt.exceptions import DecodeError
+from starlette.testclient import TestClient
 
 
 app = FastAPI()
@@ -18,40 +21,60 @@ host = "127.0.0.1"
 user = "root"
 password = ""
 database = "csdl_web"
+SECURITY_ALGORITHM = 'HS256'
+SECRET_KEY = 'super-secret-key'
 
 connect = mysql.connector.connect(host = host, user = user, password = password, database = database)
 cursor = connect.cursor(dictionary=True)
 
+app.counter = "2100250"
 
 
-# @app.get("/student")
-# def get_student_info(logged_in: bool = Cookie(), username: str = Cookie(None)):
-#     if logged_in:
-#         # Người dùng đã đăng nhập, bạn có thể thực hiện các thao tác để lấy thông tin sinh viên từ nguồn dữ liệu của bạn
-#         # Ví dụ: truy vấn cơ sở dữ liệu hoặc đọc từ tệp tin
-#         return username
-#     else:
-#         # Người dùng chưa đăng nhập, trả về lỗi không xác thực
-#         raise HTTPException(status_code=401, detail="Not authenticated")
+@app.get("/increment")
+def increment():
+    app.counter += 1
 
 
-# # Định nghĩa biến toàn cục
-# @app.middleware("http")
-# async def add_global_variable(request: Request, call_next):
-#     request.state.my_variable = request.cookies.get("username")
-#     response = await call_next(request)
-#     return response
+@app.get("/status")
+def read_status():
+    return app.counter
+
+
+# Định nghĩa biến toàn cục
+@app.middleware("http")
+async def add_global_variable(request: Request, call_next):
+    token = request.cookies.get("token")
+    if token is not None:
+        token_bytes = token.encode("utf-8")  # Chuyển đổi token thành bytes
+        try:
+            decoded = jwt.decode(token_bytes, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
+            request.state.token = decoded.get("username")
+            app.counter = 21002500
+        except:
+            request.state.token = None
+    else:
+        request.state.token = None
+    response = await call_next(request)
+    return response
+
+
+# Sử dụng biến toàn cục trong API
+@app.get("/my_cookie")
+async def my_cookie(request: Request):
+    username = request.state.token
+    return username
 
 
 @app.post("/overview")
 async def sendOverView(request: Request):
 
-    logged_in = request.cookies.get("logged_in")
-    username = request.cookies.get("username")
+    client = TestClient(app)
+    client.get("/my_cookie", headers={"Cookie": "token=21002500"})
+    user = str(client.get("/status").content.decode('utf-8'))
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where ma_sv = "21002500" and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
+                   where ma_sv = {user} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
     
     tong_so_tin = cursor.fetchall()[0]["tin"]
 

@@ -51,6 +51,7 @@ for (let i = 100; i < 200; i++) {
     ma_lop: i,
     so_tin: 3,
     so_sv: 30,
+    da_dk: 1,
     ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
     lich_hoc: [
       { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
@@ -71,8 +72,10 @@ for (let i = 1; i <= 100; i++) {
     ma_lop: i,
     so_tin: 3,
     so_sv: 30,
-    ten_gv: [],
-    lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
+    da_dk: 1,
+    ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
+    lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" },
+               { thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
     disabled: false,
   });
 }
