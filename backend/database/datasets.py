@@ -210,6 +210,15 @@ danh_sach_hoc_phan_tien_quyet = [
 #         ma_hp, hp_tien_quyet = item
 #         file2.write(f"{ma_hp},{hp_tien_quyet}\n")
         
+# try:
+#     for element in danh_sach_hoc_phan_tien_quyet:
+#         cursor.execute("""
+#                        INSERT INTO hp_tien_quyet
+#                        VALUES (%s, %s)
+#                        """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
 
 danh_sach_chuong_trinh = [
     ('KCT_01', 'QHT01'),
@@ -245,39 +254,36 @@ danh_sach_chuong_trinh = [
 #         ma_ct, ma_nganh = item
 #         file3.write(f"{ma_ct},{ma_nganh}\n")
         
-danh_sach_chuong_trinh_hoc = [
-    ('KCT_01', 'QHT01', 'PHI1006', '1', '1'),
-    ('KCT_01', 'QHT01', 'PEC1008', '1', '2'),
-    ('KCT_01', 'QHT01', 'HIS1001', '1', '1'),
-    ('KCT_01', 'QHT01', 'POL1001', '1', '2'),
-    ('KCT_01', 'QHT01', 'PHI1002', '1', '2'),
-    ('KCT_01', 'QHT01', 'INM1000', '1', '1'),
-    ('KCT_01', 'QHT01', 'HIS1056', '1', '1'),
-    ('KCT_01', 'QHT01', 'GEO1050', '1', '1'),
-    ('KCT_01', 'QHT01', 'THL1057', '1', '1'),
-    ('KCT_01', 'QHT01', 'MAT1060', '1', '1'),
-    ('KCT_01', 'QHT01', 'PHY1070', '1', '1'),
-    ('KCT_01', 'QHT01', 'PHY1020', '1', '1'),
-    ('KCT_01', 'QHT01', 'MAT1076', '1', '2'),
-    ('KCT_01', 'QHT01', 'PHY1059', '1', '2'),
-    ('KCT_01', 'QHT01', 'MAT2300', '1', '1'),
-    ('KCT_01', 'QHT01', 'MAT2301', '1', '2'),
-    ('KCT_01', 'QHT01', 'MAT2302', '1', '2'),
-    ('KCT_01', 'QHT01', 'MAT2303', '2', '1'),
-    ('KCT_01', 'QHT01', 'MAT2304', '2', '2'),
-    ('KCT_01', 'QHT01', 'MAT2314', '2', '2'),
-    ('KCT_01', 'QHT01', 'MAT2306', '2', '2'),
-    ('KCT_01', 'QHT01', 'MAT2307', '2', '2'),
-    ('KCT_01', 'QHT01', 'MAT2308', '2', '2'),
-    ('KCT_01', 'QHT01', 'MAT2407', '3', '1')
-]
+# try:
+#     for element in danh_sach_chuong_trinh:
+#         cursor.execute("""
+#                        INSERT INTO chuong_trinh
+#                        VALUES (%s, %s)
+#                        """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
+    
+df2 = pd.read_csv("danh_sach_chuong_trinh_hoc.csv")
+danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
+# print(danh_sach_chuong_trinh)
 
-with open('danh_sach_chuong_trinh_hoc.csv', 'w') as file1:
-    file1.write('ma_chuong_trinh,ma_nganh,ma_hp,nam,ki\n')
-    for item in danh_sach_chuong_trinh_hoc:
-        ma_ct, ma_nganh, ma_hp, nam, ki = item
-        file1.write(f'{ma_ct},{ma_nganh},{ma_hp},{nam},{ki}\n')
-        
+# try:
+#     for element in danh_sach_chuong_trinh:
+#         cursor.execute("""
+#                        INSERT INTO chuong_trinh_hoc
+#                        values (%s, %s, %s, %s, %s)
+#                        """, element)
+#         conn.commit()
+# except Exception as e:
+#     print(f"Error: {e}")
+    
+# print(len(df2["ma_hp"].unique()))
+
+# print(len(df["Mã \nhọc phần"][1:].unique()))
+
+
+
 danh_sach_ten_giang_vien = [
     "Nguyen Thanh Hoa",
     "Tran Minh Duc",
