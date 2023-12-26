@@ -17,85 +17,56 @@ from starlette.testclient import TestClient
 app = FastAPI()
 
 
-host = "127.0.0.1"
+
+host = "localhost"
 user = "root"
-password = ""
 database = "csdl_web"
 SECURITY_ALGORITHM = 'HS256'
 SECRET_KEY = 'super-secret-key'
+db_status = False
 
-connect = mysql.connector.connect(host = host, user = user, password = password, database = database)
-cursor = connect.cursor(dictionary=True)
+try:
+    conn = mysql.connector.connect(
+        host=host,
+        user=user,
+        database=database
+    )
 
-app.counter = "2100250"
+    cursor = conn.cursor(dictionary=True)
+    db_status = True
 
+except Exception as e:
+    print("Lỗi: ", e)
 
-@app.get("/increment")
-def increment():
-    app.counter += 1
-
-
-@app.get("/status")
-def read_status():
-    return app.counter
-
-
-# Định nghĩa biến toàn cục
-@app.middleware("http")
-async def add_global_variable(request: Request, call_next):
-    token = request.cookies.get("token")
-    if token is not None:
-        token_bytes = token.encode("utf-8")  # Chuyển đổi token thành bytes
-        try:
-            decoded = jwt.decode(token_bytes, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
-            request.state.token = decoded.get("username")
-            app.counter = 21002500
-        except:
-            request.state.token = None
-    else:
-        request.state.token = None
-    response = await call_next(request)
-    return response
-
-
-# Sử dụng biến toàn cục trong API
-@app.get("/my_cookie")
-async def my_cookie(request: Request):
-    username = request.state.token
-    return username
+    
+class User(BaseModel):
+    username: str
 
 
 @app.post("/overview")
-async def sendOverView(request: Request):
-
-    client = TestClient(app)
-    client.get("/my_cookie", headers={"Cookie": "token=21002500"})
-    user = str(client.get("/status").content.decode('utf-8'))
+async def sendOverView(user: User, request: Request):
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where ma_sv = {user} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
+                   where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
     
     tong_so_tin = cursor.fetchall()[0]["tin"]
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where ma_sv = '21002500' and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
+                   where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
                          dk.diem_tx * dk.he_so_tx + dk.diem_gk * dk.he_so_gk + dk.diem_ck * dk.he_so_ck >= 4""")
 
     tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
 
-    cursor.execute(f"""select gpa from sinh_vien where ma_sv = '21002500'""")
+    cursor.execute(f"""select gpa from sinh_vien where ma_sv = {user.username}""")
     gpa = cursor.fetchall()[0]["gpa"]
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
 
 
 @app.post("/grade")
-async def sendGrade(request: Request):
-
-    # logged_in = request.cookies.get("logged_in")
-    # username = request.cookies.get("username")
+async def sendGrade(user: User, request: Request):
 
     columns = [
         {
@@ -160,9 +131,7 @@ async def sendGrade(request: Request):
 
     current_year = datetime.datetime.now().year
 
-    # username = request.cookies.get("username")
-
-    cursor.execute("select nam_bat_dau from sinh_vien where ma_sv = '21002510'")
+    cursor.execute(f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
     nam_bat_dau = cursor.fetchall()[0]["nam_bat_dau"]
 
     data_component_grade = []
@@ -173,11 +142,10 @@ async def sendGrade(request: Request):
         
         for semester in range(1, 3):
 
-
             statement = f"""
                             select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
-                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and 
+                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -214,7 +182,7 @@ async def sendGrade(request: Request):
                             with dk as (
                             select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
                             from dang_ky 
-                            where ma_sv = '21002500'
+                            where ma_sv = {user.username}
                             )
                             select 
                                 lh.ma_hp,
@@ -245,7 +213,7 @@ async def sendGrade(request: Request):
                                 end as he4
                             from
                                 hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
-                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and 
+                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -311,6 +279,7 @@ async def sendSubject():
 @app.post("/register_subject")
 async def sendSubjectMajor():
     return 0
+
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
