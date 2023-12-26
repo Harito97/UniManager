@@ -6,19 +6,31 @@ import LoginPopup from "../components/LandingPage/LoginPopup/LoginPopup";
 import Features from "../components/LandingPage/Features";
 import TeamSection from "../components/LandingPage/TeamSection";
 import Footer from "../components/LandingPage/Footer";
+import { useContentContext } from "../components/Notification/ContentContext";
 
-function Home() {
+function Home({ level }) {
+  const { openSuccessNotification } = useContentContext();
+  if (level !== null) {
+    openSuccessNotification(
+      "Bạn đã đăng nhập trước đó!",
+      `Trang sẽ chuyển hướng sau vài giây...`,
+    );
+    setTimeout(() => {
+      if (level === "SV") {
+        window.location.replace("/student");
+      } else if (level === "GV") {
+        window.location.replace("/teacher");
+      } else {
+        window.location.replace("/admin");
+      }
+    }, 2000);
+  }
+
   const [loginPopup, setLoginPopup] = useState(false);
 
   const toggleLoginPopup = () => {
     setLoginPopup(!loginPopup);
   };
-
-  useEffect(() => {
-    if (localStorage.getItem("token") !== null) {
-      window.location.replace("/student");
-    }
-  }, []);
 
   const bgImage = {
     backgroundImage: `url(${Background})`,

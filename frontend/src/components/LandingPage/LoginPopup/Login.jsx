@@ -19,7 +19,7 @@ const Login = ({ handleForgot }) => {
         if (res.data.Status) {
           openSuccessNotification(
             "Đăng nhập thành công!",
-            `Chào mừng quay trở lại ${values.username}`,
+            `Welcome Back ${values.username}`,
           );
           setTimeout(() => {
             const level = res.data.level;
@@ -60,20 +60,6 @@ const Login = ({ handleForgot }) => {
             <Input.Password
               prefix={<LockOutlined className="site-form-item-icon" />}
             />
-          </Form.Item>
-          <Form.Item
-            initialValue={"student"}
-            label="Tôi là:"
-            name="type"
-            rules={[{ required: true }]}
-          >
-            <Select
-              options={[
-                { value: "student", label: "Sinh viên" },
-                { value: "teacher", label: "Giảng viên" },
-                { value: "admin", label: "Admin" },
-              ]}
-            ></Select>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" className="bg-blue-500">
