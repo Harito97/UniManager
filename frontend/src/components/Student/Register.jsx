@@ -158,7 +158,16 @@ const Register = ({user}) => {
     },
     { title: "Môn học", dataIndex: "ten_hp", width: 300 },
     { title: "TC", dataIndex: "so_tin", width: 50 },
-    { title: "Lớp môn học", dataIndex: "ma_hp_lop", width: 100 }, // ma_hp + " " + ma_lop
+    {
+      title: "Lớp môn học",
+      dataIndex: "ma_hp_lop",
+      width: 100,
+      render: (_, record) => (
+        <p>
+          {record.ma_hp} {record.ma_lop}
+        </p>
+      ),
+    },
     { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
     {
       title: "Lịch học",
