@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Select, Popconfirm } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 const courses_table = [
   { title: "Môn học", dataIndex: "ten_hp", width: 300 },
@@ -82,9 +83,66 @@ for (let i = 1; i <= 100; i++) {
 
 const Register = ({user}) => {
   const [dataMajor, setDataMajor] = useState(data1);
-  const [dataAll, setDataAll] = useState(data2);
+  // const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
   // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
+
+  const [dataMonth, setDataMonth] = useState(null);
+  const [dataYear, setDataYear] = useState(null);
+  const [dataAll, setDataAll] = useState([]);
+  // const [dataMajor, setDataMajor] = useState([]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseDataTime = await axios.post('http://localhost:8001/semester_year_current');
+        const data = responseDataTime.data;
+        setDataMonth(data.semester);
+        setDataYear(data.year);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseDataAll = await axios.post('http://localhost:8001/subject_all', {
+          username: user
+        });
+        const data = responseDataAll.data;
+        setDataAll(data.dataAll);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const responseDataMajoy = await axios.post('http://localhost:8001/subject_majoy', {
+  //         username: user
+  //       });
+  //       const data = responseDataMajoy.data;
+  //       setDataMajor(data.dataMajor);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [user]);
+
+
   const [registeredData, setRegisteredData] = useState([
     {
       ma_lh: 400,
@@ -254,7 +312,7 @@ const Register = ({user}) => {
       <div className="flex flex-col gap-5">
         <div className="flex flex-col justify-between sm:flex-row">
           <h1 className="text-xl font-bold">
-            Đăng kí học - Học kì 1 năm học 2022 - 2023
+            Đăng kí học - Học kì {dataMonth} năm học {dataYear} - {dataYear+1}
           </h1>
           <Select
             defaultValue={1}

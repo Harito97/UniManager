@@ -7,15 +7,14 @@ import mysql.connector
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Cookie
-import datetime
+from datetime import datetime
 import uvicorn
-import jwt
+import jwt, json
 from jwt.exceptions import DecodeError
 from starlette.testclient import TestClient
 
 
 app = FastAPI()
-
 
 
 host = "localhost"
@@ -41,6 +40,20 @@ except Exception as e:
     
 class User(BaseModel):
     username: str
+
+
+year_current = datetime.now().year
+
+def getTime():
+    if datetime(year_current, 8, 1) < datetime.now() < datetime(year_current + 1, 2, 1):
+        return {"semester": "1", "year": str(year_current)}
+    else:
+        return {"semester": "2", "year": str(year_current-1)}
+    
+
+@app.post("/semester_year_current")
+async def getCurrent(request: Request):
+    return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
 
 
 @app.post("/overview")
@@ -129,7 +142,7 @@ async def sendGrade(user: User, request: Request):
         },
     ]
 
-    current_year = datetime.datetime.now().year
+    current_year = datetime.now().year
 
     cursor.execute(f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
     nam_bat_dau = cursor.fetchall()[0]["nam_bat_dau"]
@@ -249,36 +262,96 @@ async def sendGrade(user: User, request: Request):
     return {"columns": columns, "expand_columns": expand_columns, "data": data}
 
 
-@app.post("/register_subject")
-async def sendSubject():
+@app.post("/subject_all")
+async def sendSubject(user: User, request: Request):
+    
     statement = f"""
-                    select 
-                        lh.ma_lh as "ma_lh"
-                        hp.ten_hp as "ten_hp", 
-                        hp.ma_hp as "ma_hp,
+                    select
+                        lh.ma_lh as "ma_lh",
+                        hp.ten_hp as "ten_hp",
+                        lh.ma_hp as "ma_hp",
                         lh.ma_lop as "ma_lop",
-                        hp.so_tin as "so_tin", 
-                        lh.so_luong as "so_sv",  
+                        hp.so_tin as "so_tin",
+                        lh.so_luong as "so_sv",
+                        (
+                            select count(*) 
+                            from dang_ky dk 
+                            where dk.ma_lh = lh.ma_lh
+                        ) as "da_dk",
+                        group_concat(gv.ho_ten) as "ten_gv",
+                        lh.thoi_gian as "lich_hoc",
                         case
-                            when hp.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = '21002500' and dk.ma_lh = lh.ma_lh) then 1
-                            else 0
-                        end as "Đã ĐK",
-                        gv.ho_ten as "Giáo viên",
-                        json_objectagg(lh_tg.thoi_gian) as "Lịch học"
-
-                    from hoc_phan hp, lich_hoc lh, lh_thoi_gian lh_tg, dang_ky dk, giang_vien gv
-
-                    where hp.ma_hp = lh.ma_hp and lh.ma_lh = lh_tg.ma_lh and gv.ma_gv = lh_tg.ma_gv
-                    
-                    group by hp.ten_hp
-                    order by hp.ten_hp;
-
+                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh) then true
+                            else false
+                        end as "da_hoc"
+                    from
+                        lich_hoc lh
+                        inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
+                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
+                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                    where lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
+                    group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
+                    order by
+                        hp.ten_hp;
                 """
 
+    cursor.execute(statement)
+    data = cursor.fetchall()
 
-@app.post("/register_subject")
-async def sendSubjectMajor():
-    return 0
+    for subject in data:
+        subject["da_hoc"] = bool(subject["da_hoc"])
+        unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(unicode_data)
+        subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
+
+    return {"dataAll": data}
+
+
+@app.post("/subject_majoy")
+async def sendSubjectMajor(user: User, request: Request):
+
+    statement = f"""
+                    select
+                        lh.ma_lh as "ma_lh",
+                        hp.ten_hp as "ten_hp",
+                        lh.ma_hp as "ma_hp",
+                        lh.ma_lop as "ma_lop",
+                        hp.so_tin as "so_tin",
+                        lh.so_luong as "so_sv",
+                        (
+                            select count(*) 
+                            from dang_ky dk 
+                            where dk.ma_lh = lh.ma_lh
+                        ) as "da_dk",
+                        group_concat(gv.ho_ten) as "ten_gv",
+                        lh.thoi_gian as "lich_hoc",
+                        case
+                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh) then true
+                            else false
+                        end as "da_hoc"
+                    from
+                        lich_hoc lh
+                        inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
+                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
+                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                        inner join chuong_trinh_hoc cth on cth.ma_hp = lh.ma_hp
+                        inner join sinh_vien sv on sv.ma_nganh = cth.ma_nganh
+                    where sv.ma_sv = {user.username} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
+                    order by
+                        hp.ten_hp;
+                """
+
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for subject in data:
+        subject["da_hoc"] = bool(subject["da_hoc"])
+        unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(unicode_data)
+        subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
+
+    return {"dataMajoy": data}
 
 
 
