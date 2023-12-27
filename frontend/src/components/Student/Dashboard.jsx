@@ -308,7 +308,7 @@ const Dashboard = ({ user }) => {
         setExpand_Columns(data.expand_columns);
         setSemester(data.data);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     };
 
