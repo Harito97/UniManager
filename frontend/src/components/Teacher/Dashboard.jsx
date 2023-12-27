@@ -76,7 +76,12 @@ const Dashboard = ({ user }) => {
   return (
     <>
       <h1 className="pb-5 text-xl font-bold">Các lớp đang giảng dạy</h1>
-      <Table columns={columns} dataSource={data} pagination={false}></Table>
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        scroll={{ x: 810 }}
+      ></Table>
       <Modal
         open={showModal}
         onCancel={handleModalCancel}
@@ -86,7 +91,7 @@ const Dashboard = ({ user }) => {
       >
         {selectedRow && (
           <>
-            <h1 className="text-xl font-bold pb-5">
+            <h1 className="pb-5 text-xl font-bold">
               Danh sách sinh viên lớp {selectedRow.ma_hp} {selectedRow.ma_lop}
             </h1>
             <Manager ma_lh={selectedRow.ma_lh} />

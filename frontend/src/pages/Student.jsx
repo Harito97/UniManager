@@ -18,14 +18,15 @@ import MyCalendar from "../components/Student/MyCalendar";
 import Register from "../components/Student/Register";
 import Exam from "../components/Student/Exam";
 import axios from "axios";
+import { useContentContext } from "../components/Notification/ContentContext";
 
 // import { useContentContext } from "../providers/ContentContext";
 
-const Student = ({user}) => {
+const Student = ({ user }) => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
 
-  // let { openSuccessNotification } = useContentContext();
+  let { openSuccessNotification } = useContentContext();
 
   useEffect(() => {
     if (window.innerWidth < 426) {
@@ -51,7 +52,13 @@ const Student = ({user}) => {
     if (e.key === "2") {
       //Logout
       axios.get("http://localhost:8000/logout");
-      window.location.replace("/");
+      openSuccessNotification(
+        "Bạn đã đăng xuất!",
+        `Trang sẽ chuyển hướng sau vài giây...`,
+      );
+      setTimeout(() => {
+        window.location.replace("/");
+      }, 2000);
     }
   };
 
@@ -105,11 +112,19 @@ const Student = ({user}) => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard user={user}/>} />
-            <Route exact path="/dashboard" element={<Dashboard user={user}/>} />
-            <Route exact path="/calendar" element={<MyCalendar user={user}/>} />
-            <Route exact path="/register" element={<Register user={user}/>} />
-            <Route exact path="/exam" element={<Exam user={user}/>} />
+            <Route exact path="/" element={<Dashboard user={user} />} />
+            <Route
+              exact
+              path="/dashboard"
+              element={<Dashboard user={user} />}
+            />
+            <Route
+              exact
+              path="/calendar"
+              element={<MyCalendar user={user} />}
+            />
+            <Route exact path="/register" element={<Register user={user} />} />
+            <Route exact path="/exam" element={<Exam user={user} />} />
           </Routes>
           {/* <Dashboard /> */}
         </Content>

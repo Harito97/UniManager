@@ -75,13 +75,15 @@ for (let i = 1; i <= 100; i++) {
     so_sv: 30,
     da_dk: 1,
     ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
-    lich_hoc: [{ thu: "T4", bd: 3, kt: 5, phong: "308T5" },
-               { thu: "T4", bd: 3, kt: 5, phong: "308T5" }],
+    lich_hoc: [
+      { thu: "T4", bd: 3, kt: 5, phong: "308T5" },
+      { thu: "T4", bd: 3, kt: 5, phong: "308T5" },
+    ],
     disabled: false,
   });
 }
 
-const Register = ({user}) => {
+const Register = ({ user }) => {
   const [dataMajor, setDataMajor] = useState(data1);
   // const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
@@ -92,11 +94,12 @@ const Register = ({user}) => {
   const [dataAll, setDataAll] = useState([]);
   // const [dataMajor, setDataMajor] = useState([]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseDataTime = await axios.post('http://localhost:8001/semester_year_current');
+        const responseDataTime = await axios.post(
+          "http://localhost:8001/semester_year_current",
+        );
         const data = responseDataTime.data;
         setDataMonth(data.semester);
         setDataYear(data.year);
@@ -108,13 +111,15 @@ const Register = ({user}) => {
     fetchData();
   }, [user]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseDataAll = await axios.post('http://localhost:8001/subject_all', {
-          username: user
-        });
+        const responseDataAll = await axios.post(
+          "http://localhost:8001/subject_all",
+          {
+            username: user,
+          },
+        );
         const data = responseDataAll.data;
         setDataAll(data.dataAll);
       } catch (error) {
@@ -124,7 +129,6 @@ const Register = ({user}) => {
 
     fetchData();
   }, [user]);
-
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -141,7 +145,6 @@ const Register = ({user}) => {
 
   //   fetchData();
   // }, [user]);
-
 
   const [registeredData, setRegisteredData] = useState([
     {
@@ -321,7 +324,7 @@ const Register = ({user}) => {
       <div className="flex flex-col gap-5">
         <div className="flex flex-col justify-between sm:flex-row">
           <h1 className="text-xl font-bold">
-            Đăng kí học - Học kì {dataMonth} năm học {dataYear} - {dataYear+1}
+            Đăng kí học - Học kì {dataMonth} năm học {dataYear} - {dataYear + 1}
           </h1>
           <Select
             defaultValue={1}
@@ -339,7 +342,7 @@ const Register = ({user}) => {
             rowSelection={rowSelection}
             columns={courses_table}
             dataSource={dataAll}
-            scroll={{ y: 320 }}
+            scroll={{ x: 880, y: 320 }}
             pagination={false}
             size="small"
             rowClassName={(record) => {
@@ -355,7 +358,7 @@ const Register = ({user}) => {
             rowSelection={rowSelection}
             columns={courses_table}
             dataSource={dataMajor}
-            scroll={{ y: 320 }}
+            scroll={{ x: 880, y: 320 }}
             pagination={false}
             size="small"
             rowClassName={(record) => {
@@ -374,6 +377,7 @@ const Register = ({user}) => {
           dataSource={registeredData}
           pagination={false}
           size="small"
+          scroll={{ x: 1100 }}
           rowClassName={(record) => {
             if (record.status !== undefined) {
               return "bg-blue-200";

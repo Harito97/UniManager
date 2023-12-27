@@ -17,14 +17,13 @@ import Dashboard from "../components/Teacher/Dashboard";
 import MyCalendar from "../components/Teacher/MyCalendar";
 import Manager from "../components/Teacher/Manager";
 import axios from "axios";
+import { useContentContext } from "../components/Notification/ContentContext";
 
-// import { useContentContext } from "../providers/ContentContext";
-
-const Teacher = ({user}) => {
+const Teacher = ({ user }) => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
 
-  // let { openSuccessNotification } = useContentContext();
+  let { openSuccessNotification } = useContentContext();
 
   useEffect(() => {
     if (window.innerWidth < 426) {
@@ -50,7 +49,13 @@ const Teacher = ({user}) => {
     if (e.key === "2") {
       //Logout
       axios.get("http://localhost:8000/logout");
-      window.location.replace("/");
+      openSuccessNotification(
+        "Bạn đã đăng xuất!",
+        `Trang sẽ chuyển hướng sau vài giây...`,
+      );
+      setTimeout(() => {
+        window.location.replace("/");
+      }, 2000);
     }
   };
 
@@ -104,10 +109,18 @@ const Teacher = ({user}) => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard user={user}/>} />
-            <Route exact path="/dashboard" element={<Dashboard user={user}/>} />
-            <Route exact path="/classes" element={<Manager user={user}/>} />
-            <Route exact path="/calendar" element={<MyCalendar user={user}/>} />
+            <Route exact path="/" element={<Dashboard user={user} />} />
+            <Route
+              exact
+              path="/dashboard"
+              element={<Dashboard user={user} />}
+            />
+            <Route exact path="/classes" element={<Manager user={user} />} />
+            <Route
+              exact
+              path="/calendar"
+              element={<MyCalendar user={user} />}
+            />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">
