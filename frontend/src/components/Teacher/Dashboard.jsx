@@ -77,6 +77,7 @@ const Dashboard = ({ user }) => {
     <>
       <h1 className="pb-5 text-xl font-bold">Các lớp đang giảng dạy</h1>
       <Table
+        rowKey={(record) => record.ma_lh}
         columns={columns}
         dataSource={data}
         pagination={false}
