@@ -148,8 +148,14 @@ const Register = ({ user }) => {
 
   const [registeredData, setRegisteredData] = useState([
     {
-      ma_lh: 400,
-      lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
+      ten_hp: "Cấu trúc dữ liệu và thuật toán",
+      so_tin: 4,
+      ma_hp: "MAT3585",
+      ma_lop: 1,
+      ten_gv: ["Vũ Tiến Dũng, Phạm Duy Phương"],
+      lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" },
+                 { thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
+      lan: 1
     },
   ]);
   const registered_table = [
