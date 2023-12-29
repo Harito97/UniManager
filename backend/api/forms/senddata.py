@@ -61,13 +61,13 @@ async def sendOverView(user: User, request: Request):
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
+                   where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
     
     tong_so_tin = cursor.fetchall()[0]["tin"]
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
+                   where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
                          dk.diem_tx * dk.he_so_tx + dk.diem_gk * dk.he_so_gk + dk.diem_ck * dk.he_so_ck >= 4""")
 
     tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
@@ -158,7 +158,7 @@ async def sendGrade(user: User, request: Request):
             statement = f"""
                             select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
-                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
+                            where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -226,7 +226,7 @@ async def sendGrade(user: User, request: Request):
                                 end as he4
                             from
                                 hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
-                            where lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and
+                            where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -352,6 +352,44 @@ async def sendSubjectMajor(user: User, request: Request):
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
     return {"dataMajoy": data}
+
+
+@app.post("/registered_subject")
+async def registeredSubject(user: User):
+
+    statement = f"""
+                    select 
+                        hp.ten_hp as "ten_hp",
+                        hp.so_tin as "so_tin",
+                        lh.ma_hp as "ma_hp",
+                        lh.ma_lop as "ma_lop",
+                        group_concat(gv.ho_ten) as "ten_gv",
+                        lh.thoi_gian as "lich_hoc",
+                        sv_hp.so_lan_hoc as "lan"
+
+                    from 
+                        lich_hoc lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
+                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                        inner join sv_hp on sv_hp.ma_hp = lh.ma_hp
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+
+                    where dk.ma_sv = {user.username} and dk.diem_tx is null
+                    group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian, sv_hp.so_lan_hoc
+                    order by 
+                        hp.ten_hp asc;
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for subject in data:
+        unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(unicode_data)
+        subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
+
+    return {"subjectRegister": data}
 
 
 

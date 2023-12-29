@@ -147,17 +147,38 @@ const Register = ({ user }) => {
   // }, [user]);
 
   const [registeredData, setRegisteredData] = useState([
-    {
-      ten_hp: "Cấu trúc dữ liệu và thuật toán",
-      so_tin: 4,
-      ma_hp: "MAT3585",
-      ma_lop: 1,
-      ten_gv: ["Vũ Tiến Dũng, Phạm Duy Phương"],
-      lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" },
-                 { thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
-      lan: 1
-    },
+    // {
+    //   ten_hp: "Cấu trúc dữ liệu và thuật toán",
+    //   so_tin: 4,
+    //   ma_hp: "MAT3585",
+    //   ma_lop: 1,
+    //   ten_gv: ["Vũ Tiến Dũng, Phạm Duy Phương"],
+    //   lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" },
+    //              { thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
+    //   lan: 1
+    // },
   ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseDataSubjectRegister = await axios.post(
+          "http://localhost:8001/registered_subject",
+          {
+            username: user,
+          },
+        );
+        const data = responseDataSubjectRegister.data;
+        setRegisteredData(data.subjectRegister);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+
   const registered_table = [
     {
       title: "STT",
@@ -222,12 +243,32 @@ const Register = ({ user }) => {
       (item) => item !== record.ma_lh,
     );
     setSelectedRowKeys(updateSelectedRowKeys);
+    // console.log(selectedRowKeys);
   };
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
   const start = () => {
+    for (let i = 0; i < selectedRowKeys.length; i++) {
+      try {
+        const add = axios.post('http://localhost:8002/post_dangky', {
+          ma_lh: selectedRowKeys[i],
+          ma_sv: user,
+          diem_tx: null,
+          he_so_tk: null,
+          diem_gk: null,
+          he_so_gk: null,
+          diem_ck: null,
+          he_so_ck: null
+        });
+        console.log(add);
+      }
+      catch(e) {
+        console.log(e);
+      }
+    }
+
     setLoading(true);
     // TODO
     // ajax request after empty completing
@@ -324,6 +365,28 @@ const Register = ({ user }) => {
     }
     setDataAll(newDataAll);
   }, [registeredData]);
+
+
+  // const addDataRegister = () => {
+  //   for (let i = 0; i < selectedRowKeys.length; i++) {
+  //       try {
+  //         const add = axios.post('http://localhost:8002/post_dangky', {
+  //           ma_lh: selectedRowKeys[i],
+  //           ma_sv: user,
+  //           diem_tx: null,
+  //           he_so_tk: null,
+  //           diem_gk: null,
+  //           he_so_gk: null,
+  //           diem_ck: null,
+  //           he_so_ck: null
+  //         });
+  //         console.log(add)
+  //       }
+  //       catch(e) {
+  //         console.log(e);
+  //       }
+  //   }
+  // }; 
 
   return (
     <>
