@@ -251,8 +251,8 @@ const Register = ({ user }) => {
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
   const start = () => {
-    for (let i = 0; i < selectedRowKeys.length; i++) {
-      try {
+    try {
+      for (let i = 0; i < selectedRowKeys.length; i++) {
         const add = axios.post('http://localhost:8002/post_dangky', {
           ma_lh: selectedRowKeys[i],
           ma_sv: user,
@@ -265,25 +265,27 @@ const Register = ({ user }) => {
         });
         console.log(add);
       }
-      catch(e) {
-        console.log(e);
+    }
+    
+    catch(e) {
+      console.log(e);
+    }
+  
+
+    try {
+      for (let i = 0; i < deSelected.length; i++) {
+        const deleted = axios.delete('http://localhost:8002/delete_dangky/' + deSelected[i].toString() + "_" + user, {
+          ma_lh: deSelected[i],
+          ma_sv: user
+        });
+        console.log(deleted);
       }
     }
-
-
-    // for (let i = 0; i < deSelected.length; i++) {
-    //   try {
-    //     const add = axios.post('http://localhost:8002/delete_dangky/' + deSelected[i] + "_" + user, {
-    //       ma_lh: deSelected[i],
-    //       ma_sv: user
-    //     });
-    //   }
-    //   catch(e) {
-    //     console.log(e);
-    //   }
-    // }
-
-
+   
+    catch(e) {
+      console.log(e);
+    }
+  
     setLoading(true);
     // TODO
     // ajax request after empty completing

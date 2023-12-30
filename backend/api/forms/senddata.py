@@ -388,6 +388,7 @@ async def registeredSubject(user: User):
 
     statement = f"""
                     select 
+                        lh.ma_lh as "ma_lh",
                         hp.ten_hp as "ten_hp",
                         hp.so_tin as "so_tin",
                         lh.ma_hp as "ma_hp",
