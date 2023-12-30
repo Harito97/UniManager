@@ -72,7 +72,36 @@ async def sendOverView(user: User, request: Request):
 
     tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
 
-    cursor.execute(f"""select gpa from sinh_vien where ma_sv = {user.username}""")
+    cursor.execute(f"""
+                    with dk as (
+                        select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
+                        from dang_ky 
+                        where ma_sv = "21002500"
+                    )
+
+                    select sum(subquery.he4*subquery.so_tin) / sum(so_tin) as gpa
+                    from 
+
+                        (select 
+                            hp.ten_hp as ten_hp,
+                            hp.so_tin as so_tin,
+
+                            case
+                                when dk.total_score < 4.0 then 0
+                                when dk.total_score <= 4.9 then 1
+                                when dk.total_score <= 5.4 then 1.5
+                                when dk.total_score <= 6.4 then 2
+                                when dk.total_score <= 6.9 then 2.5
+                                when dk.total_score <= 7.9 then 3
+                                when dk.total_score <= 8.4 then 3.5
+                                when dk.total_score <= 8.9 then 3.7
+                                else 4
+                            end as he4
+                        from
+                            hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
+                        where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh
+                        group by hp.ten_hp) as subquery;""")
+    
     gpa = cursor.fetchall()[0]["gpa"]
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
