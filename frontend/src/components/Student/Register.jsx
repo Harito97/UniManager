@@ -235,6 +235,7 @@ const Register = ({ user }) => {
       console.log("Deselected changed: ", newDeSelected);
       setDeSelected(newDeSelected);
     }
+    
     const updateRegisteredData = registeredData.filter(
       (item) => item.ma_lh !== record.ma_lh,
     );
@@ -268,6 +269,20 @@ const Register = ({ user }) => {
         console.log(e);
       }
     }
+
+
+    // for (let i = 0; i < deSelected.length; i++) {
+    //   try {
+    //     const add = axios.post('http://localhost:8002/delete_dangky/' + deSelected[i] + "_" + user, {
+    //       ma_lh: deSelected[i],
+    //       ma_sv: user
+    //     });
+    //   }
+    //   catch(e) {
+    //     console.log(e);
+    //   }
+    // }
+
 
     setLoading(true);
     // TODO
@@ -367,26 +382,6 @@ const Register = ({ user }) => {
   }, [registeredData]);
 
 
-  // const addDataRegister = () => {
-  //   for (let i = 0; i < selectedRowKeys.length; i++) {
-  //       try {
-  //         const add = axios.post('http://localhost:8002/post_dangky', {
-  //           ma_lh: selectedRowKeys[i],
-  //           ma_sv: user,
-  //           diem_tx: null,
-  //           he_so_tk: null,
-  //           diem_gk: null,
-  //           he_so_gk: null,
-  //           diem_ck: null,
-  //           he_so_ck: null
-  //         });
-  //         console.log(add)
-  //       }
-  //       catch(e) {
-  //         console.log(e);
-  //       }
-  //   }
-  // }; 
 
   return (
     <>
