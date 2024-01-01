@@ -87,7 +87,7 @@ const Dashboard = ({ user }) => {
         open={showModal}
         onCancel={handleModalCancel}
         footer={null}
-        width="auto" // Đặt độ rộng là "auto"
+        width={window.innerWidth > 800 ? 800 : "auto"}
         className="overflow-auto"
       >
         {selectedRow && (

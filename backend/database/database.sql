@@ -53,6 +53,9 @@ create table if not exists lich_hoc(
     so_luong int not null,
     thoi_gian json not null,
     ma_hk INT not null,
+    he_so_tx decimal(2,2),
+    he_so_gk decimal(2,2),
+    he_so_ck decimal(2,2),
     primary key (ma_lh)
 );
 
@@ -82,11 +85,8 @@ create table if not exists dang_ky(
 	ma_lh int not null,
     ma_sv varchar(8) not null,
     diem_tx decimal(2,2),
-    he_so_tx decimal(2,2),
     diem_gk decimal(2,2),
-    he_so_gk decimal(2,2),
     diem_ck decimal(2,2),
-    he_so_ck decimal(2,2),
     primary key (ma_lh, ma_sv)
 );
 
