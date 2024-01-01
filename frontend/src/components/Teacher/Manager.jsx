@@ -18,8 +18,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="diem_tx">
-              <Input />
+            <Form.Item
+              name="diem_tx"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const diem_tx = parseFloat(value);
+                    if (
+                      isNaN(diem_tx) ||
+                      (!isNaN(diem_tx) && diem_tx >= 0 && diem_tx <= 10)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Điểm phải trong đoạn [0, 10]");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -34,8 +53,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="he_so_tx">
-              <Input />
+            <Form.Item
+              name="he_so_tx"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const he_so_tx = parseFloat(value);
+                    if (
+                      isNaN(he_so_tx) ||
+                      (!isNaN(he_so_tx) && he_so_tx > 0 && he_so_tx < 1)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Hệ số phải trong khoảng (0, 1) ");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -50,8 +88,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="diem_gk">
-              <Input />
+            <Form.Item
+              name="diem_gk"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const diem_gk = parseFloat(value);
+                    if (
+                      isNaN(diem_gk) ||
+                      (!isNaN(diem_gk) && diem_gk >= 0 && diem_gk <= 10)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Điểm phải trong đoạn [0, 10]");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -66,8 +123,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="he_so_gk">
-              <Input />
+            <Form.Item
+              name="he_so_gk"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const he_so_gk = parseFloat(value);
+                    if (
+                      isNaN(he_so_gk) ||
+                      (!isNaN(he_so_gk) && he_so_gk > 0 && he_so_gk < 1)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Hệ số phải trong khoảng (0, 1) ");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -82,8 +158,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="diem_ck">
-              <Input />
+            <Form.Item
+              name="diem_ck"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const diem_ck = parseFloat(value);
+                    if (
+                      isNaN(diem_ck) ||
+                      (!isNaN(diem_ck) && diem_ck >= 0 && diem_ck <= 10)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Điểm phải trong đoạn [0, 10]");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -98,8 +193,27 @@ const Manager = ({ ma_lh }) => {
       render: (text, record) => {
         if (editingRow === record.ma_sv) {
           return (
-            <Form.Item name="he_so_ck">
-              <Input />
+            <Form.Item
+              name="he_so_ck"
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    const he_so_ck = parseFloat(value);
+                    if (
+                      isNaN(he_so_ck) ||
+                      (!isNaN(he_so_ck) && he_so_ck > 0 && he_so_ck < 1)
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Hệ số phải trong khoảng (0, 1) ");
+                  },
+                }),
+              ]}
+            >
+              <Input
+                type="number"
+                className="[&::-webkit-inner-spin-button]:appearance-none"
+              />
             </Form.Item>
           );
         } else {
@@ -160,6 +274,7 @@ const Manager = ({ ma_lh }) => {
   const onFinish = (values) => {
     console.log(values);
     //TODO: Update data trong bảng dang_ki của ma_lh ma_sv với values đã save
+    // Lưu ý các giá trị đang là kiểu String, cần parseFloat và làm tròn đến số thập phân thứ 2 trước khi update vào server
     // ma_sv = editingRow
     // values chứ các thuộc tính diem_tx, he_so_tx, ...
     const updateData = data.map((obj) =>
