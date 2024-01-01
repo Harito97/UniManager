@@ -45,8 +45,10 @@ class User(BaseModel):
 year_current = datetime.now().year
 
 def getTime():
-    if datetime(year_current, 8, 1) < datetime.now() < datetime(year_current + 1, 2, 1):
+    if datetime(year_current, 8, 1) <= datetime.now() <= datetime(year_current, 12, 31):
         return {"semester": "1", "year": str(year_current)}
+    elif datetime(year_current, 1, 1) <= datetime.now() <= datetime(year_current, 2, 15):
+        return {"semester": "1", "year": str(year_current-1)}
     else:
         return {"semester": "2", "year": str(year_current-1)}
     
@@ -286,9 +288,28 @@ async def sendGrade(user: User, request: Request):
 
     for year in range(nam_bat_dau, current_year+1):
         for semester in range(1,3):
-            data.append({"ki": semester, "nam": year, "data": data_sum_grade[year-2021][semester-1]})
+            if len(data_sum_grade[year-2021][semester-1]) == 0:
+                break
+            data.append({"ki": semester, "nam": year, "data": data_sum_grade[year-nam_bat_dau][semester-1]})
 
     return {"columns": columns, "expand_columns": expand_columns, "data": data}
+
+
+@app.post("/subject_learned")
+async def sendSubjectLearned(user: User, request: Request):
+
+    statement = f"""
+                    select 
+                        lh.ma_lh as "ma_lh",
+                        lh.ma_hp as "ma_hp"
+                    from 
+                        lich_hoc lh, dang_ky dk
+                    where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh
+
+                """
+    cursor.execute(statement)
+    data = cursor.fetchall()
+    return {"subjectLearned": data}
 
 
 @app.post("/subject_all")
@@ -312,7 +333,7 @@ async def sendSubject(user: User, request: Request):
                         case
                             when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh) then true
                             else false
-                        end as "da_hoc"
+                        end as "disabled"
                     from
                         lich_hoc lh
                         inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
@@ -328,7 +349,7 @@ async def sendSubject(user: User, request: Request):
     data = cursor.fetchall()
 
     for subject in data:
-        subject["da_hoc"] = bool(subject["da_hoc"])
+        subject["disabled"] = bool(subject["disabled"])
         unicode_data = subject["lich_hoc"].decode('utf-8')
         subject["lich_hoc"] = json.loads(unicode_data)
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
@@ -336,7 +357,7 @@ async def sendSubject(user: User, request: Request):
     return {"dataAll": data}
 
 
-@app.post("/subject_majoy")
+@app.post("/subject_major")
 async def sendSubjectMajor(user: User, request: Request):
 
     statement = f"""
@@ -380,7 +401,7 @@ async def sendSubjectMajor(user: User, request: Request):
         subject["lich_hoc"] = json.loads(unicode_data)
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
-    return {"dataMajoy": data}
+    return {"dataMajor": data}
 
 
 @app.post("/registered_subject")

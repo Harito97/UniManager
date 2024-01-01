@@ -94,6 +94,8 @@ const Register = ({ user }) => {
   const [dataAll, setDataAll] = useState([]);
   // const [dataMajor, setDataMajor] = useState([]);
 
+  const[dataSubjectLearned, setDataSubjectLearned] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -133,10 +135,10 @@ const Register = ({ user }) => {
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
-  //       const responseDataMajoy = await axios.post('http://localhost:8001/subject_majoy', {
+  //       const responseDataMajor = await axios.post('http://localhost:8001/subject_major', {
   //         username: user
   //       });
-  //       const data = responseDataMajoy.data;
+  //       const data = responseDataMajor.data;
   //       setDataMajor(data.dataMajor);
   //     } catch (error) {
   //       console.log(error);
@@ -145,6 +147,24 @@ const Register = ({ user }) => {
 
   //   fetchData();
   // }, [user]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseDataSubjectLearned = await axios.post(
+          "http://localhost:8001/subject_learned", {
+            username: user
+          }
+        );
+        const data = responseDataSubjectLearned.data;
+        setDataSubjectLearned(data.subjectLearned);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   const [registeredData, setRegisteredData] = useState([
     // {
@@ -365,23 +385,49 @@ const Register = ({ user }) => {
     // data.forEach((obj) => {
     //   obj.disabled = checkBoxDisabled(obj.lich_hoc);
     // });
+    
+    // const newDataMajor = [...dataMajor];
+    // for (let i = 0; i < newDataMajor.length; i++) {
+    //   newDataMajor[i] = {
+    //     ...newDataMajor[i],
+    //     disabled: checkBoxDisabled(newDataMajor[i].lich_hoc),
+    //   };
+    // }
+    // setDataMajor(newDataMajor);
+
     const newDataMajor = [...dataMajor];
     for (let i = 0; i < newDataMajor.length; i++) {
-      newDataMajor[i] = {
-        ...newDataMajor[i],
-        disabled: checkBoxDisabled(newDataMajor[i].lich_hoc),
-      };
+      if (dataSubjectLearned.map((record) => record.ma_hp).includes(newDataMajor[i].ma_hp)) {
+        newDataMajor[i].disabled = true;
+      }
+      else {
+        newDataMajor[i].disabled = checkBoxDisabled(newDataMajor[i].lich_hoc);
+      }
     }
     setDataMajor(newDataMajor);
+
+    // const newDataAll = [...dataAll];
+    // for (let i = 0; i < newDataAll.length; i++) {
+    //   newDataAll[i] = {
+    //     ...newDataAll[i],
+    //     disabled: checkBoxDisabled(newDataAll[i].lich_hoc),
+    //   };
+    // }
+    // setDataAll(newDataAll);
+
     const newDataAll = [...dataAll];
     for (let i = 0; i < newDataAll.length; i++) {
-      newDataAll[i] = {
-        ...newDataAll[i],
-        disabled: checkBoxDisabled(newDataAll[i].lich_hoc),
-      };
+      if (dataSubjectLearned.map((record) => record.ma_hp).includes(newDataAll[i].ma_hp)) {
+        newDataAll[i].disabled = true;
+      }
+      else {
+        newDataAll[i].disabled = checkBoxDisabled(newDataAll[i].lich_hoc);
+      }
     }
     setDataAll(newDataAll);
-  }, [registeredData]);
+
+
+  }, [registeredData, deSelected, selectedRowKeys]);
 
 
 
@@ -445,9 +491,9 @@ const Register = ({ user }) => {
           size="small"
           scroll={{ x: 1100 }}
           rowClassName={(record) => {
-            if (record.status !== undefined) {
+            // if (record.status !== undefined) {
               return "bg-blue-200";
-            }
+            // }
           }}
         />
         <div className="flex justify-end">
