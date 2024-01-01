@@ -255,6 +255,10 @@ const Register = ({ user }) => {
       console.log("Deselected changed: ", newDeSelected);
       setDeSelected(newDeSelected);
     }
+
+    const newDeSelected = [...deSelected, record.ma_lh];
+    setDeSelected(newDeSelected);
+
     
     const updateRegisteredData = registeredData.filter(
       (item) => item.ma_lh !== record.ma_lh,
@@ -264,6 +268,12 @@ const Register = ({ user }) => {
       (item) => item !== record.ma_lh,
     );
     setSelectedRowKeys(updateSelectedRowKeys);
+
+    // for (let i = 0; i < dataAll.length; i++) {
+    //   if (dataAll[i].ma_p === record.ma_hp) {
+    //     dataAll[i].disabled = false;
+    //   }
+    // }
     // console.log(selectedRowKeys);
   };
   const [showAllCourses, setShowAllCourses] = useState(false);
@@ -301,9 +311,22 @@ const Register = ({ user }) => {
         console.log(deleted);
       }
     }
-   
+
     catch(e) {
       console.log(e);
+    }
+
+    if (selectedRowKeys.length === 0 && deSelected.length === 0) {
+      alert("Bạn chưa thực hiện đăng kí hoặc xóa học phần!");
+    } 
+    else if (selectedRowKeys.length !== 0 && deSelected.length === 0) {
+      alert("Đăng kí thành công \nBạn vừa đăng kí thêm được " + selectedRowKeys.length.toString() + " học phần!")
+    }
+    else if (selectedRowKeys.length === 0 && deSelected.length !== 0) {
+      alert("Xóa thành công \nBạn vừa xóa được " + deSelected.length.toString() + " học phần!");
+    }
+    else {
+      alert("Bạn vừa đăng kí thêm được " + selectedRowKeys.length.toString() + " môn! \nBạn vừa xóa thành công " + deSelected.length.toString() + " học phần !");
     }
   
     setLoading(true);
@@ -312,8 +335,8 @@ const Register = ({ user }) => {
     setTimeout(() => {
       console.log(selectedRowKeys);
       console.log(deSelected);
-      setSelectedRowKeys([]);
-      setDeSelected([]);
+      // setSelectedRowKeys([]);
+      // setDeSelected([]);
       setLoading(false);
     }, 1000);
   };
@@ -500,7 +523,8 @@ const Register = ({ user }) => {
           <Button
             type="primary"
             onClick={start}
-            disabled={!(hasSelected || hasDeSelected)}
+            // disabled={!(hasSelected && hasDeSelected)}
+            disabled = {false}
             loading={loading}
             className="bg-blue-500"
           >
