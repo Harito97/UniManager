@@ -70,24 +70,22 @@ async def sendOverView(user: User, request: Request):
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
                    where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
-                         dk.diem_tx * dk.he_so_tx + dk.diem_gk * dk.he_so_gk + dk.diem_ck * dk.he_so_ck >= 4""")
+                         dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck >= 4""")
 
     tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
 
     cursor.execute(f"""
                     with dk as (
-                        select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
-                        from dang_ky 
-                        where ma_sv = "21002500"
+                        select dk.ma_lh, dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck as total_score
+                        from dang_ky dk, lich_hoc lh
+                        where ma_sv = {user.username} and lh.ma_lh = dk.ma_lh
                     )
 
-                    select sum(subquery.he4*subquery.so_tin) / sum(so_tin) as gpa
-                    from 
-
-                        (select 
+                    select sum(subquery.he4*subquery.so_tin) / sum(subquery.so_tin) as gpa
+                    from (
+                        select 
                             hp.ten_hp as ten_hp,
                             hp.so_tin as so_tin,
-
                             case
                                 when dk.total_score < 4.0 then 0
                                 when dk.total_score <= 4.9 then 1
@@ -100,10 +98,11 @@ async def sendOverView(user: User, request: Request):
                                 else 4
                             end as he4
                         from
-                            hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
-                        where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh
-                        group by hp.ten_hp) as subquery;""")
-    
+                            hoc_phan hp, dk, hoc_ki hk, lich_hoc lh, dang_ky
+                        where dang_ky.diem_ck is not null and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and dk.ma_lh = dang_ky.ma_lh
+                        group by hp.ten_hp
+                    ) as subquery;""")
+                        
     gpa = cursor.fetchall()[0]["gpa"]
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
@@ -187,7 +186,7 @@ async def sendGrade(user: User, request: Request):
         for semester in range(1, 3):
 
             statement = f"""
-                            select sv_hp.so_lan_hoc, dk.he_so_ck, dk.diem_ck, dk.he_so_gk, dk.diem_gk, dk.he_so_tx, dk.diem_tx
+                            select sv_hp.so_lan_hoc, lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
                             where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
@@ -224,9 +223,9 @@ async def sendGrade(user: User, request: Request):
 
             statement = f"""
                             with dk as (
-                            select *, diem_tx * he_so_tx + diem_gk * he_so_gk + diem_ck * he_so_ck as total_score
-                            from dang_ky 
-                            where ma_sv = {user.username}
+                            select dk.ma_lh, dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck as total_score
+                            from dang_ky dk, lich_hoc lh
+                            where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh
                             )
                             select 
                                 lh.ma_hp,
@@ -256,8 +255,8 @@ async def sendGrade(user: User, request: Request):
                                     else 4
                                 end as he4
                             from
-                                hoc_phan hp, lich_hoc lh, dk, hoc_ki hk
-                            where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and
+                                hoc_phan hp, lich_hoc lh, dk, hoc_ki hk, dang_ky
+                            where dang_ky.diem_ck is not null and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dang_ky.ma_lh = dk.ma_lh and dang_ky.ma_sv = {user.username} and
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -337,8 +336,8 @@ async def sendSubject(user: User, request: Request):
                     from
                         lich_hoc lh
                         inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
-                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
-                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                        inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
+                        inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                     where lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
                     group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
                     order by
@@ -382,8 +381,8 @@ async def sendSubjectMajor(user: User, request: Request):
                     from
                         lich_hoc lh
                         inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
-                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
-                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                        inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
+                        inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join chuong_trinh_hoc cth on cth.ma_hp = lh.ma_hp
                         inner join sinh_vien sv on sv.ma_nganh = cth.ma_nganh
                     where sv.ma_sv = {user.username} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
@@ -421,12 +420,12 @@ async def registeredSubject(user: User):
                     from 
                         lich_hoc lh
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
-                        inner join gv_hp on hp.ma_hp = gv_hp.ma_hp
-                        inner join giang_vien gv on gv_hp.ma_gv = gv.ma_gv
+                        inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
+                        inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join sv_hp on sv_hp.ma_hp = lh.ma_hp
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
-                    where dk.ma_sv = {user.username} and dk.diem_tx is null
+                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
                     group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian, sv_hp.so_lan_hoc
                     order by 
                         hp.ten_hp asc;
@@ -441,6 +440,44 @@ async def registeredSubject(user: User):
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
     return {"subjectRegister": data}
+
+
+@app.post("/teaching_schedule")
+async def sendSchedule(user: User, request: Request):
+     
+    statement = f"""
+                    select 
+                        lh.ma_lh as "ma_lh",
+                        hp.ten_hp as "ten_hp",
+                        lh.ma_hp as "ma_hp",
+                        lh.ma_lop as "ma_lop",
+                        (
+                            select count(*) 
+                            from dang_ky dk 
+                            where dk.ma_lh = lh.ma_lh
+                        ) as "da_dk",
+                        lh.thoi_gian as "thoi_gian"
+                    
+                    from 
+                        lich_hoc lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
+                        inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
+                    where gv.ma_gv = {user.username} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    group by lh.ma_hp
+                    order by hp.ten_hp;
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for subject in data:
+        unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(unicode_data)
+
+    return {"schedule": data}
+
+
 
 
 

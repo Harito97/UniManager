@@ -83,6 +83,9 @@ class LICHHOC(BaseModel):
     so_luong: int | None = None
     thoi_gian: dict | None = None
     ma_hk: int | None = None
+    he_so_tx: float | None = None
+    he_so_gk: float | None = None
+    he_so_ck: float | None = None
 
 
 class LICHHOCGIAOVIEN(BaseModel):
@@ -94,11 +97,11 @@ class DANGKY(BaseModel):
     ma_lh: int | None = None
     ma_sv: str | None = None
     diem_tx: float | None = None
-    he_so_tx: float | None = None
+    # he_so_tx: float | None = None
     diem_gk: float | None = None
-    he_so_gk: float | None = None
+    # he_so_gk: float | None = None
     diem_ck: float | None = None
-    he_so_ck: float | None = None
+    # he_so_ck: float | None = None
 
 
 class SINHVIENHOCPHAN(BaseModel):
@@ -697,13 +700,16 @@ async def list_records():
 @app.post("/post_lichhoc/")
 async def create_records(newRecord: LICHHOC):
     try:
-        cursor.execute("""insert into lich_hoc(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk)
-                          values (%s, %s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
+        cursor.execute("""insert into lich_hoc(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk, he_so_tx, he_so_gk, he_so_ck)
+                          values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
                                                                 newRecord.ma_hp, 
                                                                 newRecord.ma_lop, 
                                                                 newRecord.so_luong,
                                                                 newRecord.thoi_gian, 
-                                                                newRecord.ma_hk))
+                                                                newRecord.ma_hk,
+                                                                newRecord.he_so_tx,
+                                                                newRecord.he_so_gk,
+                                                                newRecord.he_so_ck))
         
         connect.commit()
         return {"message": "Record created successfully", "Record": newRecord}
@@ -715,11 +721,14 @@ async def create_records(newRecord: LICHHOC):
 async def update_record(newRecord: LICHHOC):
     try:
         cursor.execute("""update lich_hoc set ma_hp = %s, ma_lop = %s, so_luong = %s, 
-                          thoi_gian = %s, ma_hk = %s where ma_lh = %s""", (newRecord.ma_hp, 
+                          thoi_gian = %s, ma_hk = %s, he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (newRecord.ma_hp, 
                                                                             newRecord.ma_lop, 
                                                                             newRecord.so_luong, 
                                                                             newRecord.thoi_gian,
                                                                             newRecord.ma_hk, 
+                                                                            newRecord.he_so_tx,
+                                                                            newRecord.he_so_gk,
+                                                                            newRecord.he_so_ck,
                                                                             newRecord.ma_lh))
         
         connect.commit()
@@ -806,15 +815,12 @@ async def list_records():
 @app.post("/post_dangky")
 async def create_records(newRecord: DANGKY):
     try:
-        cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, he_so_tx, diem_gk, he_so_gk, diem_ck, he_so_ck)
-                          values (%s, %s, %s, %s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
-                                                                    newRecord.ma_sv, 
-                                                                    newRecord.diem_tx,
-                                                                    newRecord.he_so_tx, 
-                                                                    newRecord.diem_gk, 
-                                                                    newRecord.he_so_gk, 
-                                                                    newRecord.diem_ck, 
-                                                                    newRecord.he_so_ck))
+        cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, diem_gk, diem_ck)
+                          values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
+                                                            newRecord.ma_sv, 
+                                                            newRecord.diem_tx,
+                                                            newRecord.diem_gk, 
+                                                            newRecord.diem_ck))
         
         connect.commit()
         return {"message": "Record created successfully", "Record": newRecord}
@@ -825,15 +831,12 @@ async def create_records(newRecord: DANGKY):
 @app.put("/put_dangky/")
 async def update_record(newRecord: DANGKY):
     try:
-        cursor.execute("""update dang_ky set diem_tx = %s, he_so_tx = %s, diem_gk = %s, he_so_gk = %s,
-                          diem_ck = %s, he_so_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx, 
-                                                                                            newRecord.he_so_tx, 
-                                                                                            newRecord.diem_gk,
-                                                                                            newRecord.he_so_gk, 
-                                                                                            newRecord.diem_ck, 
-                                                                                            newRecord.he_so_ck, 
-                                                                                            newRecord.ma_lh, 
-                                                                                            newRecord.ma_sv))
+        cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
+                          diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx, 
+                                                                            newRecord.diem_gk,
+                                                                            newRecord.diem_ck, 
+                                                                            newRecord.ma_lh, 
+                                                                            newRecord.ma_sv))
         
         connect.commit()
         return {"message": "Record updated successfully", "Record": newRecord}

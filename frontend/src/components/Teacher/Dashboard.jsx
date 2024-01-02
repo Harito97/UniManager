@@ -58,20 +58,39 @@ const Dashboard = ({ user }) => {
     setShowModal(false);
   };
 
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseSchedule = await axios.post('http://localhost:8001/teaching_schedule', {
+          username: user
+        });
+        const data = responseSchedule.data;
+        setData(data.schedule);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
   // Data mẫu
-  const data = [
-    {
-      ma_lh: 1,
-      ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
-      ma_hp: "MAT3385",
-      ma_lop: 1,
-      da_dk: 30,
-      lich_hoc: [
-        { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
-        { thu: "T5", bd: 6, kt: 10, phong: "PM" },
-      ],
-    },
-  ];
+  // const data = [
+  //   {
+  //     ma_lh: 1,
+  //     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
+  //     ma_hp: "MAT3385",
+  //     ma_lop: 1,
+  //     da_dk: 30,
+  //     lich_hoc: [
+  //       { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
+  //       { thu: "T5", bd: 6, kt: 10, phong: "PM" },
+  //     ],
+  //   },
+  // ];
 
   return (
     <>
