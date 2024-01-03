@@ -237,12 +237,17 @@ const Manager = ({ ma_lh }) => {
     //TODO: Update hệ số trong bảng lich_hoc có ma_lh tương ứng
     // Lưu ý, các values đang là String, cần parseFloat trước khi gửi
 
-    const updateCofficient = axios.put('http://localhost:8002/put_coefficient', {
+    try {
+      const updateCofficient = axios.put('http://localhost:8002/put_coefficient', {
       ma_lh: ma_lh,  
       he_so_tx: parseFloat(values.he_so_tx),
       he_so_gk: parseFloat(values.he_so_gk),
       he_so_ck: parseFloat(values.he_so_ck),
-    })
+      });
+    }
+    catch(e) {
+      console.log(e);
+    }
 
     setFactorData(values);
     setEditingFactor(false);
@@ -259,15 +264,26 @@ const Manager = ({ ma_lh }) => {
     );
 
     for (let i = 0; i < updateData.length; i++) {
-      const updateGrade = axios.put('http://localhost:8002/put_dangky', {
-        ma_lh: ma_lh,
-        ma_sv: updateData[i].ma_sv,
-        diem_tx: parseFloat(updateData[i].diem_tx).toFixed(1),
-        diem_gk: parseFloat(updateData[i].diem_gk).toFixed(1),
-        diem_ck: parseFloat(updateData[i].diem_ck).toFixed(1),
-      })
+      updateData[i].diem_tx = parseFloat(updateData[i].diem_tx).toFixed(1)
+      updateData[i].diem_gk = parseFloat(updateData[i].diem_gk).toFixed(1)
+      updateData[i].diem_ck = parseFloat(updateData[i].diem_ck).toFixed(1)
     }
 
+    try {
+      for (let i = 0; i < updateData.length; i++) {
+        const updateGrade = axios.put('http://localhost:8002/put_dangky', {
+          ma_lh: ma_lh,
+          ma_sv: updateData[i].ma_sv,
+          diem_tx: updateData[i].diem_tx,
+          diem_gk: updateData[i].diem_gk,
+          diem_ck: updateData[i].diem_ck
+        });
+      }  
+    }
+    catch(e) {
+      console.log(e);
+    }
+    
     setDataStudentClass(updateData);
     setEditingRow(null);
   };
