@@ -333,7 +333,7 @@ const Register = ({ user }) => {
       console.log(selectedRowKeys);
       console.log(deSelected);
       // setSelectedRowKeys([]);
-      // setDeSelected([]);
+      setDeSelected([]);
       setLoading(false);
     }, 1000);
   };

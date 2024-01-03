@@ -102,7 +102,7 @@ async def sendOverView(user: User, request: Request):
                             end as he4
                         from
                             hoc_phan hp, dk, hoc_ki hk, lich_hoc lh, dang_ky
-                        where dang_ky.diem_ck is not null and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and dk.ma_lh = dang_ky.ma_lh
+                        where dang_ky.diem_ck is not null and dk.total_score >= 4 and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and dk.ma_lh = dang_ky.ma_lh
                         group by hp.ten_hp
                     ) as subquery;""")
                         
