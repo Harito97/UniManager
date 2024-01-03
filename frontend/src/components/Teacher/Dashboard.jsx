@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Modal } from "antd";
 import Manager from "./Manager";
+import axios from "axios";
+
 
 const Dashboard = ({ user }) => {
   const columns = [
@@ -59,7 +61,7 @@ const Dashboard = ({ user }) => {
   };
 
 
-  const [data, setData] = useState([]);
+  const [dataSchedule, setDataSchedule] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +70,7 @@ const Dashboard = ({ user }) => {
           username: user
         });
         const data = responseSchedule.data;
-        setData(data.schedule);
+        setDataSchedule(data.schedule);
       } catch (error) {
         console.log(error);
       }
@@ -76,6 +78,7 @@ const Dashboard = ({ user }) => {
 
     fetchData();
   }, [user]);
+  console.log(dataSchedule)
 
   // Data mẫu
   // const data = [
@@ -98,7 +101,7 @@ const Dashboard = ({ user }) => {
       <Table
         rowKey={(record) => record.ma_lh}
         columns={columns}
-        dataSource={data}
+        dataSource={dataSchedule}
         pagination={false}
         scroll={{ x: 810 }}
       ></Table>

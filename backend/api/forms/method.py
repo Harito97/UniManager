@@ -124,6 +124,13 @@ class DOTDKI(BaseModel):
     ng_ket_thuc: date | None = None
 
 
+class COEFFICIENT(BaseModel):
+    ma_lh: int | None = None
+    he_so_tx: float | None = None
+    he_so_gk: float | None = None
+    he_so_ck: float | None = None
+
+
 app = FastAPI()
 
 
@@ -735,6 +742,22 @@ async def update_record(newRecord: LICHHOC):
         return {"message": "Record updated successfully", "Record": newRecord}
     except Exception as e:
         return e
+
+# PUT: update record infomation
+@app.put("/put_coefficient/")
+async def update_record(coeffiecient: COEFFICIENT):
+    try:
+        cursor.execute("""update lich_hoc set he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (
+                                                                            coeffiecient.he_so_tx,
+                                                                            coeffiecient.he_so_gk,
+                                                                            coeffiecient.he_so_ck,
+                                                                            coeffiecient.ma_lh))
+        
+        connect.commit()
+        return {"message": "Record updated successfully"}
+    except Exception as e:
+        return e
+
 
 # DELETE: delete record
 @app.delete("/delete_lichhoc/{ma_lh}")

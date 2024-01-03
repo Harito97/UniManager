@@ -41,6 +41,9 @@ except Exception as e:
 class User(BaseModel):
     username: str
 
+class Class(BaseModel):
+    ma_lh: int
+
 
 year_current = datetime.now().year
 
@@ -103,7 +106,7 @@ async def sendOverView(user: User, request: Request):
                         group by hp.ten_hp
                     ) as subquery;""")
                         
-    gpa = cursor.fetchall()[0]["gpa"]
+    gpa = round(cursor.fetchall()[0]["gpa"],2)
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
 
@@ -456,7 +459,7 @@ async def sendSchedule(user: User, request: Request):
                             from dang_ky dk 
                             where dk.ma_lh = lh.ma_lh
                         ) as "da_dk",
-                        lh.thoi_gian as "thoi_gian"
+                        lh.thoi_gian as "lich_hoc"
                     
                     from 
                         lich_hoc lh
@@ -478,6 +481,47 @@ async def sendSchedule(user: User, request: Request):
     return {"schedule": data}
 
 
+@app.post("/student_class")
+async def sendStudentClass(lop: Class):
+
+    statement = f"""
+                    select 
+                        dk.ma_sv as "ma_sv",
+                        sv.ho_ten as "ho_ten",
+                        dk.diem_tx as "diem_tx",
+                        dk.diem_gk as "diem_gk",
+                        dk.diem_ck as "diem_ck"
+                    from 
+                        lich_hoc lh
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join sinh_vien sv on dk.ma_sv = sv.ma_sv
+                    where dk.ma_lh = {lop.ma_lh} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    return {"studentClass": data}
+
+
+@app.post("/coefficient_subject")
+async def sendCoefficient(lop: Class):
+
+    statement = f"""
+                    select 
+                        lh.he_so_tx as "he_so_tx",
+                        lh.he_so_gk as "he_so_gk",
+                        lh.he_so_ck as "he_so_ck"
+                    from 
+                        lich_hoc lh
+                    where lh.ma_lh = {lop.ma_lh}
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    return {"coefficient": data[0]}
 
 
 
