@@ -457,7 +457,7 @@ async def sendGrade(user: User, request: Request):
 
 
 @app.post("/subject_learned")
-async def sendSubjectLearned(user: User, request: Request):
+async def sendSubjectLearned(user: UserSemester, request: Request):
 
     statement = f"""
                     select 
@@ -465,7 +465,7 @@ async def sendSubjectLearned(user: User, request: Request):
                         lh.ma_hp as "ma_hp"
                     from 
                         lich_hoc lh, dang_ky dk
-                    where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh
+                    where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hk != {user.ma_hk}
 
                 """
     cursor.execute(statement)
