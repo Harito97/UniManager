@@ -47,6 +47,10 @@ class ForgotPassword(BaseModel):
 class User(BaseModel):
     username: str
 
+class UserSemester(BaseModel):
+    username: str
+    ma_hk: int
+
 class Class(BaseModel):
     ma_lh: int
 
@@ -205,6 +209,15 @@ async def forgot_password(request: ForgotPassword):
 @app.post("/semester_year_current")
 async def getCurrent(request: Request):
     return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
+
+@app.get("/current_registration")
+async def currentPeriod():
+    cursor.execute("""select dot, ma_hk 
+                   from dot_dki
+                   where ng_bat_dau <= NOW() and ng_ket_thuc >= NOW()""")
+    
+    data = cursor.fetchall()
+    return data
 
 
 @app.post("/overview")
@@ -461,7 +474,7 @@ async def sendSubjectLearned(user: User, request: Request):
 
 
 @app.post("/subject_all")
-async def sendSubject(user: User, request: Request):
+async def sendSubject(user: UserSemester, request: Request):
     
     statement = f"""
                     select
@@ -487,7 +500,7 @@ async def sendSubject(user: User, request: Request):
                         inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                    where lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
+                    where lh.ma_hk = {user.ma_hk} 
                     group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
                     order by
                         hp.ten_hp;
@@ -506,7 +519,7 @@ async def sendSubject(user: User, request: Request):
 
 
 @app.post("/subject_major")
-async def sendSubjectMajor(user: User, request: Request):
+async def sendSubjectMajor(user: UserSemester, request: Request):
 
     statement = f"""
                     select
@@ -534,7 +547,7 @@ async def sendSubjectMajor(user: User, request: Request):
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join chuong_trinh_hoc cth on cth.ma_hp = lh.ma_hp
                         inner join sinh_vien sv on sv.ma_nganh = cth.ma_nganh
-                    where sv.ma_sv = {user.username} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    where sv.ma_sv = {user.username} and lh.ma_hk = {user.ma_hk}
                     group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
                     order by
                         hp.ten_hp;
@@ -735,7 +748,7 @@ async def update_record(newRecord: DANGKY):
         return e
 
 
-origins = origins = ["http://localhost:5173"]
+origins = ["http://localhost:5173"]
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend

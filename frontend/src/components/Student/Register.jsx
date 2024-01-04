@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Select, Popconfirm } from "antd";
+import { Button, Table, Select, Popconfirm, Alert } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
 
 const courses_table = [
@@ -41,70 +42,33 @@ const courses_table = [
   },
 ];
 
-// Data mẫu môn học theo ngành
-// Lấy bằng cách lấy bảng lịch học theo ngành, năm và kì hiện tại
-const data1 = [];
-for (let i = 100; i < 200; i++) {
-  data1.push({
-    ma_lh: i,
-    ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
-    ma_hp: "MAT3385",
-    ma_lop: i,
-    so_tin: 3,
-    so_sv: 30,
-    da_dk: 1,
-    ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
-    lich_hoc: [
-      { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
-      { thu: "T5", bd: 6, kt: 10, phong: "PM" },
-    ],
-    disabled: false,
-  });
-}
-
-// Data mẫu toàn trường
-// Lấy bằng cách lấy bảng lịch học theo năm, kì hiện tại
-const data2 = [];
-for (let i = 1; i <= 100; i++) {
-  data2.push({
-    ma_lh: i,
-    ten_hp: "Triết học Marx-Lenin",
-    ma_hp: "PHI1006 ",
-    ma_lop: i,
-    so_tin: 3,
-    so_sv: 30,
-    da_dk: 1,
-    ten_gv: ["Vũ Tiến Dũng", "Phạm Duy Phương"],
-    lich_hoc: [
-      { thu: "T4", bd: 3, kt: 5, phong: "308T5" },
-      { thu: "T4", bd: 3, kt: 5, phong: "308T5" },
-    ],
-    disabled: false,
-  });
-}
-
 const Register = ({ user }) => {
-  const [dataMajor, setDataMajor] = useState(data1);
+  const { openSuccessNotification, openErrorNotification } =
+    useContentContext();
+  const [dataMajor, setDataMajor] = useState([]);
   // const [dataAll, setDataAll] = useState(data2);
   // Data môn sinh viên đã đăng kí trong kì này
   // Lấy bằng cách select bảng đăng kí theo mã SV, năm và kì
 
-  const [dataMonth, setDataMonth] = useState(null);
-  const [dataYear, setDataYear] = useState(null);
+  const [semester, setSemester] = useState(null);
   const [dataAll, setDataAll] = useState([]);
   // const [dataMajor, setDataMajor] = useState([]);
 
-  const[dataSubjectLearned, setDataSubjectLearned] = useState([]);
+  const [dataSubjectLearned, setDataSubjectLearned] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseDataTime = await axios.post(
-          "http://localhost:8000/semester_year_current",
+        const responseDataTime = await axios.get(
+          "http://localhost:8000/current_registration",
         );
         const data = responseDataTime.data;
-        setDataMonth(data.semester);
-        setDataYear(data.year);
+        if (data.length > 0) {
+          setSemester(data[0].ma_hk);
+        } else {
+          setSemester(0);
+        }
+        console.log(semester);
       } catch (error) {
         console.log(error);
       }
@@ -114,12 +78,14 @@ const Register = ({ user }) => {
   }, [user]);
 
   useEffect(() => {
+    console.log(semester);
     const fetchData = async () => {
       try {
         const responseDataAll = await axios.post(
           "http://localhost:8000/subject_all",
           {
             username: user,
+            ma_hk: semester,
           },
         );
         const data = responseDataAll.data;
@@ -130,31 +96,36 @@ const Register = ({ user }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, [semester]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const responseDataMajor = await axios.post('http://localhost:8000/subject_major', {
-  //         username: user
-  //       });
-  //       const data = responseDataMajor.data;
-  //       setDataMajor(data.dataMajor);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseDataMajor = await axios.post(
+          "http://localhost:8000/subject_major",
+          {
+            username: user,
+            ma_hk: semester,
+          },
+        );
+        const data = responseDataMajor.data;
+        setDataMajor(data.dataMajor);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-  //   fetchData();
-  // }, [user]);
+    fetchData();
+  }, [semester]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const responseDataSubjectLearned = await axios.post(
-          "http://localhost:8000/subject_learned", {
-            username: user
-          }
+          "http://localhost:8000/subject_learned",
+          {
+            username: user,
+          },
         );
         const data = responseDataSubjectLearned.data;
         setDataSubjectLearned(data.subjectLearned);
@@ -166,18 +137,7 @@ const Register = ({ user }) => {
     fetchData();
   }, [user]);
 
-  const [registeredData, setRegisteredData] = useState([
-    // {
-    //   ten_hp: "Cấu trúc dữ liệu và thuật toán",
-    //   so_tin: 4,
-    //   ma_hp: "MAT3585",
-    //   ma_lop: 1,
-    //   ten_gv: ["Vũ Tiến Dũng, Phạm Duy Phương"],
-    //   lich_hoc: [{ thu: "T3", bd: 1, kt: 2, phong: "103T4" },
-    //              { thu: "T3", bd: 1, kt: 2, phong: "103T4" }],
-    //   lan: 1
-    // },
-  ]);
+  const [registeredData, setRegisteredData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -188,8 +148,11 @@ const Register = ({ user }) => {
             username: user,
           },
         );
-        const data = responseDataSubjectRegister.data;
-        setRegisteredData(data.subjectRegister);
+        const data = responseDataSubjectRegister.data.subjectRegister;
+        data.forEach((obj) => {
+          obj.status = false;
+        });
+        setRegisteredData(data);
       } catch (error) {
         console.log(error);
       }
@@ -197,7 +160,6 @@ const Register = ({ user }) => {
 
     fetchData();
   }, [user]);
-
 
   const registered_table = [
     {
@@ -250,24 +212,19 @@ const Register = ({ user }) => {
   ];
 
   const handleDelete = (record) => {
-    if (record.status === undefined) {
-      const newDeSelected = [...deSelected, record.ma_lh];
-      console.log("Deselected changed: ", newDeSelected);
-      setDeSelected(newDeSelected);
-    }
-
     const newDeSelected = [...deSelected, record.ma_lh];
     setDeSelected(newDeSelected);
 
-    
     const updateRegisteredData = registeredData.filter(
       (item) => item.ma_lh !== record.ma_lh,
     );
     setRegisteredData(updateRegisteredData);
-    const updateSelectedRowKeys = selectedRowKeys.filter(
-      (item) => item !== record.ma_lh,
-    );
-    setSelectedRowKeys(updateSelectedRowKeys);
+    if (record.status) {
+      const updateSelectedRowKeys = selectedRowKeys.filter(
+        (item) => item !== record.ma_lh,
+      );
+      setSelectedRowKeys(updateSelectedRowKeys);
+    }
 
     // for (let i = 0; i < dataAll.length; i++) {
     //   if (dataAll[i].ma_p === record.ma_hp) {
@@ -281,9 +238,10 @@ const Register = ({ user }) => {
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
   const start = () => {
+    setLoading(true);
     try {
       for (let i = 0; i < selectedRowKeys.length; i++) {
-        const add = axios.post('http://localhost:8000/post_dangky', {
+        const add = axios.post("http://localhost:8000/post_dangky", {
           ma_lh: selectedRowKeys[i],
           ma_sv: user,
           diem_tx: null,
@@ -292,51 +250,65 @@ const Register = ({ user }) => {
         });
         console.log(add);
       }
-    }
-    
-    catch(e) {
+    } catch (e) {
       console.log(e);
     }
-  
 
     try {
       for (let i = 0; i < deSelected.length; i++) {
-        const deleted = axios.delete('http://localhost:8000/delete_dangky/' + deSelected[i].toString() + "_" + user, {
-          ma_lh: deSelected[i],
-          ma_sv: user
-        });
+        const deleted = axios.delete(
+          "http://localhost:8000/delete_dangky/" +
+            deSelected[i].toString() +
+            "_" +
+            user,
+          {
+            ma_lh: deSelected[i],
+            ma_sv: user,
+          },
+        );
         console.log(deleted);
       }
-    }
-
-    catch(e) {
+    } catch (e) {
       console.log(e);
     }
 
     if (selectedRowKeys.length === 0 && deSelected.length === 0) {
-      alert("Bạn chưa thực hiện đăng kí hoặc xóa học phần!");
-    } 
-    else if (selectedRowKeys.length !== 0 && deSelected.length === 0) {
-      alert("Đăng kí thành công \nBạn vừa đăng kí thêm được " + selectedRowKeys.length.toString() + " học phần!")
+      openErrorNotification(
+        "Lỗi",
+        "Bạn chưa thực hiện đăng kí hoặc xóa học phần!",
+      );
+    } else if (selectedRowKeys.length !== 0 && deSelected.length === 0) {
+      openSuccessNotification(
+        "Đăng kí thành công",
+        "Bạn vừa đăng kí thêm được " +
+          selectedRowKeys.length.toString() +
+          " học phần!",
+      );
+    } else if (selectedRowKeys.length === 0 && deSelected.length !== 0) {
+      openSuccessNotification(
+        "Xóa thành công",
+        "Bạn vừa xóa được " + deSelected.length.toString() + " học phần!",
+      );
+    } else {
+      openSuccessNotification(
+        "Thành công",
+        "Bạn vừa đăng kí thêm được " +
+          selectedRowKeys.length.toString() +
+          " môn! \nBạn vừa xóa thành công " +
+          deSelected.length.toString() +
+          " học phần !",
+      );
     }
-    else if (selectedRowKeys.length === 0 && deSelected.length !== 0) {
-      alert("Xóa thành công \nBạn vừa xóa được " + deSelected.length.toString() + " học phần!");
-    }
-    else {
-      alert("Bạn vừa đăng kí thêm được " + selectedRowKeys.length.toString() + " môn! \nBạn vừa xóa thành công " + deSelected.length.toString() + " học phần !");
-    }
-  
-    setLoading(true);
-    // TODO
-    // ajax request after empty completing
-    setTimeout(() => {
-      console.log(selectedRowKeys);
-      console.log(deSelected);
-      // setSelectedRowKeys([]);
-      setDeSelected([]);
-      setLoading(false);
-    }, 1000);
+
+    registeredData.forEach((obj) => {
+      obj.status = false;
+    });
+
+    setLoading(false);
+    setSelectedRowKeys([]);
+    setDeSelected([]);
   };
+
   const onTableChange = (value) => {
     if (value === 1) {
       setShowAllCourses(false);
@@ -344,23 +316,21 @@ const Register = ({ user }) => {
       setShowAllCourses(true);
     }
   };
+
   const onChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
+
   const onSelect = (record, selected) => {
     if (selected) {
       const newRecord = { ...record };
       newRecord.status = true;
-      // console.log(newRecord);
-      // console.log(record.status);
-
       setRegisteredData([...registeredData, newRecord]);
     } else {
       const updateRegisteredData = registeredData.filter(
         (item) => item.ma_lh !== record.ma_lh,
       );
-      //TODO: Check nếu không có thuộc tính status, thêm vào mảng để xoá
       setRegisteredData(updateRegisteredData);
     }
   };
@@ -375,6 +345,7 @@ const Register = ({ user }) => {
   const hasDeSelected = deSelected.length > 0;
 
   const checkBoxDisabled = (data1) => {
+    console.log("Đang check:", registeredData.length)
     for (let i = 0; i < registeredData.length; i++) {
       const data2 = registeredData[i].lich_hoc;
       for (let j = 0; j < data1.length; j++) {
@@ -405,7 +376,7 @@ const Register = ({ user }) => {
     // data.forEach((obj) => {
     //   obj.disabled = checkBoxDisabled(obj.lich_hoc);
     // });
-    
+
     // const newDataMajor = [...dataMajor];
     // for (let i = 0; i < newDataMajor.length; i++) {
     //   newDataMajor[i] = {
@@ -417,10 +388,17 @@ const Register = ({ user }) => {
 
     const newDataMajor = [...dataMajor];
     for (let i = 0; i < newDataMajor.length; i++) {
-      if (dataSubjectLearned.map((record) => record.ma_hp).includes(newDataMajor[i].ma_hp)) {
-        newDataMajor[i].disabled = true;
+      if (selectedRowKeys.includes(newDataMajor[i].ma_lh)) {
+        newDataMajor[i].disabled = false;
+        continue;
       }
-      else {
+      if (
+        dataSubjectLearned
+          .map((record) => record.ma_hp)
+          .includes(newDataMajor[i].ma_hp)
+      ) {
+        newDataMajor[i].disabled = true;
+      } else {
         newDataMajor[i].disabled = checkBoxDisabled(newDataMajor[i].lich_hoc);
       }
     }
@@ -437,26 +415,43 @@ const Register = ({ user }) => {
 
     const newDataAll = [...dataAll];
     for (let i = 0; i < newDataAll.length; i++) {
-      if (dataSubjectLearned.map((record) => record.ma_hp).includes(newDataAll[i].ma_hp)) {
-        newDataAll[i].disabled = true;
+      if (selectedRowKeys.includes(newDataAll[i].ma_lh)) {
+        newDataAll[i].disabled = false;
+        continue;
       }
-      else {
+      if (
+        dataSubjectLearned
+          .map((record) => record.ma_hp)
+          .includes(newDataAll[i].ma_hp)
+      ) {
+        newDataAll[i].disabled = true;
+      } else {
         newDataAll[i].disabled = checkBoxDisabled(newDataAll[i].lich_hoc);
       }
     }
     setDataAll(newDataAll);
-
-
   }, [registeredData, deSelected, selectedRowKeys]);
 
-
+  if (semester == 0) {
+    return (
+      <Alert
+        message="Đăng khoá đăng kí học, bạn vui lòng thử lại sau!"
+        type="error"
+        showIcon
+      />
+    );
+  } else if (semester === null) {
+    return <></>;
+  }
 
   return (
     <>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col justify-between sm:flex-row">
           <h1 className="text-xl font-bold">
-            Đăng kí học - Học kì {dataMonth} năm học {dataYear} - {dataYear + 1}
+            Đăng kí học - Học kì {semester.toString().slice(-1)} Năm học 20
+            {semester.toString().slice(0, 2)} - 20
+            {(semester + 10).toString().slice(0, 2)}
           </h1>
           <Select
             defaultValue={1}
@@ -511,9 +506,9 @@ const Register = ({ user }) => {
           size="small"
           scroll={{ x: 1100 }}
           rowClassName={(record) => {
-            // if (record.status !== undefined) {
+            if (record.status) {
               return "bg-blue-200";
-            // }
+            }
           }}
         />
         <div className="flex justify-end">
@@ -521,7 +516,7 @@ const Register = ({ user }) => {
             type="primary"
             onClick={start}
             // disabled={!(hasSelected && hasDeSelected)}
-            disabled = {false}
+            disabled={false}
             loading={loading}
             className="bg-blue-500"
           >
