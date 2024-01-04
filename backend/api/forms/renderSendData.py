@@ -498,8 +498,8 @@ async def sendSubject(user: User, request: Request):
 
     for subject in data:
         subject["disabled"] = bool(subject["disabled"])
-        unicode_data = subject["lich_hoc"].decode('utf-8')
-        subject["lich_hoc"] = json.loads(unicode_data)
+        # unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(subject["lich_hoc"])
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
     return {"dataAll": data}
@@ -584,8 +584,8 @@ async def registeredSubject(user: User):
     data = cursor.fetchall()
 
     for subject in data:
-        unicode_data = subject["lich_hoc"]
-        subject["lich_hoc"] = json.loads(unicode_data)
+        # unicode_data = subject["lich_hoc"]
+        subject["lich_hoc"] = json.loads(subject["lich_hoc"])
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
     return {"subjectRegister": data}
