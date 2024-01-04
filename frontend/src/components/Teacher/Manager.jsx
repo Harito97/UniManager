@@ -150,7 +150,7 @@ const Manager = ({ ma_lh }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseStudentClass = await axios.post('http://localhost:8001/student_class', {
+        const responseStudentClass = await axios.post('http://localhost:8000/student_class', {
           ma_lh: ma_lh
         });
         const data = responseStudentClass.data;
@@ -201,7 +201,7 @@ const Manager = ({ ma_lh }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseCoefficient = await axios.post('http://localhost:8001/coefficient_subject', {
+        const responseCoefficient = await axios.post('http://localhost:8000/coefficient_subject', {
           ma_lh: ma_lh
         });
         const data = responseCoefficient.data;
@@ -238,7 +238,7 @@ const Manager = ({ ma_lh }) => {
     // Lưu ý, các values đang là String, cần parseFloat trước khi gửi
 
     try {
-      const updateCofficient = axios.put('http://localhost:8002/put_coefficient', {
+      const updateCofficient = axios.put('http://localhost:8000/put_coefficient', {
       ma_lh: ma_lh,  
       he_so_tx: parseFloat(values.he_so_tx),
       he_so_gk: parseFloat(values.he_so_gk),
@@ -271,7 +271,7 @@ const Manager = ({ ma_lh }) => {
 
     try {
       for (let i = 0; i < updateData.length; i++) {
-        const updateGrade = axios.put('http://localhost:8002/put_dangky', {
+        const updateGrade = axios.put('http://localhost:8000/put_dangky', {
           ma_lh: ma_lh,
           ma_sv: updateData[i].ma_sv,
           diem_tx: updateData[i].diem_tx,

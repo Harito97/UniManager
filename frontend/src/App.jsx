@@ -14,6 +14,7 @@ import Manager from "./components/Teacher/Manager";
 import NotFound from "./pages/404";
 import Register from "./components/Student/Register";
 import Exam from "./components/Student/Exam";
+import Guide from "./components/Student/Guide";
 import axios from "axios";
 
 function App() {
@@ -60,6 +61,8 @@ function App() {
               />
               <Route exact path="/student/register" element={<Register />} />
               <Route exact path="/student/exam" element={<Exam />} />
+              <Route exact path="/student/guide" element={<Guide />} />
+
             </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />

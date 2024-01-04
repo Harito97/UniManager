@@ -66,7 +66,7 @@ const Dashboard = ({ user }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseSchedule = await axios.post('http://localhost:8001/teaching_schedule', {
+        const responseSchedule = await axios.post('http://localhost:8000/teaching_schedule', {
           username: user
         });
         const data = responseSchedule.data;

@@ -9,6 +9,7 @@ import {
   AppstoreAddOutlined,
   FileTextOutlined,
   QuestionCircleOutlined,
+  AlertOutlined,
 } from "@ant-design/icons";
 import Logo from "../../assets/hus-logo.svg";
 
@@ -27,6 +28,8 @@ const Sidebar = () => {
       return "3";
     } else if (path === "/student/exam") {
       return "4";
+    } else if (path === "/student/guide") {
+      return "6";
     } else {
       return "1";
     }
@@ -43,6 +46,11 @@ const Sidebar = () => {
         defaultSelectedKeys={[selectedKey()]}
         className="bg-[#EBEBEB] text-base font-normal text-black"
         items={[
+          {
+            key: "6",
+            icon: <AlertOutlined />,
+            label: <Link to="/student/guide">Hướng Dẫn</Link>,
+          },
           {
             key: "1",
             icon: <AppstoreOutlined />,

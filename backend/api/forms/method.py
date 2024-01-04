@@ -743,20 +743,20 @@ async def update_record(newRecord: LICHHOC):
     except Exception as e:
         return e
 
-# PUT: update record infomation
-@app.put("/put_coefficient/")
-async def update_record(coeffiecient: COEFFICIENT):
-    try:
-        cursor.execute("""update lich_hoc set he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (
-                                                                            coeffiecient.he_so_tx,
-                                                                            coeffiecient.he_so_gk,
-                                                                            coeffiecient.he_so_ck,
-                                                                            coeffiecient.ma_lh))
+# # PUT: update record infomation
+# @app.put("/put_coefficient/")
+# async def update_record(coeffiecient: COEFFICIENT):
+#     try:
+#         cursor.execute("""update lich_hoc set he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (
+#                                                                             coeffiecient.he_so_tx,
+#                                                                             coeffiecient.he_so_gk,
+#                                                                             coeffiecient.he_so_ck,
+#                                                                             coeffiecient.ma_lh))
         
-        connect.commit()
-        return {"message": "Record updated successfully"}
-    except Exception as e:
-        return e
+#         connect.commit()
+#         return {"message": "Record updated successfully"}
+#     except Exception as e:
+#         return e
 
 
 # DELETE: delete record
@@ -834,51 +834,51 @@ async def list_records():
     except Exception as e:
         return e
 
-# POST: create a new record for a table
-@app.post("/post_dangky")
-async def create_records(newRecord: DANGKY):
-    try:
-        cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, diem_gk, diem_ck)
-                          values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
-                                                            newRecord.ma_sv, 
-                                                            newRecord.diem_tx,
-                                                            newRecord.diem_gk, 
-                                                            newRecord.diem_ck))
+# # POST: create a new record for a table
+# @app.post("/post_dangky")
+# async def create_records(newRecord: DANGKY):
+#     try:
+#         cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, diem_gk, diem_ck)
+#                           values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
+#                                                             newRecord.ma_sv, 
+#                                                             newRecord.diem_tx,
+#                                                             newRecord.diem_gk, 
+#                                                             newRecord.diem_ck))
         
-        connect.commit()
-        return {"message": "Record created successfully", "Record": newRecord}
-    except Exception as e:
-        return e
+#         connect.commit()
+#         return {"message": "Record created successfully", "Record": newRecord}
+#     except Exception as e:
+#         return e
     
-# PUT: update record infomation
-@app.put("/put_dangky/")
-async def update_record(newRecord: DANGKY):
-    try:
-        cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
-                          diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx, 
-                                                                            newRecord.diem_gk,
-                                                                            newRecord.diem_ck, 
-                                                                            newRecord.ma_lh, 
-                                                                            newRecord.ma_sv))
+# # PUT: update record infomation
+# @app.put("/put_dangky/")
+# async def update_record(newRecord: DANGKY):
+#     try:
+#         cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
+#                           diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx, 
+#                                                                             newRecord.diem_gk,
+#                                                                             newRecord.diem_ck, 
+#                                                                             newRecord.ma_lh, 
+#                                                                             newRecord.ma_sv))
         
-        connect.commit()
-        return {"message": "Record updated successfully", "Record": newRecord}
-    except Exception as e:
-        return e
+#         connect.commit()
+#         return {"message": "Record updated successfully", "Record": newRecord}
+#     except Exception as e:
+#         return e
     
-# DELETE: delete record
-@app.delete("/delete_dangky/{ma_lh}_{ma_sv}")
-async def delete_record(ma_lh: int, ma_sv: str):
-    try:
-        cursor.execute("select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
-        deleted_record = cursor.fetchall()
+# # DELETE: delete record
+# @app.delete("/delete_dangky/{ma_lh}_{ma_sv}")
+# async def delete_record(ma_lh: int, ma_sv: str):
+#     try:
+#         cursor.execute("select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+#         deleted_record = cursor.fetchall()
 
-        cursor.execute("delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
-        connect.commit()
+#         cursor.execute("delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+#         connect.commit()
         
-        return {"message": f"Record with ID {ma_lh, ma_sv} has been deleted", "deleted": deleted_record}
-    except Exception as e:
-        return e
+#         return {"message": f"Record with ID {ma_lh, ma_sv} has been deleted", "deleted": deleted_record}
+#     except Exception as e:
+#         return e
     
 
 # GET: get all table records

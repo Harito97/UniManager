@@ -275,7 +275,7 @@ const Dashboard = ({ user }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseOverView = await axios.post('http://localhost:8001/overview', {
+        const responseOverView = await axios.post('http://localhost:8000/overview', {
           username: user
         });
         const data = responseOverView.data;
@@ -300,7 +300,7 @@ const Dashboard = ({ user }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseGrade = await axios.post('http://localhost:8001/grade', {
+        const responseGrade = await axios.post('http://localhost:8000/grade', {
           username: user
         });
         const data = responseGrade.data;

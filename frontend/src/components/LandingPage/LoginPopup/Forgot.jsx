@@ -8,7 +8,7 @@ const Forgot = ({ handleForgot }) => {
   const handleSubmit = async (values) => {
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/forgot_password', {
+      const response = await axios.post('http://localhost:8000/forgot_password', {
         username: values.username,
       });
       

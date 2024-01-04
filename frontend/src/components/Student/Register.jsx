@@ -100,7 +100,7 @@ const Register = ({ user }) => {
     const fetchData = async () => {
       try {
         const responseDataTime = await axios.post(
-          "http://localhost:8001/semester_year_current",
+          "http://localhost:8000/semester_year_current",
         );
         const data = responseDataTime.data;
         setDataMonth(data.semester);
@@ -117,7 +117,7 @@ const Register = ({ user }) => {
     const fetchData = async () => {
       try {
         const responseDataAll = await axios.post(
-          "http://localhost:8001/subject_all",
+          "http://localhost:8000/subject_all",
           {
             username: user,
           },
@@ -135,7 +135,7 @@ const Register = ({ user }) => {
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
-  //       const responseDataMajor = await axios.post('http://localhost:8001/subject_major', {
+  //       const responseDataMajor = await axios.post('http://localhost:8000/subject_major', {
   //         username: user
   //       });
   //       const data = responseDataMajor.data;
@@ -152,7 +152,7 @@ const Register = ({ user }) => {
     const fetchData = async () => {
       try {
         const responseDataSubjectLearned = await axios.post(
-          "http://localhost:8001/subject_learned", {
+          "http://localhost:8000/subject_learned", {
             username: user
           }
         );
@@ -183,7 +183,7 @@ const Register = ({ user }) => {
     const fetchData = async () => {
       try {
         const responseDataSubjectRegister = await axios.post(
-          "http://localhost:8001/registered_subject",
+          "http://localhost:8000/registered_subject",
           {
             username: user,
           },
@@ -283,7 +283,7 @@ const Register = ({ user }) => {
   const start = () => {
     try {
       for (let i = 0; i < selectedRowKeys.length; i++) {
-        const add = axios.post('http://localhost:8002/post_dangky', {
+        const add = axios.post('http://localhost:8000/post_dangky', {
           ma_lh: selectedRowKeys[i],
           ma_sv: user,
           diem_tx: null,
@@ -301,7 +301,7 @@ const Register = ({ user }) => {
 
     try {
       for (let i = 0; i < deSelected.length; i++) {
-        const deleted = axios.delete('http://localhost:8002/delete_dangky/' + deSelected[i].toString() + "_" + user, {
+        const deleted = axios.delete('http://localhost:8000/delete_dangky/' + deSelected[i].toString() + "_" + user, {
           ma_lh: deSelected[i],
           ma_sv: user
         });
