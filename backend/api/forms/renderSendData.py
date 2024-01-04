@@ -584,7 +584,7 @@ async def registeredSubject(user: User):
     data = cursor.fetchall()
 
     for subject in data:
-        unicode_data = subject["lich_hoc"].decode('utf-8')
+        unicode_data = subject["lich_hoc"]
         subject["lich_hoc"] = json.loads(unicode_data)
         subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
 
