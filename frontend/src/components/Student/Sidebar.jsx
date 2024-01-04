@@ -29,7 +29,7 @@ const Sidebar = () => {
     } else if (path === "/student/exam") {
       return "4";
     } else if (path === "/student/guide") {
-      return "6";
+      return "0";
     } else {
       return "1";
     }
@@ -47,7 +47,7 @@ const Sidebar = () => {
         className="bg-[#EBEBEB] text-base font-normal text-black"
         items={[
           {
-            key: "6",
+            key: "0",
             icon: <AlertOutlined />,
             label: <Link to="/student/guide">Hướng Dẫn</Link>,
           },
