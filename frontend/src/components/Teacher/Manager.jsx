@@ -163,7 +163,7 @@ const Manager = ({ ma_lh }) => {
     };
 
     fetchData();
-  }, [ma_lh]);
+  }, []);
   // const [data, setData] = useState([
   //   {
   //     ma_sv: 21002110,
