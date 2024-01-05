@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Button, Form, Input, Popconfirm, Table } from "antd";
+import { Button, Form, Input, Table, Modal } from "antd";
 import axios from "axios";
 
 const Manager = ({ ma_lh }) => {
+  const [showModal, setShowModel] = useState(false);
+
   const columns = [
     {
       title: "STT",
@@ -203,14 +205,10 @@ const Manager = ({ ma_lh }) => {
       try {
         await axios
           .post("http://localhost:8000/coefficient_subject", {
-            ma_lh: ma_lh,
+            ma_lh: 9,
           })
           .then((res) => {
-            factorForm.setFieldsValue({
-              he_so_tx: res.data.coefficient.he_so_tx,
-              he_so_gk: res.data.coefficient.he_so_gk,
-              he_so_ck: res.data.coefficient.he_so_ck,
-            });
+            setFactorData(res.data.coefficient);
           });
       } catch (error) {
         console.log(error);
@@ -220,12 +218,12 @@ const Manager = ({ ma_lh }) => {
     fetchData();
   }, []);
 
-  const [editingFactor, setEditingFactor] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
   const [form] = Form.useForm();
   const [factorForm] = Form.useForm();
 
   const onChange = (e) => {
+    console.log(e);
     const formData = factorForm.getFieldsValue();
     // console.log(formData);
     const he_so_tx = parseFloat(formData.he_so_tx);
@@ -233,6 +231,10 @@ const Manager = ({ ma_lh }) => {
     if (!isNaN(he_so_tx) && !isNaN(he_so_gk)) {
       factorForm.setFieldsValue({
         he_so_ck: (1 - he_so_tx - he_so_gk).toFixed(2).toString(),
+      });
+    } else {
+      factorForm.setFieldsValue({
+        he_so_ck: "",
       });
     }
   };
@@ -253,8 +255,8 @@ const Manager = ({ ma_lh }) => {
       console.log(e);
     }
 
-    // setFactorData(values);
-    setEditingFactor(false);
+    setFactorData(values);
+    setShowModel(false);
   };
 
   const onFinish = (values) => {
@@ -290,16 +292,17 @@ const Manager = ({ ma_lh }) => {
     setDataStudentClass(updateData);
     setEditingRow(null);
   };
-  console.log(factorData);
 
   return (
     <>
-      <div className="mb-5 flex flex-col justify-between md:flex-row">
-        <Form
-          layout={window.innerWidth > 768 ? "inline" : "horizontal"}
-          form={factorForm}
-          onFinish={onFactorFinish}
-        >
+      <Modal
+        open={showModal}
+        onCancel={() => setShowModel(false)}
+        footer={null}
+        closable={false}
+      >
+        <h1 className="pb-5 text-xl font-bold">Điều chỉnh hệ số</h1>
+        <Form form={factorForm} onFinish={onFactorFinish}>
           <Form.Item
             label="Hệ số TX"
             name="he_so_tx"
@@ -322,8 +325,6 @@ const Manager = ({ ma_lh }) => {
               type="number"
               className="[&::-webkit-inner-spin-button]:appearance-none"
               onChange={onChange}
-              style={{ width: "100px" }}
-              disabled={!editingFactor}
             />
           </Form.Item>
           <Form.Item
@@ -348,8 +349,6 @@ const Manager = ({ ma_lh }) => {
               type="number"
               className="[&::-webkit-inner-spin-button]:appearance-none"
               onChange={onChange}
-              style={{ width: "100px" }}
-              disabled={!editingFactor}
             />
           </Form.Item>
           <Form.Item
@@ -376,22 +375,23 @@ const Manager = ({ ma_lh }) => {
               type="number"
               className="[&::-webkit-inner-spin-button]:appearance-none"
               disabled
-              style={{ width: "100px" }}
             />
           </Form.Item>
-          <Button htmlType="submit" className={editingFactor ? "" : "hidden"}>
-            Save
-          </Button>
-          <Button
-            htmlType="button"
-            onClick={() => {
-              setEditingFactor(true);
-            }}
-            className={editingFactor ? "hidden" : ""}
-          >
-            Edit
-          </Button>
+          <Button htmlType="submit">Save</Button>
         </Form>
+      </Modal>
+      <div className="flex gap-5">
+        <p className="font-bold">Hệ số TX: {factorData.he_so_tx}</p>
+        <p className="font-bold">Hệ số GK: {factorData.he_so_gk}</p>
+        <p className="font-bold">Hệ số CK: {factorData.he_so_ck}</p>
+        <Button
+          onClick={() => {
+            setShowModel(true);
+            factorForm.setFieldsValue(factorData);
+          }}
+        >
+          Edit
+        </Button>
       </div>
       <Form form={form} onFinish={onFinish}>
         <Table
