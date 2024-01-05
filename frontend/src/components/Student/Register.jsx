@@ -43,6 +43,7 @@ const courses_table = [
 ];
 
 const Register = ({ user }) => {
+  // axios.defaults.withCredentials = true;
   const { openSuccessNotification, openErrorNotification } =
     useContentContext();
   const [dataMajor, setDataMajor] = useState([]);
@@ -55,111 +56,72 @@ const Register = ({ user }) => {
   // const [dataMajor, setDataMajor] = useState([]);
 
   const [dataSubjectLearned, setDataSubjectLearned] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseDataTime = await axios.get(
-          "http://localhost:8000/current_registration",
-        );
-        const data = responseDataTime.data;
-        if (data.length > 0) {
-          setSemester(data[0].ma_hk);
-        } else {
-          setSemester(0);
-        }
-        console.log(semester);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  useEffect(() => {
-    console.log(semester);
-    const fetchData = async () => {
-      try {
-        const responseDataAll = await axios.post(
-          "http://localhost:8000/subject_all",
-          {
-            username: user,
-            ma_hk: semester,
-          },
-        );
-        const data = responseDataAll.data;
-        setDataAll(data.dataAll);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [semester]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseDataMajor = await axios.post(
-          "http://localhost:8000/subject_major",
-          {
-            username: user,
-            ma_hk: semester,
-          },
-        );
-        const data = responseDataMajor.data;
-        setDataMajor(data.dataMajor);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [semester]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseDataSubjectLearned = await axios.post(
-          "http://localhost:8000/subject_learned",
-          {
-            username: user,
-          },
-        );
-        const data = responseDataSubjectLearned.data;
-        setDataSubjectLearned(data.subjectLearned);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
   const [registeredData, setRegisteredData] = useState([]);
+  const [showAllCourses, setShowAllCourses] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
+  const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseDataSubjectRegister = await axios.post(
-          "http://localhost:8000/registered_subject",
-          {
-            username: user,
-          },
-        );
-        const data = responseDataSubjectRegister.data.subjectRegister;
-        data.forEach((obj) => {
-          obj.status = false;
-        });
-        setRegisteredData(data);
+        await axios
+          .get("http://localhost:8000/current_registration")
+          .then((res) => {
+            if (res.data.Status) {
+              const ma_hk = res.data.current.ma_hk;
+              setSemester(ma_hk);
+
+              axios
+                .post("http://localhost:8000/subject_major", {
+                  username: user,
+                  ma_hk: ma_hk,
+                })
+                .then((res) => setDataMajor(res.data.dataMajor));
+
+              axios
+                .post("http://localhost:8000/subject_all", {
+                  username: user,
+                  ma_hk: ma_hk,
+                })
+                .then((res) => setDataAll(res.data.dataAll));
+                return ma_hk;
+            } else {
+              setSemester(0);
+              return 0;
+            }
+          })
+          .then((res) => {
+            if (res != 0) {
+              axios
+                .post("http://localhost:8000/subject_learned", {
+                  username: user,
+                  ma_hk: res,
+                })
+                .then((res) => setDataSubjectLearned(res.data.subjectLearned));
+            }
+          })
+          .then(() => {
+            axios
+              .post("http://localhost:8000/registered_subject", {
+                username: user,
+              })
+              .then((res) => {
+                const data = res.data.subjectRegister;
+                data.forEach((obj) => {
+                  obj.status = false;
+                });
+                setRegisteredData(data);
+              });
+          })
+          .finally(() => console.log("Lấy dữ liệu hoàn tất"));
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  }, [user]);
+  }, []);
 
   const registered_table = [
     {
@@ -233,10 +195,7 @@ const Register = ({ user }) => {
     // }
     // console.log(selectedRowKeys);
   };
-  const [showAllCourses, setShowAllCourses] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
-  const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
-  const [loading, setLoading] = useState(false);
+
   const start = () => {
     setLoading(true);
     try {
@@ -345,7 +304,7 @@ const Register = ({ user }) => {
   const hasDeSelected = deSelected.length > 0;
 
   const checkBoxDisabled = (data1) => {
-    console.log("Đang check:", registeredData.length)
+    console.log("Đang check:", registeredData.length);
     for (let i = 0; i < registeredData.length; i++) {
       const data2 = registeredData[i].lich_hoc;
       for (let j = 0; j < data1.length; j++) {
