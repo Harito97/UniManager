@@ -205,7 +205,7 @@ const Manager = ({ ma_lh }) => {
       try {
         await axios
           .post("http://localhost:8000/coefficient_subject", {
-            ma_lh: 9,
+            ma_lh: ma_lh,
           })
           .then((res) => {
             setFactorData(res.data.coefficient);
