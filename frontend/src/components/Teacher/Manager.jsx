@@ -223,7 +223,6 @@ const Manager = ({ ma_lh }) => {
   const [factorForm] = Form.useForm();
 
   const onChange = (e) => {
-    console.log(e);
     const formData = factorForm.getFieldsValue();
     // console.log(formData);
     const he_so_tx = parseFloat(formData.he_so_tx);
