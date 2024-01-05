@@ -6,7 +6,7 @@ import {
   PoweroffOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Layout, Button, Dropdown } from "antd";
+import { Layout, Button, Dropdown, Drawer } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 
@@ -26,13 +26,18 @@ import { useContentContext } from "../components/Notification/ContentContext";
 const Student = ({ user }) => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   let { openSuccessNotification } = useContentContext();
 
-  useEffect(() => {
-    if (window.innerWidth < 426) {
-      setCollapsed(true);
+  const handleResize = () => {
+    if (window.innerWidth >= 768) {
+      setOpenDrawer(false);
     }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize, false);
   }, []);
 
   // Navigation Menu Options
@@ -71,11 +76,7 @@ const Student = ({ user }) => {
   return (
     <Layout className="flex h-screen w-full flex-row">
       <Sider
-        className={
-          collapsed
-            ? "bg-[#EBEBEB] max-md:hidden"
-            : "sider visible bg-[#EBEBEB]"
-        }
+        className="bg-[#EBEBEB] max-md:hidden"
         theme="light"
         trigger={null}
         collapsible
@@ -84,6 +85,19 @@ const Student = ({ user }) => {
       >
         <Sidebar />
       </Sider>
+
+      <Drawer
+        placement="left"
+        onClose={() => setOpenDrawer(false)}
+        open={openDrawer}
+        width={250}
+        styles={{
+          header: { background: "#EBEBEB" },
+          body: { background: "#EBEBEB", padding: 0},
+        }}
+      >
+        <Sidebar />
+      </Drawer>
       <Layout>
         <Header style={{ padding: 0, background: "white" }}>
           <div className="flex flex-row ">
@@ -91,7 +105,11 @@ const Student = ({ user }) => {
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => {
-                setCollapsed(!collapsed);
+                if (window.innerWidth < 768) {
+                  setOpenDrawer(!openDrawer);
+                } else {
+                  setCollapsed(!collapsed);
+                }
               }}
               style={{
                 fontSize: "16px",
@@ -127,7 +145,6 @@ const Student = ({ user }) => {
             <Route exact path="/register" element={<Register user={user} />} />
             <Route exact path="/exam" element={<Exam user={user} />} />
             <Route exact path="/guide" element={<Guide user={user} />} />
-
           </Routes>
           {/* <Dashboard /> */}
         </Content>
