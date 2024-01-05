@@ -145,16 +145,18 @@ const Manager = ({ ma_lh }) => {
 
   // Data mẫu
   // Sau này lấy data bằng cách lấy ra các sinh viên có ma_lh này
-  const [dataStudentClass, setDataStudentClass] = useState([])
+  const [dataStudentClass, setDataStudentClass] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseStudentClass = await axios.post('http://localhost:8000/student_class', {
-          ma_lh: ma_lh
-        });
-        const data = responseStudentClass.data;
-        setDataStudentClass(data.studentClass);
+        await axios
+          .post("http://localhost:8000/student_class", {
+            ma_lh: ma_lh,
+          })
+          .then((res) => {
+            setDataStudentClass(res.data.studentClass);
+          });
       } catch (error) {
         console.log(error);
       }
@@ -194,26 +196,29 @@ const Manager = ({ ma_lh }) => {
   // ]);
 
   //Data hệ số, lấy từ bảng lịch học có ma_lh trùng
-  const [factorData, setFactorData] = useState(
-    { he_so_tx: 0.1, he_so_gk: 0.2, he_so_ck: 0.3 },
-  );
+  const [factorData, setFactorData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseCoefficient = await axios.post('http://localhost:8000/coefficient_subject', {
-          ma_lh: ma_lh
-        });
-        const data = responseCoefficient.data;
-        setFactorData(data.coefficient);
+        await axios
+          .post("http://localhost:8000/coefficient_subject", {
+            ma_lh: ma_lh,
+          })
+          .then((res) => {
+            factorForm.setFieldsValue({
+              he_so_tx: res.data.coefficient.he_so_tx,
+              he_so_gk: res.data.coefficient.he_so_gk,
+              he_so_ck: res.data.coefficient.he_so_ck,
+            });
+          });
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchData();
-  }, [ma_lh]);
-
+  }, []);
 
   const [editingFactor, setEditingFactor] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
@@ -238,18 +243,17 @@ const Manager = ({ ma_lh }) => {
     // Lưu ý, các values đang là String, cần parseFloat trước khi gửi
 
     try {
-      const updateCofficient = axios.put('http://localhost:8000/put_coefficient', {
-      ma_lh: ma_lh,  
-      he_so_tx: parseFloat(values.he_so_tx),
-      he_so_gk: parseFloat(values.he_so_gk),
-      he_so_ck: parseFloat(values.he_so_ck),
+      axios.put("http://localhost:8000/put_coefficient", {
+        ma_lh: ma_lh,
+        he_so_tx: parseFloat(values.he_so_tx),
+        he_so_gk: parseFloat(values.he_so_gk),
+        he_so_ck: parseFloat(values.he_so_ck),
       });
-    }
-    catch(e) {
+    } catch (e) {
       console.log(e);
     }
 
-    setFactorData(values);
+    // setFactorData(values);
     setEditingFactor(false);
   };
 
@@ -264,143 +268,130 @@ const Manager = ({ ma_lh }) => {
     );
 
     for (let i = 0; i < updateData.length; i++) {
-      updateData[i].diem_tx = parseFloat(updateData[i].diem_tx).toFixed(1)
-      updateData[i].diem_gk = parseFloat(updateData[i].diem_gk).toFixed(1)
-      updateData[i].diem_ck = parseFloat(updateData[i].diem_ck).toFixed(1)
+      updateData[i].diem_tx = parseFloat(updateData[i].diem_tx).toFixed(1);
+      updateData[i].diem_gk = parseFloat(updateData[i].diem_gk).toFixed(1);
+      updateData[i].diem_ck = parseFloat(updateData[i].diem_ck).toFixed(1);
     }
 
     try {
       for (let i = 0; i < updateData.length; i++) {
-        const updateGrade = axios.put('http://localhost:8000/put_dangky', {
+        axios.put("http://localhost:8000/put_dangky", {
           ma_lh: ma_lh,
           ma_sv: updateData[i].ma_sv,
           diem_tx: updateData[i].diem_tx,
           diem_gk: updateData[i].diem_gk,
-          diem_ck: updateData[i].diem_ck
+          diem_ck: updateData[i].diem_ck,
         });
-      }  
-    }
-    catch(e) {
+      }
+    } catch (e) {
       console.log(e);
     }
-    
+
     setDataStudentClass(updateData);
     setEditingRow(null);
   };
+  console.log(factorData);
 
   return (
     <>
-      <div className="mb-5 flex flex-col md:flex-row justify-between">
-        {editingFactor ? (
-          <>
-            <Form
-              layout={window.innerWidth > 768 ? "inline" : "horizontal"}
-              form={factorForm}
-              onFinish={onFactorFinish}
-            >
-              <Form.Item
-                label="Hệ số TX"
-                name="he_so_tx"
-                rules={[
-                  () => ({
-                    validator(_, value) {
-                      const he_so_tx = parseFloat(value);
-                      if (
-                        isNaN(he_so_tx) ||
-                        (!isNaN(he_so_tx) && he_so_tx > 0 && he_so_tx < 0.4)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        "Hệ số phải trong khoảng (0, 0.4) ",
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input
-                  type="number"
-                  className="[&::-webkit-inner-spin-button]:appearance-none"
-                  onChange={onChange}
-                  style={{ width: "100px" }}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Hệ số GK"
-                name="he_so_gk"
-                rules={[
-                  () => ({
-                    validator(_, value) {
-                      const he_so_gk = parseFloat(value);
-                      if (
-                        isNaN(he_so_gk) ||
-                        (!isNaN(he_so_gk) && he_so_gk > 0 && he_so_gk < 0.4)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        "Hệ số phải trong khoảng (0, 0.4) ",
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input
-                  type="number"
-                  className="[&::-webkit-inner-spin-button]:appearance-none"
-                  onChange={onChange}
-                  style={{ width: "100px" }}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Hệ số CK"
-                name="he_so_ck"
-                rules={[
-                  () => ({
-                    validator(_, value) {
-                      const he_so_ck = parseFloat(value);
-                      if (
-                        isNaN(he_so_ck) ||
-                        (!isNaN(he_so_ck) && he_so_ck >= 0.6 && he_so_ck < 1)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        "Hệ số phải trong nửa khoảng [0.6, 1) ",
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input
-                  type="number"
-                  className="[&::-webkit-inner-spin-button]:appearance-none"
-                  disabled
-                  style={{ width: "100px" }}
-                />
-              </Form.Item>
-              <Button htmlType="submit">Save</Button>
-            </Form>
-          </>
-        ) : (
-          <>
-            <p>Hệ số TX: {factorData.he_so_tx}</p>
-            <p>Hệ số GK: {factorData.he_so_gk}</p>
-            <p>Hệ số CK: {factorData.he_so_ck}</p>
-            <Button
-              onClick={() => {
-                setEditingFactor(true);
-                factorForm.setFieldsValue({
-                  he_so_tx: factorData.he_so_tx,
-                  he_so_gk: factorData.he_so_gk,
-                  he_so_ck: factorData.he_so_ck,
-                })
-              }}
-            >
-              Edit
-            </Button>
-          </>
-        )}
+      <div className="mb-5 flex flex-col justify-between md:flex-row">
+        <Form
+          layout={window.innerWidth > 768 ? "inline" : "horizontal"}
+          form={factorForm}
+          onFinish={onFactorFinish}
+        >
+          <Form.Item
+            label="Hệ số TX"
+            name="he_so_tx"
+            rules={[
+              () => ({
+                validator(_, value) {
+                  const he_so_tx = parseFloat(value);
+                  if (
+                    isNaN(he_so_tx) ||
+                    (!isNaN(he_so_tx) && he_so_tx > 0 && he_so_tx < 0.4)
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject("Hệ số phải trong khoảng (0, 0.4) ");
+                },
+              }),
+            ]}
+          >
+            <Input
+              type="number"
+              className="[&::-webkit-inner-spin-button]:appearance-none"
+              onChange={onChange}
+              style={{ width: "100px" }}
+              disabled={!editingFactor}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Hệ số GK"
+            name="he_so_gk"
+            rules={[
+              () => ({
+                validator(_, value) {
+                  const he_so_gk = parseFloat(value);
+                  if (
+                    isNaN(he_so_gk) ||
+                    (!isNaN(he_so_gk) && he_so_gk > 0 && he_so_gk < 0.4)
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject("Hệ số phải trong khoảng (0, 0.4) ");
+                },
+              }),
+            ]}
+          >
+            <Input
+              type="number"
+              className="[&::-webkit-inner-spin-button]:appearance-none"
+              onChange={onChange}
+              style={{ width: "100px" }}
+              disabled={!editingFactor}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Hệ số CK"
+            name="he_so_ck"
+            rules={[
+              () => ({
+                validator(_, value) {
+                  const he_so_ck = parseFloat(value);
+                  if (
+                    isNaN(he_so_ck) ||
+                    (!isNaN(he_so_ck) && he_so_ck >= 0.6 && he_so_ck < 1)
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    "Hệ số phải trong nửa khoảng [0.6, 1) ",
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input
+              type="number"
+              className="[&::-webkit-inner-spin-button]:appearance-none"
+              disabled
+              style={{ width: "100px" }}
+            />
+          </Form.Item>
+          <Button htmlType="submit" className={editingFactor ? "" : "hidden"}>
+            Save
+          </Button>
+          <Button
+            htmlType="button"
+            onClick={() => {
+              setEditingFactor(true);
+            }}
+            className={editingFactor ? "hidden" : ""}
+          >
+            Edit
+          </Button>
+        </Form>
       </div>
       <Form form={form} onFinish={onFinish}>
         <Table
