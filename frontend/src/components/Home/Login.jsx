@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Form, Input, Button, Select } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useContentContext } from "../../Notification/ContentContext";
+import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -40,10 +40,10 @@ const Login = ({ handleForgot }) => {
 
   return (
     <>
-      <div className="p-5">
-        <h1 className="mb-4 text-center text-2xl font-semibold text-gray-600">
-          ĐĂNG NHẬP
-        </h1>
+        <span class="mb-3 text-2xl font-bold">Welcome back!</span>
+        <span class="mb-8 font-light text-gray-400">
+          Hãy nhập thông tin đăng nhập của bạn
+        </span>
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Tên đăng nhập:"
@@ -74,7 +74,6 @@ const Login = ({ handleForgot }) => {
             </Button>
           </Form.Item>
         </Form>
-      </div>
     </>
   );
 };
