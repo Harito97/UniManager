@@ -114,7 +114,7 @@ const Dashboard = ({ user }) => {
       >
         {selectedRow && (
           <>
-            <h1 className="pb-5 text-xl font-bold">
+            <h1 className="pb-3 text-xl font-bold">
               Danh sách sinh viên lớp {selectedRow.ma_hp} {selectedRow.ma_lop}
             </h1>
             <Manager ma_lh={selectedRow.ma_lh} />

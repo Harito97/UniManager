@@ -1,11 +1,17 @@
 import { Table } from 'antd'
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Guide = ({user}) => {
   const columns = [
     {title: "Đợt đăng ký",
      dataIndex: "dot",
-     key: "dot"},
+     key: "dot",
+     render: (_, record) => (
+      <p>
+        Đợt {record.dot}
+      </p>
+    ),},
     {title: "Ngày bắt đầu",
      dataIndex: "time_start",
      key: "time_start"},
@@ -13,16 +19,31 @@ const Guide = ({user}) => {
      dataIndex: "time_end",
      key: "time_end"}]
 
-  const data = [
-    {dot: "Đợt 1",
-     time_start: "12/01/2024",
-     time_end: "15/01/2024"},
-    {dot: "Đợt 2",
-     time_start: "25/01/2024",
-     time_end: "29/01/2024"},
-    {dot: "Đợt 3",
-     time_start: "07/02/2024",
-     time_end: "10/02/2024"}]
+  const [guide, setGuide] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseGuide = await axios.post('http://localhost:8000/guide');
+        setGuide(responseGuide.data.guide);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  // const data = [
+  //   {dot: "Đợt 1",
+  //    time_start: "12/01/2024",
+  //    time_end: "15/01/2024"},
+  //   {dot: "Đợt 2",
+  //    time_start: "25/01/2024",
+  //    time_end: "29/01/2024"},
+  //   {dot: "Đợt 3",
+  //    time_start: "07/02/2024",
+  //    time_end: "10/02/2024"}]
 
   return (
     <>
@@ -62,7 +83,7 @@ const Guide = ({user}) => {
       <div className="mt-2 text-black">
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={guide}
             pagination={false}
           />
       </div>

@@ -379,11 +379,11 @@ const Manager = ({ ma_lh }) => {
           <Button htmlType="submit">Save</Button>
         </Form>
       </Modal>
-      <div className="flex gap-5">
-        <p className="font-bold">Hệ số TX: {factorData.he_so_tx}</p>
-        <p className="font-bold">Hệ số GK: {factorData.he_so_gk}</p>
-        <p className="font-bold">Hệ số CK: {factorData.he_so_ck}</p>
-        <Button
+      <div className="flex mb-2 gap-5">
+        <p className="mt-1.5 font-bold">Hệ số TX: {factorData.he_so_tx}</p>
+        <p className="mt-1.5 font-bold">Hệ số GK: {factorData.he_so_gk}</p>
+        <p className="mt-1.5 font-bold">Hệ số CK: {factorData.he_so_ck}</p>
+        <Button className="flex mb-1"
           onClick={() => {
             setShowModel(true);
             factorForm.setFieldsValue(factorData);

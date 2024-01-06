@@ -675,7 +675,7 @@ async def sendSchedule(user: User, request: Request):
     data = cursor.fetchall()
 
     for subject in data:
-        unicode_data = subject["lich_hoc"].decode('utf-8')
+        unicode_data = subject["lich_hoc"]
         subject["lich_hoc"] = json.loads(unicode_data)
 
     return {"schedule": data}
@@ -722,6 +722,17 @@ async def sendCoefficient(lop: Class):
     data = cursor.fetchall()
 
     return {"coefficient": data[0]}
+
+
+@app.post("/guide")
+async def sendGuide():
+    
+    ma_hk = str(getTime()["year"])[-2:] + str(getTime()["semester"])
+
+    cursor.execute(f"select dot as dot, date_format(ng_bat_dau, '%d-%m-%Y') as time_start, date_format(ng_ket_thuc, '%d-%m-%Y') as time_end from dot_dki where ma_hk = {ma_hk}")
+    data = cursor.fetchall()
+
+    return {"guide": data}
 
 
 # POST: create a new record for a table
