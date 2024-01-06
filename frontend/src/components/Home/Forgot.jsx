@@ -1,34 +1,37 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
 
 const Forgot = ({ handleForgot }) => {
+  const { openSuccessNotification, openErrorNotification } =
+    useContentContext();
   const handleSubmit = async (values) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/forgot_password",
-        {
+      const response = await axios
+        .post("http://localhost:8000/forgot_password", {
           username: values.username,
-        },
-      );
-
-      if (response.data) {
-        alert("Mật khẩu đã được gửi qua email của bạn!");
-      } else {
-        alert("Người dùng không tồn tại!");
-      }
+        })
+        .then((res) => {
+          if (res.data) {
+            openSuccessNotification(
+              "Đổi mật khẩu thành công",
+              "Mật khẩu đã được gửi qua email của bạn!",
+            );
+          } else {
+            openErrorNotification("Lỗi", "Người dùng không tồn tại!");
+          }
+        });
     } catch (error) {
-      console.error(error);
+      openErrorNotification("Lỗi", "Đã có lỗi xảy ra");
     }
   };
 
   return (
     <>
       <span class="mb-3 text-2xl font-bold">Quên mật khẩu?</span>
-      <span class="font-light text-gray-400">
-        Nhập tên đăng nhập của bạn
-      </span>
+      <span class="font-light text-gray-400">Nhập tên đăng nhập của bạn</span>
       <span class="mb-8 font-light text-gray-400">
         Mật khẩu mới sẽ được gửi về email của bạn
       </span>
