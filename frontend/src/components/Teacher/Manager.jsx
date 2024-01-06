@@ -165,7 +165,7 @@ const Manager = ({ ma_lh }) => {
     };
 
     fetchData();
-  }, []);
+  }, [ma_lh]);
   // const [data, setData] = useState([
   //   {
   //     ma_sv: 21002110,
@@ -216,7 +216,7 @@ const Manager = ({ ma_lh }) => {
     };
 
     fetchData();
-  }, []);
+  }, [ma_lh]);
 
   const [editingRow, setEditingRow] = useState(null);
   const [form] = Form.useForm();
