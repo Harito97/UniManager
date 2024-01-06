@@ -18,6 +18,7 @@ import MyCalendar from "../components/Teacher/MyCalendar";
 import Manager from "../components/Teacher/Manager";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
+import TeamLogo from "../assets/logo/logo.png";
 
 const Teacher = ({ user }) => {
   axios.defaults.withCredentials = true;
@@ -120,7 +121,7 @@ const Teacher = ({ user }) => {
               icon={<UserOutlined />}
               className="m-4 flex justify-end"
             >
-              Hello, User!
+              Hello, {user}!
             </Dropdown.Button>
           </div>
         </Header>
@@ -142,13 +143,13 @@ const Teacher = ({ user }) => {
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">
-          Copyright 2023 © ALL RIGHTS RESERVED. Design by{" "}
+          Design by{" "}
           <a
             href="https://github.com/Harito97/UniManager"
             target="_blank"
             rel="noreferrer"
           >
-            HADT Team
+            <img src={TeamLogo} className="inline h-5" />
           </a>
         </Footer>
       </Layout>

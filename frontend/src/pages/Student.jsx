@@ -20,8 +20,7 @@ import Exam from "../components/Student/Exam";
 import Guide from "../components/Student/Guide";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
-
-// import { useContentContext } from "../providers/ContentContext";
+import TeamLogo from "../assets/logo/logo.png"
 
 const Student = ({ user }) => {
   axios.defaults.withCredentials = true;
@@ -124,7 +123,7 @@ const Student = ({ user }) => {
               icon={<UserOutlined />}
               className="m-4 flex justify-end"
             >
-              Hello, User!
+              Hello, {user}!
             </Dropdown.Button>
           </div>
         </Header>
@@ -149,13 +148,13 @@ const Student = ({ user }) => {
           {/* <Dashboard /> */}
         </Content>
         <Footer className="pt-0 text-center">
-          Copyright 2023 © ALL RIGHTS RESERVED. Design by{" "}
+          Design by {" "}
           <a
             href="https://github.com/Harito97/UniManager"
             target="_blank"
             rel="noreferrer"
           >
-            HADT Team
+           <img src={TeamLogo} className="h-5 inline"/>
           </a>
         </Footer>
       </Layout>
