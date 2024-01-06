@@ -20,10 +20,8 @@ const Sidebar = () => {
   const selectedKey = () => {
     if (path === "/teacher/dashboard") {
       return "1";
-    } else if (path === "/teacher/classes") {
-      return "2";
     } else if (path === "/teacher/calendar") {
-      return "3";
+      return "2";
     } else {
       return "1";
     }
@@ -47,16 +45,11 @@ const Sidebar = () => {
           },
           {
             key: "2",
-            icon: <ReconciliationOutlined />,
-            label: <Link to="/teacher/classes">Lớp học</Link>,
-          },
-          {
-            key: "3",
             icon: <CalendarOutlined />,
             label: <Link to="/teacher/calendar">Lịch</Link>,
           },
           {
-            key: "4",
+            key: "3",
             icon: <AppstoreAddOutlined />,
             label: <Link>Khác</Link>,
             children: [
