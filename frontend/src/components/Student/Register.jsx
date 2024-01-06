@@ -58,6 +58,7 @@ const Register = ({ user }) => {
   const [dataSubjectLearned, setDataSubjectLearned] = useState([]);
   const [registeredData, setRegisteredData] = useState([]);
   const [showAllCourses, setShowAllCourses] = useState(false);
+  const [selected, setSelected] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
@@ -85,7 +86,7 @@ const Register = ({ user }) => {
                   ma_hk: ma_hk,
                 })
                 .then((res) => setDataAll(res.data.dataAll));
-                return ma_hk;
+              return ma_hk;
             } else {
               setSemester(0);
               return 0;
@@ -111,6 +112,8 @@ const Register = ({ user }) => {
                 data.forEach((obj) => {
                   obj.status = false;
                 });
+                const updateSelected = data.map((obj) => obj.ma_lh);
+                setSelected(updateSelected);
                 setRegisteredData(data);
               });
           })
@@ -174,19 +177,24 @@ const Register = ({ user }) => {
   ];
 
   const handleDelete = (record) => {
-    const newDeSelected = [...deSelected, record.ma_lh];
-    setDeSelected(newDeSelected);
+    if (!record.status) {
+      const newDeSelected = [...deSelected, record.ma_lh];
+      setDeSelected(newDeSelected);
+      const updateSelected = selected.filter((item) => item !== record.ma_lh);
+      setSelected(updateSelected);
+    } else {
+      const updateSelectedRowKeys = selectedRowKeys.filter(
+        (item) => item !== record.ma_lh,
+      );
+      setSelectedRowKeys(updateSelectedRowKeys);
+      const updateSelected = selected.filter((item) => item !== record.ma_lh);
+      setSelected(updateSelected);
+    }
 
     const updateRegisteredData = registeredData.filter(
       (item) => item.ma_lh !== record.ma_lh,
     );
     setRegisteredData(updateRegisteredData);
-    if (record.status) {
-      const updateSelectedRowKeys = selectedRowKeys.filter(
-        (item) => item !== record.ma_lh,
-      );
-      setSelectedRowKeys(updateSelectedRowKeys);
-    }
 
     // for (let i = 0; i < dataAll.length; i++) {
     //   if (dataAll[i].ma_p === record.ma_hp) {
@@ -276,35 +284,46 @@ const Register = ({ user }) => {
     }
   };
 
-  const onChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
-  const onSelect = (record, selected) => {
-    if (selected) {
-      const newRecord = { ...record };
-      newRecord.status = true;
-      setRegisteredData([...registeredData, newRecord]);
+  const onSelect = (record, isSelect) => {
+    if (isSelect) {
+      if (deSelected.includes(record.ma_lh)) {
+        const newRecord = { ...record };
+        newRecord.status = false;
+        setRegisteredData([...registeredData, newRecord]);
+        const updateDeSelected = deSelected.filter(
+          (item) => item !== record.ma_lh,
+        );
+        setDeSelected(updateDeSelected);
+      } else {
+        const newRecord = { ...record };
+        newRecord.status = true;
+        setRegisteredData([...registeredData, newRecord]);
+        setSelectedRowKeys([...selectedRowKeys, record.ma_lh]);
+        setSelected([...selected, record.ma_lh]);
+      }
     } else {
       const updateRegisteredData = registeredData.filter(
         (item) => item.ma_lh !== record.ma_lh,
       );
+      const updateSelectedRowKeys = selectedRowKeys.filter(
+        (item) => item !== record.ma_lh,
+      );
+      const updateSelected = selected.filter((item) => item !== record.ma_lh);
+      setSelectedRowKeys(updateSelectedRowKeys);
+      setSelected(updateSelected);
       setRegisteredData(updateRegisteredData);
     }
   };
   const rowSelection = {
     onSelect: onSelect,
-    onChange: onChange,
     hideSelectAll: true,
     getCheckboxProps: (record) => ({ disabled: record.disabled }),
-    selectedRowKeys: selectedRowKeys,
+    selectedRowKeys: selected,
   };
   const hasSelected = selectedRowKeys.length > 0;
   const hasDeSelected = deSelected.length > 0;
 
   const checkBoxDisabled = (data1) => {
-    console.log("Đang check:", registeredData.length);
     for (let i = 0; i < registeredData.length; i++) {
       const data2 = registeredData[i].lich_hoc;
       for (let j = 0; j < data1.length; j++) {
@@ -328,7 +347,6 @@ const Register = ({ user }) => {
   };
 
   useEffect(() => {
-    console.log("Độ dài mảng đã thay đổi: ", registeredData.length);
     // dataMajor.forEach((obj) => {
     //   obj.disabled = checkBoxDisabled(obj.lich_hoc);
     // });
