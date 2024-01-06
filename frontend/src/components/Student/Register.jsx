@@ -145,7 +145,14 @@ const Register = ({ user }) => {
         </p>
       ),
     },
-    { title: "Giáo viên", dataIndex: "ten_gv", width: 100 },
+    {
+      title: "Giáo viên",
+      dataIndex: "ten_gv",
+      width: 100,
+      render: (_, record) => {
+        return record.ten_gv.map((n) => <p>{n}</p>);
+      },
+    },
     {
       title: "Lịch học",
       dataIndex: "lich_hoc",
@@ -261,7 +268,11 @@ const Register = ({ user }) => {
         "Thành công",
         "Bạn vừa đăng kí thêm được " +
           selectedRowKeys.length.toString() +
-          " môn! \nBạn vừa xóa thành công " +
+          " học phần!",
+      );
+      openSuccessNotification(
+        "Thành công",
+        "Bạn vừa xóa thành công " +
           deSelected.length.toString() +
           " học phần !",
       );
