@@ -492,8 +492,8 @@ const Register = ({ user }) => {
           <Button
             type="primary"
             onClick={start}
-            // disabled={!(hasSelected && hasDeSelected)}
-            disabled={false}
+            disabled={!(hasSelected || hasDeSelected)}
+            // disabled={false}
             loading={loading}
             className="bg-blue-500"
           >
