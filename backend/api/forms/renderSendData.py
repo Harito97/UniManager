@@ -84,6 +84,20 @@ def getTime():
         return {"semester": "2", "year": str(year_current-1)}
 
 
+def subject(data):
+    max_he4_dict = {}
+
+    for item in data:
+        ma_hp = item["ma_hp"]
+        he4 = item["he4"]
+        
+        if ma_hp not in max_he4_dict or he4 > max_he4_dict[ma_hp]["he4"]:
+            max_he4_dict[ma_hp] = {"ma_hp": ma_hp, "he4": he4, "so_tin": item["so_tin"]}
+
+    result = list(max_he4_dict.values())
+    return result
+
+
 @app.get("/")
 async def verify_user(request: Request):
     if "token" in request.cookies:
@@ -232,12 +246,14 @@ async def sendOverView(user: User, request: Request):
     
     tong_so_tin = cursor.fetchall()[0]["tin"]
 
-    cursor.execute(f"""select sum(hp.so_tin) as tin
+    cursor.execute(f"""select sum(subquery.so_tin) as so_tin from (select distinct(lh.ma_hp), hp.so_tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
                    where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
-                         dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck >= 4""")
+                         dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck >= 4) as subquery
+                   """)
+                   
 
-    tong_so_tin_tich_luy = cursor.fetchall()[0]["tin"]
+    tong_so_tin_tich_luy = cursor.fetchall()[0]["so_tin"]
 
     cursor.execute(f"""
                     with dk as (
@@ -246,10 +262,10 @@ async def sendOverView(user: User, request: Request):
                         where ma_sv = {user.username} and lh.ma_lh = dk.ma_lh
                     )
 
-                    select sum(subquery.he4*subquery.so_tin) / sum(subquery.so_tin) as gpa
+                    select subquery.ma_hp, subquery.he4, subquery.so_tin
                     from (
                         select 
-                            hp.ten_hp as ten_hp,
+                            hp.ma_hp as ma_hp,
                             hp.so_tin as so_tin,
                             case
                                 when dk.total_score < 4.0 then 0
@@ -265,10 +281,21 @@ async def sendOverView(user: User, request: Request):
                         from
                             hoc_phan hp, dk, hoc_ki hk, lich_hoc lh, dang_ky
                         where dang_ky.diem_ck is not null and dk.total_score >= 4 and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and dk.ma_lh = dang_ky.ma_lh
-                        group by hp.ten_hp
+                        group by lh.ma_lh
                     ) as subquery;""")
-                        
-    gpa = round(cursor.fetchall()[0]["gpa"],2)
+    
+    data = subject(cursor.fetchall())
+
+    numerator = 0
+    denominator = 0
+    
+    for element in data:
+        numerator += element["he4"]*element["so_tin"]
+        denominator += element["so_tin"]
+    
+    gpa = round(numerator/denominator,2)
+
+    # đang làm dở
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
 
@@ -351,11 +378,12 @@ async def sendGrade(user: User, request: Request):
         for semester in range(1, 3):
 
             statement = f"""
-                            select sv_hp.so_lan_hoc, lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
+                            select lh.ma_hp, 1 as "so_lan_hoc", lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
                             where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
-                                (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
+                                (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\")
+                            group by lh.ma_lh;
                         """
             
             cursor.execute(statement)
@@ -363,6 +391,19 @@ async def sendGrade(user: User, request: Request):
             data_year.append(data)
 
         data_component_grade.append(data_year)
+
+   
+    counter = {}  # Dùng để theo dõi số lần xuất hiện của mỗi môn học
+
+    for year in data_component_grade:
+        for semester in year:
+            for object in semester:
+                if object["ma_hp"] not in counter:
+                    counter[object["ma_hp"]] = 1
+                else: 
+                    counter[object["ma_hp"]] += 1
+                object["so_lan_hoc"] = counter[object["ma_hp"]]
+               
 
     data_expand = []
 
