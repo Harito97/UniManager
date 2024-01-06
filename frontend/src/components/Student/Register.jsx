@@ -286,6 +286,7 @@ const Register = ({ user }) => {
 
   const onSelect = (record, isSelect) => {
     if (isSelect) {
+      setSelected([...selected, record.ma_lh]);
       if (deSelected.includes(record.ma_lh)) {
         const newRecord = { ...record };
         newRecord.status = false;
@@ -299,7 +300,6 @@ const Register = ({ user }) => {
         newRecord.status = true;
         setRegisteredData([...registeredData, newRecord]);
         setSelectedRowKeys([...selectedRowKeys, record.ma_lh]);
-        setSelected([...selected, record.ma_lh]);
       }
     } else {
       const updateRegisteredData = registeredData.filter(
