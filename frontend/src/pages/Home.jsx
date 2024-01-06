@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import NavBar from "../components/LandingPage/Navbar";
-import Hero from "../components/LandingPage/Hero";
 import Background from "../assets/background.jpg";
-import LoginPopup from "../components/LandingPage/LoginPopup/LoginPopup";
-import Features from "../components/LandingPage/Features";
-import TeamSection from "../components/LandingPage/TeamSection";
-import Footer from "../components/LandingPage/Footer";
+import LoginForm from "../components/Home/LoginForm";
 import { useContentContext } from "../components/Notification/ContentContext";
 
 function Home({ level }) {
@@ -26,12 +21,6 @@ function Home({ level }) {
     }, 2000);
   }
 
-  const [loginPopup, setLoginPopup] = useState(false);
-
-  const toggleLoginPopup = () => {
-    setLoginPopup(!loginPopup);
-  };
-
   const bgImage = {
     backgroundImage: `url(${Background})`,
     backgroundPosition: "center",
@@ -44,14 +33,8 @@ function Home({ level }) {
   return (
     <>
       <div style={bgImage}>
-        <NavBar toggleLoginPopup={toggleLoginPopup} />
-        <Hero toggleLoginPopup={toggleLoginPopup} />
+        <LoginForm/>
       </div>
-      {/* <Backdrop toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} /> */}
-      <Features />
-      <TeamSection />
-      <Footer />
-      <LoginPopup toggleLoginPopup={toggleLoginPopup} loginPopup={loginPopup} />
     </>
   );
 }
