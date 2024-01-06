@@ -5,7 +5,7 @@ create table if not exists giang_vien(
 	ma_gv varchar(8) not null,
     ho_ten varchar(50) not null,
     gioi_tinh varchar(3) not null,
-    luong decimal(8,2) not null,
+    luong decimal(10,3) not null,
     ngsinh date not null,
     sdt varchar(10) not null,
     dia_chi varchar(50) not null,
@@ -84,9 +84,9 @@ create table if not exists chuong_trinh_hoc(
 create table if not exists dang_ky(
 	ma_lh int not null,
     ma_sv varchar(8) not null,
-    diem_tx decimal(2,2),
-    diem_gk decimal(2,2),
-    diem_ck decimal(2,2),
+    diem_tx decimal(3,2),
+    diem_gk decimal(3,2),
+    diem_ck decimal(3,2),
     primary key (ma_lh, ma_sv)
 );
 

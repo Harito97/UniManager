@@ -239,16 +239,19 @@ const Manager = ({ ma_lh }) => {
   };
 
   const onFactorFinish = (values) => {
-    console.log(values);
     //TODO: Update hệ số trong bảng lich_hoc có ma_lh tương ứng
     // Lưu ý, các values đang là String, cần parseFloat trước khi gửi
+
+    const he_so_tx = parseFloat(values.he_so_tx);
+    const he_so_gk = parseFloat(values.he_so_gk);
+    const he_so_ck = parseFloat(values.he_so_ck);
 
     try {
       axios.put("http://localhost:8000/put_coefficient", {
         ma_lh: ma_lh,
-        he_so_tx: parseFloat(values.he_so_tx),
-        he_so_gk: parseFloat(values.he_so_gk),
-        he_so_ck: parseFloat(values.he_so_ck),
+        he_so_tx: he_so_tx === NaN ? null : he_so_tx,
+        he_so_gk: he_so_gk === NaN ? null : he_so_gk,
+        he_so_ck: he_so_ck === NaN ? null : he_so_ck,
       });
     } catch (e) {
       console.log(e);
@@ -264,29 +267,26 @@ const Manager = ({ ma_lh }) => {
     // Lưu ý các giá trị đang là kiểu String, cần parseFloat và làm tròn đến số thập phân thứ 2 trước khi update vào server
     // ma_sv = editingRow
     // values chứ các thuộc tính diem_tx, diem_gk, diem_ck
-    const updateData = dataStudentClass.map((obj) =>
-      obj.ma_sv === editingRow ? { ...obj, ...values } : obj,
-    );
 
-    for (let i = 0; i < updateData.length; i++) {
-      updateData[i].diem_tx = parseFloat(updateData[i].diem_tx).toFixed(1);
-      updateData[i].diem_gk = parseFloat(updateData[i].diem_gk).toFixed(1);
-      updateData[i].diem_ck = parseFloat(updateData[i].diem_ck).toFixed(1);
-    }
+    const diem_tx = parseFloat(values.diem_tx);
+    const diem_gk = parseFloat(values.diem_gk);
+    const diem_ck = parseFloat(values.diem_ck);
 
     try {
-      for (let i = 0; i < updateData.length; i++) {
-        axios.put("http://localhost:8000/put_dangky", {
-          ma_lh: ma_lh,
-          ma_sv: updateData[i].ma_sv,
-          diem_tx: updateData[i].diem_tx,
-          diem_gk: updateData[i].diem_gk,
-          diem_ck: updateData[i].diem_ck,
-        });
-      }
+      axios.put("http://localhost:8000/put_dangky", {
+        ma_lh: ma_lh,
+        ma_sv: editingRow,
+        diem_tx: diem_tx === NaN ? null : parseFloat(diem_tx.toFixed(2)),
+        diem_gk: diem_gk === NaN ? null : parseFloat(diem_gk.toFixed(2)),
+        diem_ck: diem_ck === NaN ? null : parseFloat(diem_ck.toFixed(2)),
+      });
     } catch (e) {
       console.log(e);
     }
+
+    const updateData = dataStudentClass.map((obj) =>
+      obj.ma_sv === editingRow ? { ...obj, ...values } : obj,
+    );
 
     setDataStudentClass(updateData);
     setEditingRow(null);
@@ -379,11 +379,12 @@ const Manager = ({ ma_lh }) => {
           <Button htmlType="submit">Save</Button>
         </Form>
       </Modal>
-      <div className="flex mb-2 gap-5">
+      <div className="mb-2 flex gap-5">
         <p className="mt-1.5 font-bold">Hệ số TX: {factorData.he_so_tx}</p>
         <p className="mt-1.5 font-bold">Hệ số GK: {factorData.he_so_gk}</p>
         <p className="mt-1.5 font-bold">Hệ số CK: {factorData.he_so_ck}</p>
-        <Button className="flex mb-1"
+        <Button
+          className="mb-1 flex"
           onClick={() => {
             setShowModel(true);
             factorForm.setFieldsValue(factorData);
