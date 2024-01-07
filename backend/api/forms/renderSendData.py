@@ -10,6 +10,8 @@ import bcrypt
 import jwt
 import json
 import base64
+import os
+import glob
 
 app = FastAPI()
 
@@ -808,12 +810,17 @@ async def update_record(newRecord: DANGKY):
 @app.post("/download")
 async def download(id: ID):
     
-    cursor.execute(f"select file from form where id = {id.id}")
+    cursor.execute(f"select name, file from form where id = {id.id}")
     result = cursor.fetchone()
 
     file_data = result["file"]
 
-    temp_file_path = "F:\\result.pdf"
+    if os.path.exists(rf"F:\{result['name']}"):
+        file_list = glob.glob(os.path.join("F:/", result["name"].split(".")[0]))
+        temp_file_path = f"F:\{result['name'].split('.')[0]}{len(file_list)}{result['name'].split('.')[1]}"
+    else:
+        temp_file_path = f"F:\{result['name']}"
+
     with open(temp_file_path, "wb") as temp_file:
         temp_file.write(base64.b64decode(file_data))
 
