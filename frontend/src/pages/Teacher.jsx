@@ -16,6 +16,7 @@ import Sidebar from "../components/Teacher/Sidebar";
 import Dashboard from "../components/Teacher/Dashboard";
 import MyCalendar from "../components/Teacher/MyCalendar";
 import Manager from "../components/Teacher/Manager";
+import TeacherProfile from "../components/Teacher/UserProfile";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
 import TeamLogo from "../assets/logo/logo.png";
@@ -62,6 +63,8 @@ const Teacher = ({ user }) => {
       setTimeout(() => {
         window.location.replace("/");
       }, 2000);
+    } else {
+      window.location.replace("/teacher/setting");
     }
   };
 
@@ -139,6 +142,11 @@ const Teacher = ({ user }) => {
               exact
               path="/calendar"
               element={<MyCalendar user={user} />}
+            />
+            <Route
+              exact
+              path="/setting"
+              element={<TeacherProfile user={user} />}
             />
           </Routes>
         </Content>

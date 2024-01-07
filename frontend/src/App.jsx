@@ -15,6 +15,8 @@ import NotFound from "./pages/404";
 import Register from "./components/Student/Register";
 import Exam from "./components/Student/Exam";
 import Guide from "./components/Student/Guide";
+import StudentProfile from "./components/Student/UserProfile";
+import TeacherProfile from "./components/Teacher/UserProfile";
 import axios from "axios";
 
 function App() {
@@ -62,13 +64,17 @@ function App() {
               <Route exact path="/student/register" element={<Register />} />
               <Route exact path="/student/exam" element={<Exam />} />
               <Route exact path="/student/guide" element={<Guide />} />
-
+              <Route
+                exact
+                path="/student/setting"
+                element={<StudentProfile />}
+              />
             </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "GV" ? (
-            <Route path="/teacher/" element={<Teacher user={user}/>}>
+            <Route path="/teacher/" element={<Teacher user={user} />}>
               <Route exact path="/teacher/" element={<TeacherDashboard />} />
               <Route
                 exact
@@ -81,12 +87,17 @@ function App() {
                 path="/teacher/calendar"
                 element={<TeacherCalendar />}
               />
+              <Route
+                exact
+                path="/teacher/setting"
+                element={<TeacherProfile />}
+              />
             </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "AD" ? (
-            <Route path="/admin/" element={<Admin user={user}/>}></Route>
+            <Route path="/admin/" element={<Admin user={user} />}></Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}

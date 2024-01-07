@@ -18,9 +18,10 @@ import MyCalendar from "../components/Student/MyCalendar";
 import Register from "../components/Student/Register";
 import Exam from "../components/Student/Exam";
 import Guide from "../components/Student/Guide";
+import StudentProfile from "../components/Student/UserProfile";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
-import TeamLogo from "../assets/logo/logo.png"
+import TeamLogo from "../assets/logo/logo.png";
 
 const Student = ({ user }) => {
   axios.defaults.withCredentials = true;
@@ -64,6 +65,8 @@ const Student = ({ user }) => {
       setTimeout(() => {
         window.location.replace("/");
       }, 2000);
+    } else {
+      window.location.replace("/student/setting");
     }
   };
 
@@ -92,7 +95,7 @@ const Student = ({ user }) => {
         width={250}
         styles={{
           header: { background: "#EBEBEB" },
-          body: { background: "#EBEBEB", padding: 0},
+          body: { background: "#EBEBEB", padding: 0 },
         }}
       >
         <Sidebar />
@@ -144,17 +147,22 @@ const Student = ({ user }) => {
             <Route exact path="/register" element={<Register user={user} />} />
             <Route exact path="/exam" element={<Exam user={user} />} />
             <Route exact path="/guide" element={<Guide user={user} />} />
+            <Route
+              exact
+              path="/setting"
+              element={<StudentProfile user={user} />}
+            />
           </Routes>
           {/* <Dashboard /> */}
         </Content>
         <Footer className="pt-0 text-center">
-          Design by {" "}
+          Design by{" "}
           <a
             href="https://github.com/Harito97/UniManager"
             target="_blank"
             rel="noreferrer"
           >
-           <img src={TeamLogo} className="h-5 inline"/>
+            <img src={TeamLogo} className="inline h-5" />
           </a>
         </Footer>
       </Layout>
