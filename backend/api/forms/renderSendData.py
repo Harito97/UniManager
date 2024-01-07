@@ -9,6 +9,7 @@ import uvicorn
 import bcrypt
 import jwt
 import json
+import base64
 
 app = FastAPI()
 
@@ -71,6 +72,10 @@ class COEFFICIENT(BaseModel):
     he_so_tx: float | None = None
     he_so_gk: float | None = None
     he_so_ck: float | None = None
+
+
+class ID(BaseModel):
+    id: int | None = None
 
 
 year_current = datetime.now().year
@@ -798,6 +803,19 @@ async def update_record(newRecord: DANGKY):
         return {"message": "Record updated successfully", "Record": newRecord}
     except Exception as e:
         return e
+    
+
+@app.post("/download")
+async def download(id: ID):
+    
+    cursor.execute(f"select file from form where id = {id.id}")
+    result = cursor.fetchone()
+
+    file_data = result["file"]
+
+    temp_file_path = "F:\\result.pdf"
+    with open(temp_file_path, "wb") as temp_file:
+        temp_file.write(base64.b64decode(file_data))
 
 
 origins = ["http://localhost:5173"]

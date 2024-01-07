@@ -30,6 +30,8 @@ const Sidebar = () => {
       return "4";
     } else if (path === "/student/guide") {
       return "0";
+    } else if (path === "/student/form") {
+      return "5.1";
     } else {
       return "1";
     }
@@ -79,7 +81,7 @@ const Sidebar = () => {
               {
                 key: "5.1",
                 icon: <FileTextOutlined />,
-                label: <Link>Biểu mẫu</Link>,
+                label: <Link to="/student/form">Biểu mẫu</Link>,
               },
               {
                 key: "5.2",

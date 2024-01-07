@@ -18,6 +18,7 @@ import MyCalendar from "../components/Student/MyCalendar";
 import Register from "../components/Student/Register";
 import Exam from "../components/Student/Exam";
 import Guide from "../components/Student/Guide";
+import Form from "../components/Student/Form";
 import StudentProfile from "../components/Student/UserProfile";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
@@ -147,6 +148,8 @@ const Student = ({ user }) => {
             <Route exact path="/register" element={<Register user={user} />} />
             <Route exact path="/exam" element={<Exam user={user} />} />
             <Route exact path="/guide" element={<Guide user={user} />} />
+            <Route exact path="/form" element={<Form user={user} />} />
+
             <Route
               exact
               path="/setting"
