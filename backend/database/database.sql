@@ -56,6 +56,7 @@ create table if not exists lich_hoc(
     he_so_tx decimal(2,2),
     he_so_gk decimal(2,2),
     he_so_ck decimal(2,2),
+    lich_thi json,
     primary key (ma_lh)
 );
 

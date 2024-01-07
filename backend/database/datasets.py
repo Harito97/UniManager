@@ -11,7 +11,7 @@ for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["S�
     if x not in hoc_phan_dict:
         hoc_phan_dict[x] = 1
         danh_sach_hoc_phan.append((x, y, z))
-# print(danh_sach_hoc_phan)
+# print(df["Mã \nhọc phần"].tolist()[1:])
 # print(df["Số\nTC"].fillna(2).to_string())
 # print(len(danh_sach_hoc_phan))
 
@@ -29,28 +29,7 @@ danh_sach_nganh = [
     ('QHT01', 'Toán học'),
     ('QHT02', 'Toán tin'),
     ('QHT98', 'Khoa học máy tính và thông tin (*)(**)'),
-    ('QHT93', 'Khoa học dữ liệu (*)'),
-    ('QHT03', 'Vật lý học'),
-    ('QHT04', 'Khoa học vật liệu'),
-    ('QHT05', 'Công nghệ kỹ thuật hạt nhân'),
-    ('QHT94', 'Kỹ thuật điện tử và tin học'),
-    ('QHT06', 'Hóa học'),
-    ('QHT41', 'Hóa học(***)'),
-    ('QHT42', 'Công nghệ kỹ thuật hóa học(**)'),
-    ('QHT43', 'Hóa dược(**)'),
-    ('QHT08', 'Sinh học'),
-    ('QHT44', 'Công nghệ sinh học(**)'),
-    ('QHT10', 'Địa lý tự nhiên'),
-    ('QHT91', 'Khoa học thông tin địa không gian(*)'),
-    ('QHT12', 'Quản lý đất đai'),
-    ('QHT95', 'Quản lý phát triển đô thị và bất động sản'),
-    ('QHT13', 'Khoa học môi trường'),
-    ('QHT46', 'Công nghệ kỹ thuật môi trường(**)'),
-    ('QHT17', 'Hải dương học'),
-    ('QHT92', 'Tài nguyên và môi trường nước(*)'),
-    ('QHT18', 'Địa chất học'),
-    ('QHT20', 'Quản lý tài nguyên và môi trường'),
-    ('QHT97', 'Công nghệ quan trắc và giám sát tài nguyên môi trường(*)')
+    ('QHT93', 'Khoa học dữ liệu (*)')
 ]
 
 # with open('danh_sach_nganh.csv', 'w', encoding='utf8') as file1:
@@ -224,28 +203,7 @@ danh_sach_chuong_trinh = [
     ('KCT_01', 'QHT01'),
     ('KCT_02', 'QHT02'),
     ('KCT_98', 'QHT98'),
-    ('KCT_93', 'QHT93'),
-    ('KCT_03', 'QHT03'),
-    ('KCT_04', 'QHT04'),
-    ('KCT_05', 'QHT05'),
-    ('KCT_94', 'QHT94'),
-    ('KCT_06', 'QHT06'),
-    ('KCT_41', 'QHT41'),
-    ('KCT_42', 'QHT42'),
-    ('KCT_43', 'QHT43'),
-    ('KCT_08', 'QHT08'),
-    ('KCT_44', 'QHT44'),
-    ('KCT_10', 'QHT10'),
-    ('KCT_91', 'QHT91'),
-    ('KCT_12', 'QHT12'),
-    ('KCT_95', 'QHT95'),
-    ('KCT_13', 'QHT13'),
-    ('KCT_46', 'QHT46'),
-    ('KCT_17', 'QHT17'),
-    ('KCT_92', 'QHT92'),
-    ('KCT_18', 'QHT18'),
-    ('KCT_20', 'QHT20'),
-    ('KCT_97', 'QHT97')   
+    ('KCT_93', 'QHT93') 
 ]
 
 # with open('danh_sach_chuong_trinh.csv', 'w') as file3:
@@ -281,8 +239,6 @@ danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2
 # print(len(df2["ma_hp"].unique()))
 
 # print(len(df["Mã \nhọc phần"][1:].unique()))
-
-
 
 danh_sach_ten_giang_vien = [
     "Nguyen Thanh Hoa",
@@ -437,3 +393,11 @@ danh_sach_sinh_vien = [
 
 # print(danh_sach_sinh_vien)
 
+danh_sach_ma_lop = zip(df["Mã \nhọc phần"][1:], df["HK"][1:])
+with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
+    file_a.write('ma_hoc_phan,hoc_ki\n')
+    for item in danh_sach_ma_lop:
+        ma_lop, ma_hp = 
+# df_lich_hoc = pd.read_csv("danh_sach_lich_hoc.csv")
+# danh_sach_lich_hoc = [(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk)
+#                         for ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk in zip(df_lich_hoc[""])]
