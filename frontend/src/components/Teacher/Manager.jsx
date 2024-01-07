@@ -249,9 +249,9 @@ const Manager = ({ ma_lh }) => {
     try {
       axios.put("http://localhost:8000/put_coefficient", {
         ma_lh: ma_lh,
-        he_so_tx: he_so_tx === NaN ? null : he_so_tx,
-        he_so_gk: he_so_gk === NaN ? null : he_so_gk,
-        he_so_ck: he_so_ck === NaN ? null : he_so_ck,
+        he_so_tx: isNaN(he_so_tx) ? null : he_so_tx,
+        he_so_gk: isNaN(he_so_gk) ? null : he_so_gk,
+        he_so_ck: isNaN(he_so_ck) ? null : he_so_ck,
       });
     } catch (e) {
       console.log(e);
@@ -276,9 +276,9 @@ const Manager = ({ ma_lh }) => {
       axios.put("http://localhost:8000/put_dangky", {
         ma_lh: ma_lh,
         ma_sv: editingRow,
-        diem_tx: diem_tx === NaN ? null : parseFloat(diem_tx.toFixed(2)),
-        diem_gk: diem_gk === NaN ? null : parseFloat(diem_gk.toFixed(2)),
-        diem_ck: diem_ck === NaN ? null : parseFloat(diem_ck.toFixed(2)),
+        diem_tx: isNaN(diem_tx) ? null : parseFloat(diem_tx.toFixed(2)),
+        diem_gk: isNaN(diem_gk) ? null : parseFloat(diem_gk.toFixed(2)),
+        diem_ck: isNaN(diem_ck) ? null : parseFloat(diem_ck.toFixed(2)),
       });
     } catch (e) {
       console.log(e);
@@ -321,7 +321,7 @@ const Manager = ({ ma_lh }) => {
             ]}
           >
             <Input
-              type="number"
+              pattern="^\d*\.\d{0,2}$"
               className="[&::-webkit-inner-spin-button]:appearance-none"
               onChange={onChange}
             />
@@ -345,7 +345,7 @@ const Manager = ({ ma_lh }) => {
             ]}
           >
             <Input
-              type="number"
+              pattern="^\d*\.\d{0,2}$"
               className="[&::-webkit-inner-spin-button]:appearance-none"
               onChange={onChange}
             />
@@ -370,11 +370,7 @@ const Manager = ({ ma_lh }) => {
               }),
             ]}
           >
-            <Input
-              type="number"
-              className="[&::-webkit-inner-spin-button]:appearance-none"
-              disabled
-            />
+            <Input disabled />
           </Form.Item>
           <Button htmlType="submit">Save</Button>
         </Form>
