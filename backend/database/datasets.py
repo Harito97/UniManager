@@ -393,11 +393,21 @@ danh_sach_sinh_vien = [
 
 # print(danh_sach_sinh_vien)
 
-danh_sach_ma_lop = zip(df["Mã \nhọc phần"][1:], df["HK"][1:])
-with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
-    file_a.write('ma_hoc_phan,hoc_ki\n')
-    for item in danh_sach_ma_lop:
-        ma_lop, ma_hp = 
+# danh_sach_ma_lop = zip(df["Mã \nhọc phần"][1:], df["HK"][1:])
+# with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
+#     file_a.write('ma_hoc_phan,hoc_ki\n')
+#     for item in danh_sach_ma_lop:
+#         ma_lop, ma_hp = 
 # df_lich_hoc = pd.read_csv("danh_sach_lich_hoc.csv")
 # danh_sach_lich_hoc = [(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk)
 #                         for ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk in zip(df_lich_hoc[""])]
+
+# with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
+#     file_a.write("ma_hoc_phan,hoc_ki\n")
+#     for x, y in zip(df["Mã \nhọc phần"][1:],df["HK"][1:]):
+#         file_a.write(f"{x},{y}\n")
+
+df_ma_hp = pd.read_csv("danh_sach_ma_hoc_phan.csv")
+for x, y in zip(df_ma_hp["ma_hoc_phan"],df_ma_hp["hoc_ki"]):
+    if x == "MAT2304":
+        print(x, y)
