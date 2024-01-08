@@ -24,7 +24,7 @@ const Form = ({user}) => {
         title: <p><center>{"Tên tệp tin"}</center></p>,
         dataIndex: 'name',
         render: (_, record) => <p><center>{record.name}</center></p>,
-        width: 150,
+        width: 170,
       },
       {
         title: <p><center>{"Mô tả"}</center></p>,
@@ -42,13 +42,13 @@ const Form = ({user}) => {
         title: <p><center>{"Dung lượng"}</center></p>,
         dataIndex: 'size',
         render: (_, record) => <p><center>{record.size}</center></p>,
-        width: 100,
+        width: 110,
       },
       {
         title: <p><center>{"Ngày tải lên"}</center></p>,
         dataIndex: 'dateLoading',
         render: (_, record) => <p><center>{record.dateLoading}</center></p>,
-        width: 150,
+        width: 100,
       },
       {
         title: <p><center>{"Tải xuống"}</center></p>,
