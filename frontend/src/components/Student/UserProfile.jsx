@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ProfileImg from "../../assets/avatar/default.jpg";
-import { Button, Form, Input, Upload } from "antd";
+import { Button, Form, Input, Upload, Popconfirm } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import ImgCrop from "antd-img-crop";
 import { storage } from "../../constants/Firebase";
@@ -43,11 +43,19 @@ const UserProfile = ({ user }) => {
   const submitData = (values) => {
     console.log(values);
     //TODO: Update data tương ứng
+    // Gồm sdt và email
   };
 
   const changePwd = (values) => {
     console.log(values);
     //TODO: Update data tương ứng
+    // Thay doi mat khau thanh new_pass
+    // Nhớ mã hoá nhé :))
+  };
+
+  const deleteAvatar = () => {
+    setimgURL(null);
+    //TODO: chuyển giá trị avatar về null
   };
 
   return (
@@ -105,7 +113,13 @@ const UserProfile = ({ user }) => {
                       </Button>
                     </Upload>
                   </ImgCrop>
-                  <Button danger>Xoá ảnh</Button>
+                  <Popconfirm
+                    title="Xoá ảnh"
+                    description="Bạn có chắc chắn muốn xoá ảnh ?"
+                    onConfirm={deleteAvatar}
+                  >
+                    <Button danger>Xoá ảnh</Button>
+                  </Popconfirm>
                 </div>
               </div>
             </div>
