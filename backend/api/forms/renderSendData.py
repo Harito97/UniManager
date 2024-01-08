@@ -828,15 +828,30 @@ async def download(id: ID):
 
 
 @app.post("/schedule_exam")
-async def sendScheduleExam():
+async def sendScheduleExam(user: User):
 
-    # statement = f"""
-    #                 select lh.ma_hk, lh.ma_hp, lh.ten_hp, lh.ma_lop, lh.lich_thi
-    #                 from 
-    #                     lich_hoc lh
+    statement = f"""
+                    select lh.ma_hk, lh.ma_hp, hp.ten_hp, lh.ma_lop, lh.lich_thi
+                    from 
+                        lich_hoc lh
+                        inner join hoc_ki hk on hk.ma_hk = lh.ma_hk
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
+                        and dk.ma_sv = {user.username} 
+                        and dk.diem_tx is null
                     
-    #             """
-    return 0
+                """
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for schedule in data:
+        unicode_data = schedule["lich_thi"]
+        schedule["lich_thi"] = json.loads(unicode_data)
+    
+    return {"exam": data}
+
 
 origins = ["http://localhost:5173"]
 
