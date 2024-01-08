@@ -9,6 +9,9 @@ import uvicorn
 import bcrypt
 import jwt
 import json
+import base64
+import os
+import glob
 
 app = FastAPI()
 
@@ -71,6 +74,10 @@ class COEFFICIENT(BaseModel):
     he_so_tx: float | None = None
     he_so_gk: float | None = None
     he_so_ck: float | None = None
+
+
+class ID(BaseModel):
+    id: int | None = None
 
 
 year_current = datetime.now().year
@@ -798,7 +805,38 @@ async def update_record(newRecord: DANGKY):
         return {"message": "Record updated successfully", "Record": newRecord}
     except Exception as e:
         return e
+    
 
+@app.post("/download")
+async def download(id: ID):
+    
+    cursor.execute(f"select name, file from form where id = {id.id}")
+    result = cursor.fetchall()
+
+    file_data = result[0]["file"]
+
+    ten = result[0]['name'].split(".")
+
+    if os.path.exists(rf"F:\{result[0]['name']}"):
+        file_list = glob.glob(f'F:\\{ten[0]}*')
+        temp_file_path = f"F:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
+    else:
+        temp_file_path = f"F:\{result[0]['name']}"
+
+    with open(temp_file_path, "wb") as temp_file:
+        temp_file.write(base64.b64decode(file_data))
+
+
+@app.post("/schedule_exam")
+async def sendScheduleExam():
+
+    # statement = f"""
+    #                 select lh.ma_hk, lh.ma_hp, lh.ten_hp, lh.ma_lop, lh.lich_thi
+    #                 from 
+    #                     lich_hoc lh
+                    
+    #             """
+    return 0
 
 origins = ["http://localhost:5173"]
 

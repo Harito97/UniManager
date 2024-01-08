@@ -20,7 +20,7 @@ const Sidebar = () => {
   useEffect(() => {}, []);
 
   const selectedKey = () => {
-    if (path === "/student/dashboard") {
+    if (path === "/student/dashboard" || path === "/student") {
       return "1";
     } else if (path === "/student/calendar") {
       return "2";
@@ -30,8 +30,10 @@ const Sidebar = () => {
       return "4";
     } else if (path === "/student/guide") {
       return "0";
-    } else {
-      return "1";
+    } else if (path === "/student/setting") {
+      return "-1";
+    } else if (path === "/student/form") {
+      return "5.1";
     }
   };
 
@@ -79,7 +81,7 @@ const Sidebar = () => {
               {
                 key: "5.1",
                 icon: <FileTextOutlined />,
-                label: <Link>Biểu mẫu</Link>,
+                label: <Link to="/student/form">Biểu mẫu</Link>,
               },
               {
                 key: "5.2",

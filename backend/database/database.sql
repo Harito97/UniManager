@@ -115,6 +115,7 @@ create table if not exists user(
     pass_word binary(60) not null,
     email varchar(100) not null,
     access_level varchar(2) not null,
+    avatar varchar(255),
     primary key (username)
 );
 
