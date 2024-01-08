@@ -206,7 +206,6 @@ const Form = ({user}) => {
                columns={columns}
                dataSource={data}
                pagination={false}
-               
             />
         </>
         
