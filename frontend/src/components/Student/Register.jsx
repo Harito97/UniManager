@@ -3,6 +3,7 @@ import { Button, Table, Select, Popconfirm, Alert } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
+import generateDocument from "../../utils/RenderDocx";
 
 const courses_table = [
   { title: "Môn học", dataIndex: "ten_hp", width: 300 },
@@ -499,7 +500,7 @@ const Register = ({ user }) => {
             }
           }}
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
           <Button
             type="primary"
             onClick={start}
@@ -510,6 +511,7 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
+          <Button onClick={() => generateDocument(user)}>Xuất file</Button>
         </div>
       </div>
     </>
