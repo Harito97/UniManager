@@ -1,11 +1,26 @@
-import React from "react";
-import ProfileImg from "../../assets/avatar/DA.jpg";
-import { Button, Form, Input } from "antd";
+import React, { useState } from "react";
+import ProfileImg from "../../assets/avatar/default.jpg";
+import { Button, Form, Input, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import ImgCrop from "antd-img-crop";
+import { storage } from "../../constants/Firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 } from "uuid";
 
 const UserProfile = ({ user }) => {
   const [form] = Form.useForm();
   const [passForm] = Form.useForm();
+  const [imgURL, setimgURL] = useState(null);
+
+  const uploadImage = (values) => {
+    const imageRef = ref(storage, `images/${values.file.name + v4()}`);
+    uploadBytes(imageRef, values.file).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        //TODO: thay đổi đường link avatar trong DB
+        setimgURL(url);
+      });
+    });
+  };
 
   //Data mẫu
   const userData = {
@@ -16,6 +31,7 @@ const UserProfile = ({ user }) => {
     email: "fakeemail@gmail.com",
     nganh: "Khoa học dữ liệu",
     lop: "K66A5",
+    avatar: "",
   };
 
   // Set field của form
@@ -47,7 +63,7 @@ const UserProfile = ({ user }) => {
             <div className="items-center sm:flex sm:space-x-4 xl:block xl:space-x-0 2xl:flex 2xl:space-x-4">
               <img
                 className="mb-4 h-28 w-28 rounded-lg sm:mb-0 xl:mb-4 2xl:mb-0"
-                src={ProfileImg}
+                src={imgURL !== null ? imgURL : ProfileImg}
                 alt="Avatar"
               />
               <div>
@@ -67,13 +83,24 @@ const UserProfile = ({ user }) => {
                   Giới tính: {userData.gioi_tinh}
                 </p>
                 <div className="flex items-center space-x-4">
-                  <Button
-                    type="primary"
-                    icon={<UploadOutlined />}
-                    className="bg-blue-500"
-                  >
-                    Tải ảnh lên
-                  </Button>
+                  <ImgCrop rotationSlider>
+                    <Upload
+                      accept=".png,.jpeg"
+                      showUploadList={false}
+                      listType="picture"
+                      multiple={false}
+                      beforeUpload={() => false}
+                      onChange={uploadImage}
+                    >
+                      <Button
+                        type="primary"
+                        icon={<UploadOutlined />}
+                        className="bg-blue-500"
+                      >
+                        Tải ảnh lên
+                      </Button>
+                    </Upload>
+                  </ImgCrop>
                   <Button danger>Xoá ảnh</Button>
                 </div>
               </div>
