@@ -149,8 +149,10 @@ const Form = ({user}) => {
                     dateLoaing: "17/11/2020",
                     download: "Download"},
                  ]
-  
-    return (
+
+   const line = {border: '1px solid black'}
+
+   return (
         <>
             <div className='headline' style={{fontSize: '1.5rem', marginBottom: '10px'}}><strong>Danh sách biểu mẫu</strong></div>
             <div className='custom-table'>
@@ -169,13 +171,13 @@ const Form = ({user}) => {
                     <tbody>
                         {data.map((item) => (
                             <tr key={item.id} style={{ backgroundColor: item.id % 2 === 0 ? "#CCFFFF" : "" }}>
-                                <td style={{border: '1px solid black'}}><center>{item.id}</center></td>
-                                <td style={{border: '1px solid black'}}><center>{item.name}</center></td>
-                                <td style={{border: '1px solid black'}}><center>{item.description}</center></td>
-                                <td style={{border: '1px solid black'}}><center>{item.classify}</center></td>
-                                <td style={{border: '1px solid black'}}><center>{item.size}</center></td>
-                                <td style={{border: '1px solid black'}}><center>{item.dateLoaing}</center></td>
-                                <td style={{border: '1px solid black'}}><a href={"#"} onClick={() => handleDownload(item.id)}><center><CloudDownloadOutlined className="xl:text-2xl text-[#33FF99]"/></center></a></td>
+                                <td style={line}><center>{item.id}</center></td>
+                                <td style={line}><center>{item.name}</center></td>
+                                <td style={line}><center>{item.description}</center></td>
+                                <td style={line}><center>{item.classify}</center></td>
+                                <td style={line}><center>{item.size}</center></td>
+                                <td style={line}><center>{item.dateLoaing}</center></td>
+                                <td style={line}><a href={"#"} onClick={() => handleDownload(item.id)}><center><CloudDownloadOutlined className="xl:text-2xl text-[#33FF99]"/></center></a></td>
 
                             </tr>
                         ))}
