@@ -499,7 +499,7 @@ const Register = ({ user }) => {
             }
           }}
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
           <Button
             type="primary"
             onClick={start}
@@ -510,6 +510,7 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
+          <Button>Xuất file</Button>
         </div>
       </div>
     </>
