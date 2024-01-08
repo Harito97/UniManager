@@ -811,15 +811,17 @@ async def update_record(newRecord: DANGKY):
 async def download(id: ID):
     
     cursor.execute(f"select name, file from form where id = {id.id}")
-    result = cursor.fetchone()
+    result = cursor.fetchall()
 
-    file_data = result["file"]
+    file_data = result[0]["file"]
 
-    if os.path.exists(rf"F:\{result['name']}"):
-        file_list = glob.glob(os.path.join("F:/", result["name"].split(".")[0]))
-        temp_file_path = f"F:\{result['name'].split('.')[0]}{len(file_list)}{result['name'].split('.')[1]}"
+    ten = result[0]['name'].split(".")
+
+    if os.path.exists(rf"F:\{result[0]['name']}"):
+        file_list = glob.glob(f'F:\\{ten[0]}*')
+        temp_file_path = f"F:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
     else:
-        temp_file_path = f"F:\{result['name']}"
+        temp_file_path = f"F:\{result[0]['name']}"
 
     with open(temp_file_path, "wb") as temp_file:
         temp_file.write(base64.b64decode(file_data))

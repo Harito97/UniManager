@@ -1,6 +1,8 @@
-import { Table } from 'antd'
-import React, { useState, useEffect } from "react";
+import React, {useState} from "react";
 import axios from "axios";
+import {
+   CloudDownloadOutlined
+ } from "@ant-design/icons";
 
 function handleDownload(id) {
     axios.post('http://localhost:8000/download', {
@@ -9,6 +11,7 @@ function handleDownload(id) {
 }
 
 const Form = ({user}) => {
+
    const data = [{  id: 1, 
                     name: "Đơn xét trợ cấp xã hội", 
                     description: "Dùng cho sinh viên xin xét trợ cấp xã hội",
@@ -22,7 +25,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên dân tộc thiểu số hộ nghèo, cận nghèo theo quy định của Thủ tướng Chính phủ thi đỗ vào đại học chính quy",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "174KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "02/11/2020",
                     download: "Download"},
 
                  {  id: 3, 
@@ -30,7 +33,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên vay vốn ở địa phương",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "298KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "03/11/2020",
                     download: "Download"},
                 
                  {  id: 4, 
@@ -38,7 +41,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên tự đánh giá điểm rèn luyện cuối mỗi học kỳ",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "288KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "04/11/2020",
                     download: "Download"},
 
                  {  id: 5, 
@@ -46,7 +49,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên rút hồ sơ khi có quyết định thôi học hoặc hết thời gian đào tạo",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "206KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "05/11/2020",
                     download: "Download"},
 
                  {  id: 6, 
@@ -54,7 +57,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên xin thôi học vì lí do cá nhân, đi du học...",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "205KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "06/11/2020",
                     download: "Download"},
 
                  {  id: 7, 
@@ -62,7 +65,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên xin nghỉ học (bảo lưu) học kì hay năm học (sinh viên lưu ý cần có bảng điểm tích lũy học tập từ 2.0 trở lên hoặc các lí do cá nhân theo quy định của quy chế đào tạo)",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "197KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "07/11/2020",
                     download: "Download"},
 
 
@@ -71,7 +74,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên sau khi hết thời gian nghỉ học bảo lưu",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "196KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "08/11/2020",
                     download: "Download"},
 
                  {  id: 9, 
@@ -79,7 +82,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên để xin chuyển sang trường khác (SV lưu ý trước khi làm đơn cần phải có xác nhận đồng ý của Trường nơi sinh viên sẽ đến học)",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "210KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "09/11/2020",
                     download: "Download"},
 
                  {  id: 10, 
@@ -87,7 +90,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên có thắc mắc, đề nghị về các vấn đề như học bổng, học phí, điểm rèn luyện,...",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "198KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "10/11/2020",
                     download: "Download"},
 
                  {  id: 11, 
@@ -95,7 +98,7 @@ const Form = ({user}) => {
                     description: "Ban hành kèm theo quyết định của ĐHQGHN và áp dụng cho sinh viên hệ đại học chính quy",
                     classify: "Quy định, quy chế",
                     size: "819KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "11/11/2020",
                     download: "Download"},
 
                  {  id: 12, 
@@ -103,7 +106,7 @@ const Form = ({user}) => {
                     description: "Ban hành kèm theo quyết định của ĐHQGHN và áp dụng cho sinh viên hệ đại học chính quy",
                     classify: "Quy định, quy chế",
                     size: "751KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "12/11/2020",
                     download: "Download"},
 
                  {  id: 13, 
@@ -111,7 +114,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên xin học bổng, việc làm...",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "210KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "13/11/2020",
                     download: "Download"},
 
                  {  id: 14, 
@@ -119,7 +122,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên xác nhận nghĩa vụ quân sự, báo cáo địa phương, thi học kì khi mất thẻ SV,...",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "41KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "14/11/2020",
                     download: "Download"},
 
                  {  id: 15, 
@@ -127,7 +130,7 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên để xin học bổng, visa đi nước ngoài,...",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "50KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "15/11/2020",
                     download: "Download"},
 
                  {  id: 16, 
@@ -135,7 +138,7 @@ const Form = ({user}) => {
                     description: "Dùng xác nhận điểm rèn luyện cho sinh viên để xin học bổng",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "40KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "16/11/2020",
                     download: "Download"},
 
                  {  id: 17, 
@@ -143,36 +146,36 @@ const Form = ({user}) => {
                     description: "Dùng cho sinh viên làm lại thẻ sinh viên tích hợp thẻ ngân hàng BIDV chi nhánh Thanh Xuân",
                     classify: "Các biểu mẫu dành cho sinh viên",
                     size: "141KB",
-                    dateLoaing: "01/11/2020",
+                    dateLoaing: "17/11/2020",
                     download: "Download"},
                  ]
   
     return (
         <>
-            <div className='headline' style={{fontSize: '2rem'}}><strong>Danh sách biểu mẫu</strong></div>
+            <div className='headline' style={{fontSize: '1.5rem', marginBottom: '10px'}}><strong>Danh sách biểu mẫu</strong></div>
             <div className='custom-table'>
                 <table>
                     <thead>
-                        <tr style={{fontSize: '0.8rem'}}>
-                            <th style={{paddingLeft: '1rem', paddingRight: '1rem', border: '1px solid black'}}>STT</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Tên tệp tin</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Mô tả</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Phân loại</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Dung lượng</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Ngày tải lên</th>
-                            <th style={{paddingLeft: '3rem', paddingRight: '3rem', border: '1px solid black'}}>Tải xuống</th>
+                        <tr style={{fontSize: '0.8rem', backgroundColor: '#99FFFF'}}>
+                            <th style={{paddingLeft: '0.5rem', paddingRight: '0.5rem', border: '1px solid black'}}>STT</th>
+                            <th style={{paddingLeft: '1.5rem', paddingRight: '1.5rem', border: '1px solid black'}}>Tên tệp tin</th>
+                            <th style={{paddingLeft: '2rem', paddingRight: '2rem', border: '1px solid black'}}>Mô tả</th>
+                            <th style={{paddingLeft: '4rem', paddingRight: '4rem', border: '1px solid black'}}>Phân loại</th>
+                            <th style={{paddingLeft: '1.5rem', paddingRight: '1.5rem', border: '1px solid black'}}>Dung lượng</th>
+                            <th style={{paddingLeft: '1rem', paddingRight: '1rem', border: '1px solid black'}}>Ngày tải lên</th>
+                            <th style={{paddingLeft: '1rem', paddingRight: '1rem', border: '1px solid black'}}>Tải xuống</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((item) => (
-                            <tr key={item.id}>
+                            <tr key={item.id} style={{ backgroundColor: item.id % 2 === 0 ? "#CCFFFF" : "" }}>
                                 <td style={{border: '1px solid black'}}><center>{item.id}</center></td>
                                 <td style={{border: '1px solid black'}}><center>{item.name}</center></td>
                                 <td style={{border: '1px solid black'}}><center>{item.description}</center></td>
                                 <td style={{border: '1px solid black'}}><center>{item.classify}</center></td>
                                 <td style={{border: '1px solid black'}}><center>{item.size}</center></td>
                                 <td style={{border: '1px solid black'}}><center>{item.dateLoaing}</center></td>
-                                <td style={{border: '1px solid black'}}><a href={"#"} onClick={() => handleDownload(item.id)}><center>{item.download}</center></a></td>
+                                <td style={{border: '1px solid black'}}><a href={"#"} onClick={() => handleDownload(item.id)}><center><CloudDownloadOutlined className="xl:text-2xl text-[#33FF99]"/></center></a></td>
 
                             </tr>
                         ))}
