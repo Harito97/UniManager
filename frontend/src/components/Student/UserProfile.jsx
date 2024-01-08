@@ -83,14 +83,18 @@ const UserProfile = ({ user }) => {
                   Giới tính: {userData.gioi_tinh}
                 </p>
                 <div className="flex items-center space-x-4">
-                  <ImgCrop rotationSlider>
+                  <ImgCrop
+                    rotationSlider
+                    modalProps={{ okButtonProps: { className: "bg-blue-500" } }}
+                  >
                     <Upload
                       accept=".png,.jpeg"
                       showUploadList={false}
                       listType="picture"
                       multiple={false}
-                      beforeUpload={() => false}
-                      onChange={uploadImage}
+                      // beforeUpload={() => false}
+                      // onChange={uploadImage}
+                      customRequest={uploadImage}
                     >
                       <Button
                         type="primary"
