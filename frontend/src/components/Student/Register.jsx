@@ -3,6 +3,7 @@ import { Button, Table, Select, Popconfirm, Alert } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
+import generateDocument from "../../utils/RenderDocx";
 
 const courses_table = [
   { title: "Môn học", dataIndex: "ten_hp", width: 300 },
@@ -510,7 +511,7 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
-          <Button>Xuất file</Button>
+          <Button onClick={() => generateDocument(user)}>Xuất file</Button>
         </div>
       </div>
     </>

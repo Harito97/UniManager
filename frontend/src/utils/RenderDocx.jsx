@@ -36,7 +36,7 @@ const generateDocument = (user) => {
           so_tin: 3,
           ma_lop: 1,
           render: (scope) => {
-            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong}\n`;
+            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
           },
           lich_hoc: [
             { thu: "T3", bd: 1, kt: 3, phong: "101T5" },
@@ -50,7 +50,7 @@ const generateDocument = (user) => {
           so_tin: 3,
           ma_lop: 2,
           render: (scope) => {
-            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong}\n`;
+            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
           },
           lich_hoc: [
             { thu: "T2", bd: 1, kt: 3, phong: "101T5" },
