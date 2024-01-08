@@ -117,6 +117,7 @@ const UserProfile = ({ user }) => {
                     title="Xoá ảnh"
                     description="Bạn có chắc chắn muốn xoá ảnh ?"
                     onConfirm={deleteAvatar}
+                    okButtonProps={{ className: "bg-blue-500" }}
                   >
                     <Button danger>Xoá ảnh</Button>
                   </Popconfirm>
