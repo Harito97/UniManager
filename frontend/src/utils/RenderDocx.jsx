@@ -35,9 +35,6 @@ const generateDocument = (user) => {
           ten_hp: " Cơ sở dữ liệu Web và hệ thống thông tin",
           so_tin: 3,
           ma_lop: 1,
-          render: (scope) => {
-            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
-          },
           lich_hoc: [
             { thu: "T3", bd: 1, kt: 3, phong: "101T5" },
             { thu: "T4", bd: 1, kt: 5, phong: "102T5" },
@@ -49,9 +46,6 @@ const generateDocument = (user) => {
           ten_hp: " Cơ sở dữ liệu Web và hệ thống thông tin",
           so_tin: 3,
           ma_lop: 2,
-          render: (scope) => {
-            return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
-          },
           lich_hoc: [
             { thu: "T2", bd: 1, kt: 3, phong: "101T5" },
             { thu: "T3", bd: 1, kt: 5, phong: "102T5" },
@@ -59,6 +53,9 @@ const generateDocument = (user) => {
         },
       ],
       total: 6,
+      render: (scope) => {
+        return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
+      },
     });
     try {
       doc.render();
