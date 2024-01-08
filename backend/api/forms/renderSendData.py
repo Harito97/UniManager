@@ -827,6 +827,17 @@ async def download(id: ID):
         temp_file.write(base64.b64decode(file_data))
 
 
+@app.post("/schedule_exam")
+async def sendScheduleExam():
+
+    # statement = f"""
+    #                 select lh.ma_hk, lh.ma_hp, lh.ten_hp, lh.ma_lop, lh.lich_thi
+    #                 from 
+    #                     lich_hoc lh
+                    
+    #             """
+    return 0
+
 origins = ["http://localhost:5173"]
 
 
