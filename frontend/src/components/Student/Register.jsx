@@ -64,6 +64,26 @@ const Register = ({ user }) => {
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
   const [loading, setLoading] = useState(false);
 
+  const [extractSubject, setExtractSubject] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.post('http://localhost:8000/get_info_subject_register', {
+          username: user,
+        })
+        .then((res) => setExtractSubject(res.data.info_subject_register));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  console.log(extractSubject);
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -511,7 +531,7 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
-          <Button onClick={() => generateDocument(user)}>Xuất file</Button>
+          <Button onClick={() => generateDocument(user, extractSubject[0])}>Xuất file</Button>
         </div>
       </div>
     </>

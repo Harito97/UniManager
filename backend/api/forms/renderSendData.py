@@ -403,7 +403,7 @@ async def sendGrade(user: User, request: Request):
 
             statement = f"""
                             select lh.ma_hp, 1 as "so_lan_hoc", lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
-                            from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
+                            from hoc_phan hp, lich_hoc lh, dang_ky dk, hoc_ki hk
                             where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\")
@@ -642,24 +642,25 @@ async def registeredSubject(user: User):
                         lh.ma_lop as "ma_lop",
                         group_concat(gv.ho_ten) as "ten_gv",
                         lh.thoi_gian as "lich_hoc",
-                        sv_hp.so_lan_hoc as "lan"
+                        1 as "lan"
 
                     from 
                         lich_hoc lh
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                        inner join sv_hp on sv_hp.ma_hp = lh.ma_hp
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
                     where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
-                    group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian, sv_hp.so_lan_hoc
+                    group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian
                     order by 
                         hp.ten_hp asc;
                 """
     
     cursor.execute(statement)
     data = cursor.fetchall()
+    
+    
 
     for subject in data:
         # unicode_data = subject["lich_hoc"]
@@ -972,6 +973,72 @@ async def changePassWord(info: UPDATEPASSWORD):
         
     except Exception as e:
         return {"Error": e}
+
+
+@app.post("/get_info_subject_register")
+async def getInfoSubjectRegister(user: User):
+
+    statement1 = f"""
+                    select 
+                        {int(getTime()["semester"])} as ki,
+                        {int(getTime()["year"])} as nh,
+                        {int(getTime()["year"])} + 1 as nhs,
+                        day(curdate()) as ngay,
+                        month(curdate()) as thang,
+                        year(curdate()) as nam,
+                        sv.ho_ten as ho_ten,
+                        date_format(sv.ngsinh, '%d/%m/%Y') as ngsinh,
+                        sv.ma_sv as ma_sv,
+                        (select concat(sv.lop, ' ', nganh.ten_nganh)) as lop
+
+                    from 
+                        sinh_vien sv 
+                        inner join nganh on nganh.ma_nganh = sv.ma_nganh
+                        inner join dang_ky dk on dk.ma_sv = sv.ma_sv
+                        inner join lich_hoc lh on lh.ma_lh = dk.ma_lh
+
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username}
+
+                    group by
+                        sv.ma_sv
+
+                """
+    
+    cursor.execute(statement1)
+    data1 = cursor.fetchall()
+
+    statement2 = f"""
+                    select 
+                        row_number() over() as stt,
+                        lh.ma_hp as ma_hp,
+                        hp.ten_hp as ten_hp,
+                        hp.so_tin as so_tin,
+                        lh.ma_lop as ma_lop,
+                        lh.thoi_gian as lich_hoc
+
+                    from 
+                        lich_hoc lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join hoc_ki hk on hk.ma_hk = lh.ma_hk
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+                        inner join sinh_vien sv on sv.ma_sv = dk.ma_sv
+
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username} and dk.diem_tx is null
+
+                """
+    
+    cursor.execute(statement2)
+    data2 = cursor.fetchall()
+    
+    for subject in data2:
+        unicode_data = subject["lich_hoc"]
+        subject["lich_hoc"] = json.loads(unicode_data)
+
+    data1[0]["items"] = data2
+
+    return {"info_subject_register": data1}
 
 
 origins = ["http://localhost:5173"]

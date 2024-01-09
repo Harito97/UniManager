@@ -1,12 +1,15 @@
 import Docxtemplater from "docxtemplater";
+import React, { useState, useEffect } from "react";
 import PizZip from "pizzip";
 import PizZipUtils from "pizzip/utils/index.js";
 import { saveAs } from "file-saver";
+import axios from "axios";
 
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
-const generateDocument = (user) => {
+const generateDocument = (user, data) => {
+
   loadFile("/template/input.docx", function (error, content) {
     if (error) {
       throw error;
@@ -16,42 +19,20 @@ const generateDocument = (user) => {
       paragraphLoop: true,
       linebreaks: true,
     });
+
     //Data mẫu
     doc.setData({
-      ki: 1,
-      nh: 2023,
-      nhs: 2024,
-      ngay: 10,
-      thang: 1,
-      nam: 2024,
-      ho_ten: "Nguyễn Văn A",
-      ngsinh: "1/1/2003",
-      ma_sv: "21002500",
-      lop: "K66A5 Khoa học dữ liệu",
-      items: [
-        {
-          stt: 1,
-          ma_hp: "MAT3385",
-          ten_hp: " Cơ sở dữ liệu Web và hệ thống thông tin",
-          so_tin: 3,
-          ma_lop: 1,
-          lich_hoc: [
-            { thu: "T3", bd: 1, kt: 3, phong: "101T5" },
-            { thu: "T4", bd: 1, kt: 5, phong: "102T5" },
-          ],
-        },
-        {
-          stt: 2,
-          ma_hp: "MAT3385",
-          ten_hp: " Cơ sở dữ liệu Web và hệ thống thông tin",
-          so_tin: 3,
-          ma_lop: 2,
-          lich_hoc: [
-            { thu: "T2", bd: 1, kt: 3, phong: "101T5" },
-            { thu: "T3", bd: 1, kt: 5, phong: "102T5" },
-          ],
-        },
-      ],
+      ki: data.ki,
+      nh: data.nh,
+      nhs: data.nhs,
+      ngay: data.ngay,
+      thang: data.thang,
+      nam: data.nam,
+      ho_ten: data.ho_ten,
+      ngsinh: data.ngsinh,
+      ma_sv: data.ma_sv,
+      lop: data.log,
+      items: data.items,
       total: 6,
       render: (scope) => {
         return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
