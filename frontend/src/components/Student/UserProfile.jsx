@@ -39,7 +39,7 @@ const UserProfile = ({ user }) => {
       getDownloadURL(snapshot.ref).then((url) => {
         //TODO: thay đổi đường link avatar trong DB
         setimgURL(url);
-        axios.put('http://localhost:8000/put_image', {
+        axios.put("http://localhost:8000/put_image", {
           username: user,
           avatar: url,
         });
@@ -47,17 +47,23 @@ const UserProfile = ({ user }) => {
     });
   };
 
-  const [userData, setUserData] = useState([])
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.post('http://localhost:8000/info_student', {
-          username: user
-        })
-        .then((res) => {setUserData(res.data.info);
-                       setimgURL(res.data.info.avatar)});
-
+        await axios
+          .post("http://localhost:8000/info_student", {
+            username: user,
+          })
+          .then((res) => {
+            setUserData(res.data.info);
+            setimgURL(res.data.info.avatar);
+            form.setFieldsValue({
+              sdt: res.data.info.sdt,
+              email: res.data.info.email,
+            });
+          });
       } catch (error) {
         console.log(error);
       }
@@ -65,12 +71,6 @@ const UserProfile = ({ user }) => {
 
     fetchData();
   }, [user]);
-
-  // Set field của form
-  form.setFieldsValue({
-    sdt: userData.sdt,
-    email: userData.email,
-  });
 
   const submitData = (values) => {
     console.log(values);
@@ -128,12 +128,11 @@ const UserProfile = ({ user }) => {
     setimgURL(null);
     //TODO: chuyển giá trị avatar về null
     try {
-      axios.delete('http://localhost:8000/delete_avatar/' + user, {
-        username: user
+      axios.delete("http://localhost:8000/delete_avatar/" + user, {
+        username: user,
       });
-    }
-    catch (e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
 
   };
