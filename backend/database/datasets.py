@@ -4,7 +4,7 @@ from database_model import *
 import random
 from datetime import datetime, timedelta
 
-df = pd.read_excel("TKB-HKI-2023-2024.xlsx", engine="openpyxl")
+df = pd.read_excel("./backend/database/TKB-HKI-2023-2024.xlsx", engine="openpyxl")
 danh_sach_hoc_phan = []
 hoc_phan_dict = dict()
 for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["Số\nTC"].fillna(2)[1:]):
@@ -222,9 +222,16 @@ danh_sach_chuong_trinh = [
 # except Exception as e:
 #     print(f"Error: {e}")
     
-df2 = pd.read_csv("danh_sach_chuong_trinh_hoc.csv")
-danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
+df2 = pd.read_csv("./backend/database/danh_sach_chuong_trinh_hoc.csv")
+# danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
 # print(danh_sach_chuong_trinh)
+
+danh_sach_ngoai_le = []
+for element in df2['ma_hp']:
+    if element not in df["Mã \nhọc phần"][1:]:
+        danh_sach_ngoai_le.append(element)
+
+print(danh_sach_ngoai_le)
 
 # try:
 #     for element in danh_sach_chuong_trinh:
@@ -407,7 +414,3 @@ danh_sach_sinh_vien = [
 #     for x, y in zip(df["Mã \nhọc phần"][1:],df["HK"][1:]):
 #         file_a.write(f"{x},{y}\n")
 
-df_ma_hp = pd.read_csv("danh_sach_ma_hoc_phan.csv")
-for x, y in zip(df_ma_hp["ma_hoc_phan"],df_ma_hp["hoc_ki"]):
-    if x == "MAT2304":
-        print(x, y)
