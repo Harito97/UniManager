@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProfileImg from "../../assets/avatar/default.jpg";
 import { Button, Form, Input, Upload, Popconfirm } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
@@ -6,11 +6,28 @@ import ImgCrop from "antd-img-crop";
 import { storage } from "../../constants/Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
+import axios from "axios";
 
 const UserProfile = ({ user }) => {
   const [form] = Form.useForm();
   const [passForm] = Form.useForm();
   const [imgURL, setimgURL] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await axios.post('http://localhost:8000/get_avatar', {
+  //         username: user,
+  //       })
+  //       .then((res) => setimgURL(res.data.avatar));
+
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [user]);
 
   const uploadImage = (values) => {
     const imageRef = ref(storage, `images/${values.file.name + v4()}`);
@@ -18,21 +35,32 @@ const UserProfile = ({ user }) => {
       getDownloadURL(snapshot.ref).then((url) => {
         //TODO: thay đổi đường link avatar trong DB
         setimgURL(url);
+        axios.put('http://localhost:8000/put_image', {
+          username: user,
+          avatar: url,
+        });
       });
     });
   };
 
-  //Data mẫu
-  const userData = {
-    ho_ten: "Nguyễn Văn A",
-    gioi_tinh: "Nam",
-    ngsinh: "1/1/2003",
-    sdt: "0912312345",
-    email: "fakeemail@gmail.com",
-    nganh: "Khoa học dữ liệu",
-    lop: "K66A5",
-    avatar: "",
-  };
+  const [userData, setUserData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.post('http://localhost:8000/info_student', {
+          username: user
+        })
+        .then((res) => {setUserData(res.data.info);
+                       setimgURL(res.data.info.avatar)});
+
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   // Set field của form
   form.setFieldsValue({
@@ -54,6 +82,14 @@ const UserProfile = ({ user }) => {
   };
 
   const deleteAvatar = () => {
+    try {
+      axios.delete('http://localhost:8000/delete_avatar/' + user, {
+        username: user
+      });
+    }
+    catch (e) {
+      console.log(e)
+    }
     setimgURL(null);
     //TODO: chuyển giá trị avatar về null
   };

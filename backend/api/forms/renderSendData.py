@@ -80,6 +80,11 @@ class ID(BaseModel):
     id: int | None = None
 
 
+class AVATAR(BaseModel):
+    username: str | None = None
+    avatar: str | None = None
+
+
 year_current = datetime.now().year
 
 def getTime():
@@ -851,6 +856,75 @@ async def sendScheduleExam(user: User):
         schedule["lich_thi"] = json.loads(unicode_data)
     
     return {"exam": data}
+
+
+@app.post("/info_student")
+async def sendInfoStudent(user: User):
+
+    statement = f"""
+                    select
+                        sv.ho_ten, sv.gioi_tinh, sv.ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
+                    from 
+                        sinh_vien sv
+                        inner join user on user.username = sv.ma_sv
+                        inner join nganh on nganh.ma_nganh = sv.ma_nganh
+                    where 
+                        sv.ma_sv = {user.username}
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    return {"info": data[0]}
+
+
+@app.post("/get_avatar")
+async def sendInfoStudent(user: User):
+
+    statement = f"""
+                    select
+                        user.avatar
+                    from 
+                        sinh_vien sv
+                        inner join user on user.username = sv.ma_sv
+                    where 
+                        sv.ma_sv = {user.username}
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    return {"avatar": data[0]["avatar"]}
+
+
+# PUT: update record infomation
+@app.put("/put_image/")
+async def update_record(image: AVATAR):
+    try:
+        cursor.execute("""update user set avatar = %s
+                          where username = %s""", (
+                                                    image.avatar,
+                                                    image.username
+                                                  ))
+        
+        conn.commit()
+        return {"message": "Record updated successfully", "Record": image}
+    except Exception as e:
+        return e
+
+
+# DELETE: delete record
+@app.delete("/delete_avatar/{username}")
+async def delete_record(username: str):
+    try:
+
+        cursor.execute("update user set avatar = null where username = %s", (username,))
+        conn.commit()
+        
+        return {"message": f"Record image with ID {username} has been deleted"}
+    except Exception as e:
+        return e
+    
 
 
 origins = ["http://localhost:5173"]
