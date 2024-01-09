@@ -85,6 +85,18 @@ class AVATAR(BaseModel):
     avatar: str | None = None
 
 
+class UPDATEINFO(BaseModel):
+    username: str | None = None
+    sdt: str | None = None
+    email: str | None = None
+
+
+class UPDATEPASSWORD(BaseModel):
+    username: str | None = None
+    current_pass: str | None = None
+    new_pass: str | None = None
+
+
 year_current = datetime.now().year
 
 def getTime():
@@ -878,23 +890,23 @@ async def sendInfoStudent(user: User):
     return {"info": data[0]}
 
 
-@app.post("/get_avatar")
-async def sendInfoStudent(user: User):
+# @app.post("/get_avatar")
+# async def sendInfoStudent(user: User):
 
-    statement = f"""
-                    select
-                        user.avatar
-                    from 
-                        sinh_vien sv
-                        inner join user on user.username = sv.ma_sv
-                    where 
-                        sv.ma_sv = {user.username}
-                """
+#     statement = f"""
+#                     select
+#                         user.avatar
+#                     from 
+#                         sinh_vien sv
+#                         inner join user on user.username = sv.ma_sv
+#                     where 
+#                         sv.ma_sv = {user.username}
+#                 """
     
-    cursor.execute(statement)
-    data = cursor.fetchall()
+#     cursor.execute(statement)
+#     data = cursor.fetchall()
 
-    return {"avatar": data[0]["avatar"]}
+#     return {"avatar": data[0]["avatar"]}
 
 
 # PUT: update record infomation
@@ -925,6 +937,41 @@ async def delete_record(username: str):
     except Exception as e:
         return e
     
+
+@app.put("/put_info_student")
+async def updateInfoStudent(record: UPDATEINFO):
+    try: 
+       
+        cursor.execute(f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {record.username};")
+        conn.commit()
+        cursor.execute(f"update user set email = \"{record.email}\" where username = {record.username};")
+        conn.commit()
+
+        return {"message": "Record updated successfully"}
+    
+    except Exception as e:
+        return e
+
+
+@app.put("/change_pass")
+async def changePassWord(info: UPDATEPASSWORD):
+    try: 
+        cursor.execute(f"select pass_word from user where username = {info.username}")
+        data = cursor.fetchall()
+        if (len(data) > 0):
+            pwd_bytes = info.current_pass.encode('utf-8')
+            check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
+            if check_pwd:
+                cursor.execute(f"update user set pass_word = %s where username = {info.username}", (bcrypt.hashpw(info.new_pass.encode('utf8'), bcrypt.gensalt()), ))
+                conn.commit()
+                return {"Status": True, "message": "Update password successfully"}
+            else:
+                return {"Status": False, "message": "Mật khẩu cũ không trùng khớp"}
+        else: 
+            return {"Status": False, "message": "Tài khoản không tồn tại"}
+        
+    except Exception as e:
+        return {"Error": e}
 
 
 origins = ["http://localhost:5173"]

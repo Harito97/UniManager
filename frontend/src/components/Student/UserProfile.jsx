@@ -6,9 +6,13 @@ import ImgCrop from "antd-img-crop";
 import { storage } from "../../constants/Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
+import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
 
 const UserProfile = ({ user }) => {
+  const { openSuccessNotification, openErrorNotification } =
+    useContentContext();
+
   const [form] = Form.useForm();
   const [passForm] = Form.useForm();
   const [imgURL, setimgURL] = useState(null);
@@ -72,6 +76,18 @@ const UserProfile = ({ user }) => {
     console.log(values);
     //TODO: Update data tương ứng
     // Gồm sdt và email
+    try {
+      axios.put('http://localhost:8000/put_info_student', {
+        username: user,
+        sdt: values.sdt,
+        email: values.email,
+      })
+      .then((res) => console.log(res.data.message));
+    }
+   
+    catch(e) {
+      console.log(e);
+    }
   };
 
   const changePwd = (values) => {
@@ -79,9 +95,38 @@ const UserProfile = ({ user }) => {
     //TODO: Update data tương ứng
     // Thay doi mat khau thanh new_pass
     // Nhớ mã hoá nhé :))
+    console.log(values);
+    try {
+      axios.put('http://localhost:8000/change_pass', {
+        username: user,
+        current_pass: values.current_pass,
+        new_pass: values.new_pass,
+      })
+      .then((res) => {
+        if (res.data.Status) {
+          openSuccessNotification(
+            "Successfully!",
+            "Đổi mật khẩu thành công",
+          );
+          setTimeout(function() {
+          }, 700);
+        }
+        else {
+          openErrorNotification("Lỗi", res.data.message);
+          setTimeout(function() {
+          }, 700);
+        }
+      });
+    }
+    catch(e) {
+      console.log(e);
+    }
+
   };
 
   const deleteAvatar = () => {
+    setimgURL(null);
+    //TODO: chuyển giá trị avatar về null
     try {
       axios.delete('http://localhost:8000/delete_avatar/' + user, {
         username: user
@@ -90,8 +135,7 @@ const UserProfile = ({ user }) => {
     catch (e) {
       console.log(e)
     }
-    setimgURL(null);
-    //TODO: chuyển giá trị avatar về null
+
   };
 
   return (
