@@ -424,7 +424,7 @@ const Register = ({ user }) => {
   if (semester == 0) {
     return (
       <Alert
-        message="Đăng khoá đăng kí học, bạn vui lòng thử lại sau!"
+        message="Đang khoá đăng kí học, bạn vui lòng thử lại sau!"
         type="error"
         showIcon
       />
