@@ -80,6 +80,23 @@ class ID(BaseModel):
     id: int | None = None
 
 
+class AVATAR(BaseModel):
+    username: str | None = None
+    avatar: str | None = None
+
+
+class UPDATEINFO(BaseModel):
+    username: str | None = None
+    sdt: str | None = None
+    email: str | None = None
+
+
+class UPDATEPASSWORD(BaseModel):
+    username: str | None = None
+    current_pass: str | None = None
+    new_pass: str | None = None
+
+
 year_current = datetime.now().year
 
 def getTime():
@@ -828,15 +845,134 @@ async def download(id: ID):
 
 
 @app.post("/schedule_exam")
-async def sendScheduleExam():
+async def sendScheduleExam(user: User):
 
-    # statement = f"""
-    #                 select lh.ma_hk, lh.ma_hp, lh.ten_hp, lh.ma_lop, lh.lich_thi
-    #                 from 
-    #                     lich_hoc lh
+    statement = f"""
+                    select lh.ma_hk, lh.ma_hp, hp.ten_hp, lh.ma_lop, lh.lich_thi
+                    from 
+                        lich_hoc lh
+                        inner join hoc_ki hk on hk.ma_hk = lh.ma_hk
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
+                        and dk.ma_sv = {user.username} 
+                        and dk.diem_tx is null
                     
-    #             """
-    return 0
+                """
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for schedule in data:
+        unicode_data = schedule["lich_thi"]
+        schedule["lich_thi"] = json.loads(unicode_data)
+    
+    return {"exam": data}
+
+
+@app.post("/info_student")
+async def sendInfoStudent(user: User):
+
+    statement = f"""
+                    select
+                        sv.ho_ten, sv.gioi_tinh, sv.ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
+                    from 
+                        sinh_vien sv
+                        inner join user on user.username = sv.ma_sv
+                        inner join nganh on nganh.ma_nganh = sv.ma_nganh
+                    where 
+                        sv.ma_sv = {user.username}
+                """
+    
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    return {"info": data[0]}
+
+
+# @app.post("/get_avatar")
+# async def sendInfoStudent(user: User):
+
+#     statement = f"""
+#                     select
+#                         user.avatar
+#                     from 
+#                         sinh_vien sv
+#                         inner join user on user.username = sv.ma_sv
+#                     where 
+#                         sv.ma_sv = {user.username}
+#                 """
+    
+#     cursor.execute(statement)
+#     data = cursor.fetchall()
+
+#     return {"avatar": data[0]["avatar"]}
+
+
+# PUT: update record infomation
+@app.put("/put_image/")
+async def update_record(image: AVATAR):
+    try:
+        cursor.execute("""update user set avatar = %s
+                          where username = %s""", (
+                                                    image.avatar,
+                                                    image.username
+                                                  ))
+        
+        conn.commit()
+        return {"message": "Record updated successfully", "Record": image}
+    except Exception as e:
+        return e
+
+
+# DELETE: delete record
+@app.delete("/delete_avatar/{username}")
+async def delete_record(username: str):
+    try:
+
+        cursor.execute("update user set avatar = null where username = %s", (username,))
+        conn.commit()
+        
+        return {"message": f"Record image with ID {username} has been deleted"}
+    except Exception as e:
+        return e
+    
+
+@app.put("/put_info_student")
+async def updateInfoStudent(record: UPDATEINFO):
+    try: 
+       
+        cursor.execute(f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {record.username};")
+        conn.commit()
+        cursor.execute(f"update user set email = \"{record.email}\" where username = {record.username};")
+        conn.commit()
+
+        return {"message": "Record updated successfully"}
+    
+    except Exception as e:
+        return e
+
+
+@app.put("/change_pass")
+async def changePassWord(info: UPDATEPASSWORD):
+    try: 
+        cursor.execute(f"select pass_word from user where username = {info.username}")
+        data = cursor.fetchall()
+        if (len(data) > 0):
+            pwd_bytes = info.current_pass.encode('utf-8')
+            check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
+            if check_pwd:
+                cursor.execute(f"update user set pass_word = %s where username = {info.username}", (bcrypt.hashpw(info.new_pass.encode('utf8'), bcrypt.gensalt()), ))
+                conn.commit()
+                return {"Status": True, "message": "Update password successfully"}
+            else:
+                return {"Status": False, "message": "Mật khẩu cũ không trùng khớp"}
+        else: 
+            return {"Status": False, "message": "Tài khoản không tồn tại"}
+        
+    except Exception as e:
+        return {"Error": e}
+
 
 origins = ["http://localhost:5173"]
 
