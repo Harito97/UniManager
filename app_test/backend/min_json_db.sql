@@ -1,4 +1,5 @@
 -- Database
+drop database uni_manager;
 create database if not exists uni_manager;
 use uni_manager;
 
@@ -6,7 +7,7 @@ use uni_manager;
 -- 1. User
 create table if not exists TaiKhoan(
     id varchar(15) not null,    
-    mat_khau varchar(255) not null,
+    mat_khau binary(60) not null,
     quyen int(1) not null,
     primary key(id)
 );
@@ -47,7 +48,7 @@ create table if not exists PhongHoc(
 -- 3. Subject
 create table if not exists HocPhan(
     id varchar(15) not null,
-    ten varchar(50) not null,
+    ten varchar(255) not null,
     so_tin int not null,
     mo_ta varchar(255) not null,
     primary key(id)
@@ -64,12 +65,11 @@ create table if not exists MonHoc(
     id varchar(15) not null,
     id_hoc_phan varchar(15) not null,
     ky_hoc varchar(15) not null,
-    loai_phong varchar(15) not null,
     so_sv int not null,
-    he_so_tx decimal(2,2),
-    he_so_gk decimal(2,2),
-    he_so_ck decimal(2,2),
-    primary key(id)
+    he_so_tx decimal(3,2),
+    he_so_gk decimal(3,2),
+    he_so_ck decimal(3,2),
+    primary key(id, id_hoc_phan)
 );
 
 -- Connection
@@ -123,7 +123,10 @@ create table if not exists TKB(
     id_mh varchar(15) not null,
     id_ph varchar(15) not null,
     _time varchar(10) not null,
+    -- Eg: _time: 2_345: thứ 2 - tiết 345 
     id_gv varchar(15) not null,
+    _tinh_chat int(1) not null,
+    -- Eg: _tinh_chat: 0 - LT, 1 - TH, BT
     primary key(id_mh, id_ph, _time)
 );
 
@@ -167,7 +170,7 @@ alter table TKB add constraint fk_TKB_id_gv foreign key (id_gv) references Giang
 -- Thu tu do data lan luot la: 
 
 -- First: Object table
--- TaiKhoan = HocPhan = ChuongTrinhHoc = LoaiPhong > SinhVien = GiangVien = MonHoc = HocPhan
+-- TaiKhoan = HocPhan = ChuongTrinhHoc = LoaiPhong > SinhVien = GiangVien = MonHoc = PhongHoc
 
 -- Second: Connect table
 -- HPTQ = CTH_HP = GV_HP = GV_MH = SV_HP = SV_MH = HP_LP = TKB
