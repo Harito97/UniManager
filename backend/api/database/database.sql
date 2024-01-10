@@ -1,5 +1,13 @@
 use csdl_web;
 
+
+insert into user(username, pass_word, email, access_level)
+values
+("21002117", "$2b$12$Udgbyxbk0dvqEteQ82TONOtyI9V3D2Feb7kdoED7Eb1uiPM/X7C8e", "sv21002117@gmail.com", "SV"),
+("21002139", "$2b$12$BgBol6cOkz/D1f7zQ/2/5e4fQ2dbAL2bVECTTaYKtT.jykzBZt386", "admin@gmail.com", "AD"),
+("21002175", "$2b$12$7Bbx5AvwqvqCRssUyr8kxu2Du29TH.hPm37skHYNUdlpz3uD/SYlC", "gv21002175@gmail.com", "GV");
+
+
 insert into giang_vien(ma_gv, ho_ten, gioi_tinh, luong, ngsinh, sdt, dia_chi, ng_bat_dau, ng_ket_thuc) 
 values 
 ("21002100", "Nguyễn Văn A", "Nam", 2000.0, "2003-02-01", "0123456799", "Hà Nội", "2020-02-01", "2030-02-01"), 
@@ -191,14 +199,8 @@ values
 ("FLF1107", "21002500", 2);
 
 
-insert into user(username, pass_word, email, access_level)
-values
-("21002500", "2003", "nguyenvanthangk66@gmail.com", "SV"),
-("21002510", "2002", "nguyenvanthangk61@gmail.com", "ADMIN"),
-("21002520", "2001", "nguyenvanthangk62@gmail.com", "SV"),
-("21002530", "2004", "nguyenvanthangk63@gmail.com", "SV"),
-("21002540", "2005", "nguyenvanthangk64@gmail.com", "GV"),
-("21002550", "2006", "nguyenvanthangk65@gmail.com", "GV");
+
+
 
 
 
