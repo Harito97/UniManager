@@ -505,6 +505,9 @@ const Register = ({ user }) => {
             if (record.status) {
               return "bg-blue-200";
             }
+            else {
+              return "bg-pink-200";
+            }
           }}
         />
         <div className="flex justify-end gap-3">
