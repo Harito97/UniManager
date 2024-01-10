@@ -18,12 +18,12 @@ const Sidebar = () => {
   useEffect(() => {}, []);
 
   const selectedKey = () => {
-    if (path === "/teacher/dashboard") {
+    if (path === "/teacher/dashboard" || path === "/teacher") {
       return "1";
     } else if (path === "/teacher/calendar") {
       return "2";
-    } else {
-      return "1";
+    } else if (path === "/teacher/setting") {
+      return "-1";
     }
   };
 
