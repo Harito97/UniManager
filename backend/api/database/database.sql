@@ -1,3 +1,5 @@
+use csdl_web;
+
 insert into giang_vien(ma_gv, ho_ten, gioi_tinh, luong, ngsinh, sdt, dia_chi, ng_bat_dau, ng_ket_thuc) 
 values 
 ("21002100", "Nguyễn Văn A", "Nam", 2000.0, "2003-02-01", "0123456799", "Hà Nội", "2020-02-01", "2030-02-01"), 
@@ -34,7 +36,7 @@ values
 ("501T3", 60, "Phòng học lý thuyết"),
 ("301T5", 80, "Phòng thực hành vật lý"),
 ("502T3", 65, "Phòng thực hành hóa học"),
-("105T3", 150, "Phòng thực hành y sinh"),
+("105T3", 150, "Phòng thực hành y sinh");
 
 
 
@@ -52,7 +54,7 @@ values
 
 ("21002550", "Nguyễn Văn FG", "Nữ", "1998-06-05", "0129322539", "INM", "2018", "A4"),
 
-("21002550", "Nguyễn Văn GH", "Nữ", "1998-06-05", "0129322539", "INM", "2018", "A4");
+("21002551", "Nguyễn Văn GH", "Nữ", "1998-06-05", "0129322539", "INM", "2018", "A4");
 
 
 
@@ -98,7 +100,7 @@ values
 ("456", "HIS"),
 ("567", "GEO"),
 ("678", "INM"),
-("789", "CMT"),
+("789", "CMT");
 
 
 

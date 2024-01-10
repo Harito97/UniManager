@@ -876,7 +876,7 @@ async def sendInfoStudent(user: User):
 
     statement = f"""
                     select
-                        sv.ho_ten, sv.gioi_tinh, sv.ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
+                        sv.ho_ten, sv.gioi_tinh, date_format(sv.ngsinh, '%d/%m/%Y') as ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
                     from 
                         sinh_vien sv
                         inner join user on user.username = sv.ma_sv
