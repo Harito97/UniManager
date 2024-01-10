@@ -167,7 +167,14 @@ const Register = ({ user }) => {
         ));
       },
     },
-    { title: "Kiểu đăng kí", dataIndex: "type", width: 200 },
+    { 
+      title: "Kiểu đăng kí", 
+      dataIndex: "type", 
+      width: 200,
+      render: (_, record) => {
+        return <p>Đăng ký lần {record.lan}</p>
+      }   
+    },
     {
       title: "Huỷ",
       dataIndex: "delete",
