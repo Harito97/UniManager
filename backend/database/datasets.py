@@ -4,6 +4,7 @@ from database_model import *
 import random
 from datetime import datetime, timedelta
 
+# Danh sach hoc phan
 df = pd.read_excel("./backend/database/TKB-HKI-2023-2024.xlsx", engine="openpyxl")
 danh_sach_hoc_phan = []
 hoc_phan_dict = dict()
@@ -11,10 +12,14 @@ for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["S�
     if x not in hoc_phan_dict:
         hoc_phan_dict[x] = 1
         danh_sach_hoc_phan.append((x, y, z))
-# print(df["Mã \nhọc phần"].tolist()[1:])
-# print(df["Số\nTC"].fillna(2).to_string())
-# print(len(danh_sach_hoc_phan))
+        
+with open('./backend/database/danh_sach_hoc_phan.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('ma_hp,ten_hp,so_tin\n')
+    for element in danh_sach_hoc_phan:
+        ma_hp, ten_hp, so_tin = element[0], element[1], str(element[2])
+        file_a.write(f"{ma_hp},{ten_hp},{so_tin}\n")
 
+# Nhap vao database
 # try:
 #     for element in danh_sach_hoc_phan:
 #         cursor.execute("""
@@ -25,6 +30,7 @@ for x, y, z in zip(df["Mã \nhọc phần"][1:], df["Học phần"][1:], df["S�
 # except Exception as e:
 #     print(f"Error: {e}")
 
+# Danh sach nganh
 danh_sach_nganh = [
     ('QHT01', 'Toán học'),
     ('QHT02', 'Toán tin'),
@@ -32,17 +38,7 @@ danh_sach_nganh = [
     ('QHT93', 'Khoa học dữ liệu (*)')
 ]
 
-# with open('danh_sach_nganh.csv', 'w', encoding='utf8') as file1:
-#     file1.write('ma_nganh,ten_nganh\n')
-#     for item in danh_sach_nganh:
-#         ma_nganh,ten_nganh = item
-#         file1.write(f"{ma_nganh},{ten_nganh}\n")
-
-# with open('hoc_phan_tien_quyet.csv', 'w') as file2:
-#     file2.write("Ma_HP,HP_Tien_quyet\n")
-#     for item in danh_sach_hoc_phan_tien_quyet:
-#         ma_hp, hp_tien_quyet = item
-#         file2.write(f"{ma_hp},{hp_tien_quyet}\n")
+# Nhap vao database
 # try:
 #     for element in danh_sach_nganh:
 #         cursor.execute("""
@@ -53,19 +49,16 @@ danh_sach_nganh = [
 # except Exception as e:
 #     print(f"Error: {e}")
 
-danh_sach_phong = [
-    [(f'T3-P{i}', 80, f"Tòa T3 - Phòng số {i}") for i in range(1, 11)],
-    [(f'T4-P{i}', 80, f"Tòa T4 - Phòng số {i}") for i in range(1, 11)],
-    [(f'T5-P{i}', 120, f"Tòa T5 - Phòng số {i}") for i in range(1, 21)],
-    [(f'T2-P{i}', 80, f"Tòa T2 - Phòng số {i}") for i in range(1, 11)],
-    [(f'T1-P{i}', 80, f"Tòa T1 - Phòng số {i}") for i in range(1, 11)]
-]
+# Danh sach phong
+danh_sach_phong = []
+for i in range(1, 6):
+    for k in range(1, 16):
+        if k < 10: danh_sach_phong.append((f'{i}0{k}-T{i}',80,f'Tầng {k}, tòa T{i}'))
+        else: danh_sach_phong.append((f'{i}{k}-T{i}',80,f'Tầng {k}, tòa T{i}'))
 
-# with open('danh_sach_phong.csv', 'w', encoding='utf8') as file:
-#     file.write('phong,suc_chua,mo_ta\n')
-#     for item in danh_sach_phong:
-#         phong,suc_chua,mo_ta = item[0], item[1], item[2]
-#         file.write(f'{phong},{suc_chua},{mo_ta}\n')
+# print(danh_sach_phong)
+
+# Nhap vao database
 # try:
 #     for row in danh_sach_phong:
 #         for element in row:
@@ -77,6 +70,7 @@ danh_sach_phong = [
 # except Exception as e:
 #     print(f"Error: {e}") 
 
+# Danh sach hoc phan tien quyet
 danh_sach_hoc_phan_tien_quyet = [
     ("PHI1006", ""),
     ("PEC1008", "PHI1006"),
@@ -183,12 +177,7 @@ danh_sach_hoc_phan_tien_quyet = [
     ("MAT3398", "MAT3533")
 ]
 
-# with open('hoc_phan_tien_quyet.csv', 'w') as file2:
-#     file2.write("Ma_HP,HP_Tien_quyet\n")
-#     for item in danh_sach_hoc_phan_tien_quyet:
-#         ma_hp, hp_tien_quyet = item
-#         file2.write(f"{ma_hp},{hp_tien_quyet}\n")
-        
+# Nhap vao database
 # try:
 #     for element in danh_sach_hoc_phan_tien_quyet:
 #         cursor.execute("""
@@ -199,6 +188,7 @@ danh_sach_hoc_phan_tien_quyet = [
 # except Exception as e:
 #     print(f"Error: {e}")
 
+# Danh sach chuong trinh
 danh_sach_chuong_trinh = [
     ('KCT_01', 'QHT01'),
     ('KCT_02', 'QHT02'),
@@ -206,12 +196,7 @@ danh_sach_chuong_trinh = [
     ('KCT_93', 'QHT93') 
 ]
 
-# with open('danh_sach_chuong_trinh.csv', 'w') as file3:
-#     file3.write("ma_ct,ma_nganh\n")
-#     for item in danh_sach_chuong_trinh:
-#         ma_ct, ma_nganh = item
-#         file3.write(f"{ma_ct},{ma_nganh}\n")
-        
+# Nhap vao database        
 # try:
 #     for element in danh_sach_chuong_trinh:
 #         cursor.execute("""
@@ -222,17 +207,11 @@ danh_sach_chuong_trinh = [
 # except Exception as e:
 #     print(f"Error: {e}")
     
+# Danh sach chuong trinh hoc
 df2 = pd.read_csv("./backend/database/danh_sach_chuong_trinh_hoc.csv")
-# danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
-# print(danh_sach_chuong_trinh)
+danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
 
-danh_sach_ngoai_le = []
-for element in df2['ma_hp']:
-    if element not in df["Mã \nhọc phần"][1:]:
-        danh_sach_ngoai_le.append(element)
-
-print(danh_sach_ngoai_le)
-
+# Nhap vao database
 # try:
 #     for element in danh_sach_chuong_trinh:
 #         cursor.execute("""
@@ -242,11 +221,8 @@ print(danh_sach_ngoai_le)
 #         conn.commit()
 # except Exception as e:
 #     print(f"Error: {e}")
-    
-# print(len(df2["ma_hp"].unique()))
 
-# print(len(df["Mã \nhọc phần"][1:].unique()))
-
+# Danh sach ten giang vien
 danh_sach_ten_giang_vien = [
     "Nguyen Thanh Hoa",
     "Tran Minh Duc",
@@ -300,7 +276,6 @@ danh_sach_ten_giang_vien = [
     "Nguyen Ha Khanh Linh"
 ]
 
-
 def generate_student_names(count):
     first_names = ["Nguyen", "Tran", "Le", "Pham", "Hoang", "Vo", "Ngo", "Do", "Luong", "Truong", "Dang", "Mai", "Bui"]
     middle_names = ["Van", "Thi", "Minh", "Duc", "Thi", "Quang", "Van", "Thi", "Van", "Thi", "Van", "Van", "Van"]
@@ -316,6 +291,7 @@ def generate_student_names(count):
 
     return student_names
 
+# Danh sach ten sinh vien
 danh_sach_ten_sinh_vien = generate_student_names(200)
 
 def generate_hanoi_addresses(count):
@@ -335,7 +311,7 @@ def generate_hanoi_addresses(count):
 
     return hanoi_addresses
 
-# Generate 200 Hanoi addresses
+# Danh sach dia chi
 danh_sach_dia_chi_giang_vien = generate_hanoi_addresses(50)
 
 def generate_random_phone_number():
@@ -343,6 +319,7 @@ def generate_random_phone_number():
     phone_number += "".join([str(random.randint(0, 9)) for _ in range(8)])  # Random remaining 9 digits
     return phone_number
 
+# Danh sach sdt
 danh_sach_sdt_giang_vien = [generate_random_phone_number() for _ in range(50)]
 danh_sach_sdt_sinh_vien = [generate_random_phone_number() for _ in range(200)]
 
@@ -364,12 +341,12 @@ end_date2 = datetime(1980, 12, 31)
 
 danh_sach_ngsinh_giang_vien = generate_random_dates(start_date2, end_date2, 50)
 
+# Danh sach giang vien
 danh_sach_giang_vien = [
     (f'GV_{i+1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 50)
 ]
 
-# print(danh_sach_giang_vien)
-
+# Nhap vao database
 # try:
 #     for element in danh_sach_giang_vien:
 #         cursor.execute("""
@@ -380,14 +357,12 @@ danh_sach_giang_vien = [
 # except Exception as e:
 #     print(f"Error: {e}")
 
-danh_sach_ma_nganh = [i for i in danh_sach_nganh]
-
+# Danh sach sinh vien
 danh_sach_sinh_vien = [
-    (f'{21000000 + i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], random.choice(danh_sach_ma_nganh)[0], 2021, f'K66A{i % 5 + 1}') for i in range(0, 200)
+    (f'{21000000 + i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], random.choice(danh_sach_nganh)[0], 2021, f'K66A{i % 4 + 1}') for i in range(0, 200)
 ]
 
-# print(danh_sach_sinh_vien)
-
+# Nhap vao database
 # try:
 #     for element in danh_sach_sinh_vien:
 #         cursor.execute("""
@@ -398,19 +373,4 @@ danh_sach_sinh_vien = [
 # except Exception as e:
 #     print(f"Error: {e}")
 
-# print(danh_sach_sinh_vien)
-
-# danh_sach_ma_lop = zip(df["Mã \nhọc phần"][1:], df["HK"][1:])
-# with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
-#     file_a.write('ma_hoc_phan,hoc_ki\n')
-#     for item in danh_sach_ma_lop:
-#         ma_lop, ma_hp = 
-# df_lich_hoc = pd.read_csv("danh_sach_lich_hoc.csv")
-# danh_sach_lich_hoc = [(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk)
-#                         for ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk in zip(df_lich_hoc[""])]
-
-# with open("danh_sach_ma_hoc_phan.csv", "w") as file_a:
-#     file_a.write("ma_hoc_phan,hoc_ki\n")
-#     for x, y in zip(df["Mã \nhọc phần"][1:],df["HK"][1:]):
-#         file_a.write(f"{x},{y}\n")
-
+danh_sach_lich_hoc = []
