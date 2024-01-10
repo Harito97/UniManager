@@ -753,9 +753,9 @@ async def update_record(coeffiecient: COEFFICIENT):
             coeffiecient.ma_lh))
 
         conn.commit()
-        return {"message": "Record updated successfully"}
+        return {"message": "Record updated successfully", "Status": True}
     except Exception as e:
-        return e
+        return {"Status": False}
 
 
 # PUT: update record infomation
@@ -770,9 +770,9 @@ async def update_record(newRecord: DANGKY):
                                                                             newRecord.ma_sv))
 
         conn.commit()
-        return {"message": "Record updated successfully", "Record": newRecord}
+        return {"message": "Record updated successfully", "Status": True}
     except Exception as e:
-        return e
+        return {"Status": False}
 
 
 @app.post("/download")

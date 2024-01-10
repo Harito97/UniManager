@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, Table, Modal } from "antd";
 import axios from "axios";
+import { useContentContext } from "../Notification/ContentContext";
 
 const Manager = ({ ma_lh }) => {
   const [showModal, setShowModel] = useState(false);
+  const { openSuccessNotification, openErrorNotification } =
+    useContentContext();
 
   const columns = [
     {
@@ -212,12 +215,20 @@ const Manager = ({ ma_lh }) => {
     const he_so_ck = parseFloat(values.he_so_ck);
 
     try {
-      axios.put("http://localhost:8000/put_coefficient", {
-        ma_lh: ma_lh,
-        he_so_tx: isNaN(he_so_tx) ? null : he_so_tx,
-        he_so_gk: isNaN(he_so_gk) ? null : he_so_gk,
-        he_so_ck: isNaN(he_so_ck) ? null : he_so_ck,
-      });
+      axios
+        .put("http://localhost:8000/put_coefficient", {
+          ma_lh: ma_lh,
+          he_so_tx: isNaN(he_so_tx) ? null : he_so_tx,
+          he_so_gk: isNaN(he_so_gk) ? null : he_so_gk,
+          he_so_ck: isNaN(he_so_ck) ? null : he_so_ck,
+        })
+        .then((res) => {
+          if (res.data.Status) {
+            openSuccessNotification("Thành công", "Cập nhật hệ số thành công");
+          } else {
+            openErrorNotification("Lỗi", "Đã có lỗi xảy ra");
+          }
+        });
     } catch (e) {
       console.log(e);
     }
@@ -232,13 +243,24 @@ const Manager = ({ ma_lh }) => {
     const diem_ck = parseFloat(values.diem_ck);
 
     try {
-      axios.put("http://localhost:8000/put_dangky", {
-        ma_lh: ma_lh,
-        ma_sv: editingRow,
-        diem_tx: isNaN(diem_tx) ? null : parseFloat(diem_tx.toFixed(2)),
-        diem_gk: isNaN(diem_gk) ? null : parseFloat(diem_gk.toFixed(2)),
-        diem_ck: isNaN(diem_ck) ? null : parseFloat(diem_ck.toFixed(2)),
-      });
+      axios
+        .put("http://localhost:8000/put_dangky", {
+          ma_lh: ma_lh,
+          ma_sv: editingRow,
+          diem_tx: isNaN(diem_tx) ? null : parseFloat(diem_tx.toFixed(2)),
+          diem_gk: isNaN(diem_gk) ? null : parseFloat(diem_gk.toFixed(2)),
+          diem_ck: isNaN(diem_ck) ? null : parseFloat(diem_ck.toFixed(2)),
+        })
+        .then((res) => {
+          if (res.data.Status) {
+            openSuccessNotification(
+              "Thành công",
+              "Đã cập nhật điểm thành công",
+            );
+          } else {
+            openErrorNotification("Lỗi", "Đã có lỗi xảy ra");
+          }
+        });
     } catch (e) {
       console.log(e);
     }
