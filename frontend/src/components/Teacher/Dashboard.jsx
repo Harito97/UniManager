@@ -80,21 +80,6 @@ const Dashboard = ({ user }) => {
   }, [user]);
   console.log(dataSchedule)
 
-  // Data mẫu
-  // const data = [
-  //   {
-  //     ma_lh: 1,
-  //     ten_hp: "Cơ sở dữ liệu Web và hệ thống thông tin",
-  //     ma_hp: "MAT3385",
-  //     ma_lop: 1,
-  //     da_dk: 30,
-  //     lich_hoc: [
-  //       { thu: "T2", bd: 1, kt: 2, phong: "103T4" },
-  //       { thu: "T5", bd: 6, kt: 10, phong: "PM" },
-  //     ],
-  //   },
-  // ];
-
   return (
     <>
       <h1 className="pb-5 text-xl font-bold">Các lớp đang giảng dạy</h1>

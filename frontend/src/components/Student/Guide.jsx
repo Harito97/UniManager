@@ -24,8 +24,8 @@ const Guide = ({user}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseGuide = await axios.post('http://localhost:8000/guide');
-        setGuide(responseGuide.data.guide);
+        await axios.post('http://localhost:8000/guide').then((res) => setGuide(res.data.guide));
+        
       } catch (error) {
         console.log(error);
       }
@@ -33,17 +33,6 @@ const Guide = ({user}) => {
 
     fetchData();
   }, [user]);
-
-  // const data = [
-  //   {dot: "Đợt 1",
-  //    time_start: "12/01/2024",
-  //    time_end: "15/01/2024"},
-  //   {dot: "Đợt 2",
-  //    time_start: "25/01/2024",
-  //    time_end: "29/01/2024"},
-  //   {dot: "Đợt 3",
-  //    time_start: "07/02/2024",
-  //    time_end: "10/02/2024"}]
 
   return (
     <>

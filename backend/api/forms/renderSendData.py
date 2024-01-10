@@ -44,15 +44,19 @@ class UserInfo(BaseModel):
     username: str
     password: str
 
+
 class ForgotPassword(BaseModel):
     username: str
+
 
 class User(BaseModel):
     username: str
 
+
 class UserSemester(BaseModel):
     username: str
     ma_hk: int
+
 
 class Class(BaseModel):
     ma_lh: int
@@ -99,6 +103,7 @@ class UPDATEPASSWORD(BaseModel):
 
 year_current = datetime.now().year
 
+
 def getTime():
     if datetime(year_current, 8, 1) <= datetime.now() <= datetime(year_current, 12, 31):
         return {"semester": "1", "year": str(year_current)}
@@ -114,9 +119,10 @@ def subject(data):
     for item in data:
         ma_hp = item["ma_hp"]
         he4 = item["he4"]
-        
+
         if ma_hp not in max_he4_dict or he4 > max_he4_dict[ma_hp]["he4"]:
-            max_he4_dict[ma_hp] = {"ma_hp": ma_hp, "he4": he4, "so_tin": item["so_tin"]}
+            max_he4_dict[ma_hp] = {"ma_hp": ma_hp,
+                                   "he4": he4, "so_tin": item["so_tin"]}
 
     result = list(max_he4_dict.values())
     return result
@@ -126,27 +132,30 @@ def subject(data):
 async def verify_user(request: Request):
     if "token" in request.cookies:
         token = request.cookies["token"]
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=[
+                             SECURITY_ALGORITHM])
         return {"Status": True, "decoded": decoded}
     else:
         return {"Status": False, "Error": "Bạn chưa đăng nhập"}
-    
 
-    
+
 @app.post("/login")
 async def login(user: UserInfo, response: Response):
     if not db_status:
         return {"Status": False, "Error": "Không thể kết nối với CSDL"}
     try:
-        cursor.execute("select * from user where username = \"{}\"".format(user.username))
+        cursor.execute(
+            "select * from user where username = \"{}\"".format(user.username))
         data = cursor.fetchall()
         if (len(data) > 0):
             pwd_bytes = user.password.encode('utf-8')
             check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
             if (check_pwd):
-                print({"username": data[0]["username"], "access_level": data[0]["access_level"]})
-                token = jwt.encode({"username": data[0]["username"], "access_level": data[0]["access_level"]}, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
-                response.set_cookie(key = "token", value = token, httponly=True)
+                print({"username": data[0]["username"],
+                      "access_level": data[0]["access_level"]})
+                token = jwt.encode({"username": data[0]["username"], "access_level": data[0]
+                                   ["access_level"]}, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
+                response.set_cookie(key="token", value=token, httponly=True)
                 return {"Status": True, "level": data[0]["access_level"]}
             else:
                 return {"Status": False, "Error": "Mật khẩu không chính xác"}
@@ -154,11 +163,13 @@ async def login(user: UserInfo, response: Response):
             return {"Status": False, "Error": f"Không tồn tại username {user.username}"}
     except Exception as e:
         return {"Error": e}
-    
+
+
 @app.get("/logout")
 async def log_out(response: Response):
     response.delete_cookie("token")
     return {"Status": True}
+
 
 @app.post("/forgot_password")
 async def forgot_password(request: ForgotPassword):
@@ -188,8 +199,8 @@ async def forgot_password(request: ForgotPassword):
         MAIL_FROM="nguyenvanthang_t66@hus.edu.vn",
         MAIL_PORT=587,
         MAIL_SERVER="smtp.gmail.com",
-        MAIL_STARTTLS = True,
-        MAIL_SSL_TLS = False,
+        MAIL_STARTTLS=True,
+        MAIL_SSL_TLS=False,
         USE_CREDENTIALS=True,
         VALIDATE_CERTS=True,
         MAIL_FROM_NAME="Phong Dao Tao DHKHTN",
@@ -248,16 +259,17 @@ async def forgot_password(request: ForgotPassword):
 async def getCurrent(request: Request):
     return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
 
+
 @app.get("/current_registration")
 async def currentPeriod():
     cursor.execute("""select dot, ma_hk 
                    from dot_dki
                    where ng_bat_dau <= NOW() and ng_ket_thuc >= NOW()""")
-    
+
     data = cursor.fetchall()
     if len(data) == 0:
         return {"Status": False}
-    else: 
+    else:
         return {"Status": True, "current": data[0]}
 
 
@@ -267,7 +279,7 @@ async def sendOverView(user: User, request: Request):
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
                    where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
-    
+
     tong_so_tin = cursor.fetchall()[0]["tin"]
 
     cursor.execute(f"""select sum(subquery.so_tin) as so_tin from (select distinct(lh.ma_hp), hp.so_tin
@@ -275,7 +287,6 @@ async def sendOverView(user: User, request: Request):
                    where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
                          dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck >= 4) as subquery
                    """)
-                   
 
     tong_so_tin_tich_luy = cursor.fetchall()[0]["so_tin"]
 
@@ -307,17 +318,17 @@ async def sendOverView(user: User, request: Request):
                         where dang_ky.diem_ck is not null and dk.total_score >= 4 and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and dk.ma_lh = dang_ky.ma_lh
                         group by lh.ma_lh
                     ) as subquery;""")
-    
+
     data = subject(cursor.fetchall())
 
     numerator = 0
     denominator = 0
-    
+
     for element in data:
         numerator += element["he4"]*element["so_tin"]
         denominator += element["so_tin"]
-    
-    gpa = round(numerator/denominator,2)
+
+    gpa = round(numerator/denominator, 2)
 
     # đang làm dở
 
@@ -326,71 +337,10 @@ async def sendOverView(user: User, request: Request):
 
 @app.post("/grade")
 async def sendGrade(user: User, request: Request):
-
-    columns = [
-        {
-            "title": "Mã môn học",
-            "dataIndex": "ma_hp",
-            "key": "ma_hp",
-        },
-        {
-            "title": "Môn học",
-            "dataIndex": "ten_hp",
-            "key": "ten_hp",
-        },
-        {
-            "title": "Số tín chỉ",
-            "dataIndex": "so_tin",
-            "key": "so_tin",
-        },
-        {
-            "title": "Điểm hệ 10",
-            "dataIndex": "he10",
-            "key": "he10",
-        },
-        {
-            "title": "Điểm chữ",
-            "dataIndex": "diem",
-            "key": "diem",
-        },
-        {
-            "title": "Điểm hệ 4",
-            "dataIndex": "he4",
-            "key": "he4",
-        },
-    ]
-
-    expand_columns = [
-        {
-            "title": "STT",
-            "dataIndex": "stt",
-            "key": "stt",
-        },
-        {
-            "title": "Bản chất kỳ thi",
-            "dataIndex": "type",
-            "key": "type",
-        },
-        {
-            "title": "Hệ số",
-            "dataIndex": "he_so",
-            "key": "he_so",
-        },
-        {
-            "title": "Lần thi",
-            "dataIndex": "lan",
-            "key": "lan",
-        },
-        {
-            "title": "Điểm",
-            "dataIndex": "diem",
-            "key": "diem",
-        },
-    ]
-
     current_year = datetime.now().year
 
-    cursor.execute(f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
+    cursor.execute(
+        f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
     nam_bat_dau = cursor.fetchall()[0]["nam_bat_dau"]
 
     data_component_grade = []
@@ -398,25 +348,24 @@ async def sendGrade(user: User, request: Request):
     for year in range(nam_bat_dau, current_year+1):
 
         data_year = []
-        
+
         for semester in range(1, 3):
 
             statement = f"""
                             select lh.ma_hp, 1 as "so_lan_hoc", lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
-                            from hoc_phan hp, lich_hoc lh, dang_ky dk, sv_hp, hoc_ki hk
+                            from hoc_phan hp, lich_hoc lh, dang_ky dk, hoc_ki hk
                             where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\")
                             group by lh.ma_lh;
                         """
-            
+
             cursor.execute(statement)
             data = cursor.fetchall()
             data_year.append(data)
 
         data_component_grade.append(data_year)
 
-   
     counter = {}  # Dùng để theo dõi số lần xuất hiện của mỗi môn học
 
     for year in data_component_grade:
@@ -424,10 +373,9 @@ async def sendGrade(user: User, request: Request):
             for object in semester:
                 if object["ma_hp"] not in counter:
                     counter[object["ma_hp"]] = 1
-                else: 
+                else:
                     counter[object["ma_hp"]] += 1
                 object["so_lan_hoc"] = counter[object["ma_hp"]]
-               
 
     data_expand = []
 
@@ -436,19 +384,19 @@ async def sendGrade(user: User, request: Request):
         for semester in year:
             list_objects = []
             for object in semester:
-                list_objects.append([{"stt": 1, "type": "Thi cuối kì", "he_so": object["he_so_ck"], "lan": object["so_lan_hoc"], "diem": object["diem_ck"]},
-                                {"stt": 2, "type": "Giữa kì", "he_so": object["he_so_gk"], "lan": object["so_lan_hoc"], "diem": object["diem_gk"]},
-                                {"stt": 3, "type": "Thường xuyên", "he_so": object["he_so_tx"], "lan": object["so_lan_hoc"], "diem": object["diem_tx"]}])
+                list_objects.append([{"type": "Thi cuối kì", "he_so": object["he_so_ck"], "lan": object["so_lan_hoc"], "diem": object["diem_ck"]},
+                                     {"type": "Giữa kì", "he_so": object["he_so_gk"],
+                                         "lan": object["so_lan_hoc"], "diem": object["diem_gk"]},
+                                     {"type": "Thường xuyên", "he_so": object["he_so_tx"], "lan": object["so_lan_hoc"], "diem": object["diem_tx"]}])
             list_semesters.append(list_objects)
         data_expand.append(list_semesters)
-
 
     data_sum_grade = []
 
     for year in range(nam_bat_dau, current_year+1):
 
         data_year = []
-        
+
         for semester in range(1, 3):
 
             statement = f"""
@@ -495,10 +443,10 @@ async def sendGrade(user: User, request: Request):
             data_semester = cursor.fetchall()
 
             for element in data_semester:
-                element['he10'] = round(element['he10'],1)
+                element['he10'] = round(element['he10'], 1)
 
             data_year.append(data_semester)
-            
+
         data_sum_grade.append(data_year)
 
     nam = 0
@@ -516,12 +464,13 @@ async def sendGrade(user: User, request: Request):
     data = []
 
     for year in range(nam_bat_dau, current_year+1):
-        for semester in range(1,3):
+        for semester in range(1, 3):
             if len(data_sum_grade[year-2021][semester-1]) == 0:
                 break
-            data.append({"ki": semester, "nam": year, "data": data_sum_grade[year-nam_bat_dau][semester-1]})
+            data.append({"ki": semester, "nam": year,
+                        "data": data_sum_grade[year-nam_bat_dau][semester-1]})
 
-    return {"columns": columns, "expand_columns": expand_columns, "data": data}
+    return {"data": data}
 
 
 @app.post("/subject_learned")
@@ -543,7 +492,7 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
 
 @app.post("/subject_all")
 async def sendSubject(user: UserSemester, request: Request):
-    
+
     statement = f"""
                     select
                         lh.ma_lh as "ma_lh",
@@ -642,22 +591,21 @@ async def registeredSubject(user: User):
                         lh.ma_lop as "ma_lop",
                         group_concat(gv.ho_ten) as "ten_gv",
                         lh.thoi_gian as "lich_hoc",
-                        sv_hp.so_lan_hoc as "lan"
+                        (select count(*) from dang_ky dk2, lich_hoc lh2 where dk2.ma_lh = lh2.ma_lh and lh2.ma_hp = lh.ma_hp and dk2.ma_sv = "21002500") as "lan"
 
                     from 
                         lich_hoc lh
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                        inner join sv_hp on sv_hp.ma_hp = lh.ma_hp
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
                     where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
-                    group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian, sv_hp.so_lan_hoc
+                    group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian
                     order by 
                         hp.ten_hp asc;
                 """
-    
+
     cursor.execute(statement)
     data = cursor.fetchall()
 
@@ -671,7 +619,7 @@ async def registeredSubject(user: User):
 
 @app.post("/teaching_schedule")
 async def sendSchedule(user: User, request: Request):
-     
+
     statement = f"""
                     select 
                         lh.ma_lh as "ma_lh",
@@ -694,7 +642,7 @@ async def sendSchedule(user: User, request: Request):
                     group by lh.ma_hp
                     order by hp.ten_hp;
                 """
-    
+
     cursor.execute(statement)
     data = cursor.fetchall()
 
@@ -722,7 +670,7 @@ async def sendStudentClass(lop: Class):
                         inner join sinh_vien sv on dk.ma_sv = sv.ma_sv
                     where dk.ma_lh = {lop.ma_lh} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
                 """
-    
+
     cursor.execute(statement)
     data = cursor.fetchall()
 
@@ -741,7 +689,7 @@ async def sendCoefficient(lop: Class):
                         lich_hoc lh
                     where lh.ma_lh = {lop.ma_lh}
                 """
-    
+
     cursor.execute(statement)
     data = cursor.fetchall()
 
@@ -750,10 +698,11 @@ async def sendCoefficient(lop: Class):
 
 @app.post("/guide")
 async def sendGuide():
-    
+
     ma_hk = str(getTime()["year"])[-2:] + str(getTime()["semester"])
 
-    cursor.execute(f"select dot as dot, date_format(ng_bat_dau, '%d-%m-%Y') as time_start, date_format(ng_ket_thuc, '%d-%m-%Y') as time_end from dot_dki where ma_hk = {ma_hk}")
+    cursor.execute(
+        f"select dot as dot, date_format(ng_bat_dau, '%d-%m-%Y') as time_start, date_format(ng_ket_thuc, '%d-%m-%Y') as time_end from dot_dki where ma_hk = {ma_hk}")
     data = cursor.fetchall()
 
     return {"guide": data}
@@ -764,12 +713,12 @@ async def sendGuide():
 async def create_records(newRecord: DANGKY):
     try:
         cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, diem_gk, diem_ck)
-                          values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh, 
-                                                            newRecord.ma_sv, 
-                                                            newRecord.diem_tx,
-                                                            newRecord.diem_gk, 
-                                                            newRecord.diem_ck))
-        
+                          values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh,
+                                                           newRecord.ma_sv,
+                                                           newRecord.diem_tx,
+                                                           newRecord.diem_gk,
+                                                           newRecord.diem_ck))
+
         conn.commit()
         return {"message": "Record created successfully", "Record": newRecord}
     except Exception as e:
@@ -780,31 +729,33 @@ async def create_records(newRecord: DANGKY):
 @app.delete("/delete_dangky/{ma_lh}_{ma_sv}")
 async def delete_record(ma_lh: int, ma_sv: str):
     try:
-        cursor.execute("select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+        cursor.execute(
+            "select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
         deleted_record = cursor.fetchall()
 
-        cursor.execute("delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+        cursor.execute(
+            "delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
         conn.commit()
-        
+
         return {"message": f"Record with ID {ma_lh, ma_sv} has been deleted", "deleted": deleted_record}
     except Exception as e:
         return e
-    
+
 
 # PUT: update record infomation
 @app.put("/put_coefficient/")
 async def update_record(coeffiecient: COEFFICIENT):
     try:
         cursor.execute("""update lich_hoc set he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (
-                                                                            coeffiecient.he_so_tx,
-                                                                            coeffiecient.he_so_gk,
-                                                                            coeffiecient.he_so_ck,
-                                                                            coeffiecient.ma_lh))
-        
+            coeffiecient.he_so_tx,
+            coeffiecient.he_so_gk,
+            coeffiecient.he_so_ck,
+            coeffiecient.ma_lh))
+
         conn.commit()
-        return {"message": "Record updated successfully"}
+        return {"message": "Record updated successfully", "Status": True}
     except Exception as e:
-        return e
+        return {"Status": False}
 
 
 # PUT: update record infomation
@@ -812,21 +763,21 @@ async def update_record(coeffiecient: COEFFICIENT):
 async def update_record(newRecord: DANGKY):
     try:
         cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
-                          diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx, 
+                          diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx,
                                                                             newRecord.diem_gk,
-                                                                            newRecord.diem_ck, 
-                                                                            newRecord.ma_lh, 
+                                                                            newRecord.diem_ck,
+                                                                            newRecord.ma_lh,
                                                                             newRecord.ma_sv))
-        
+
         conn.commit()
-        return {"message": "Record updated successfully", "Record": newRecord}
+        return {"message": "Record updated successfully", "Status": True}
     except Exception as e:
-        return e
-    
+        return {"Status": False}
+
 
 @app.post("/download")
 async def download(id: ID):
-    
+
     cursor.execute(f"select name, file from form where id = {id.id}")
     result = cursor.fetchall()
 
@@ -866,7 +817,7 @@ async def sendScheduleExam(user: User):
     for schedule in data:
         unicode_data = schedule["lich_thi"]
         schedule["lich_thi"] = json.loads(unicode_data)
-    
+
     return {"exam": data}
 
 
@@ -883,7 +834,7 @@ async def sendInfoStudent(user: User):
                     where 
                         sv.ma_sv = {user.username}
                 """
-    
+
     cursor.execute(statement)
     data = cursor.fetchall()
 
@@ -896,13 +847,13 @@ async def sendInfoStudent(user: User):
 #     statement = f"""
 #                     select
 #                         user.avatar
-#                     from 
+#                     from
 #                         sinh_vien sv
 #                         inner join user on user.username = sv.ma_sv
-#                     where 
+#                     where
 #                         sv.ma_sv = {user.username}
 #                 """
-    
+
 #     cursor.execute(statement)
 #     data = cursor.fetchall()
 
@@ -915,10 +866,10 @@ async def update_record(image: AVATAR):
     try:
         cursor.execute("""update user set avatar = %s
                           where username = %s""", (
-                                                    image.avatar,
-                                                    image.username
-                                                  ))
-        
+            image.avatar,
+            image.username
+        ))
+
         conn.commit()
         return {"message": "Record updated successfully", "Record": image}
     except Exception as e:
@@ -930,48 +881,119 @@ async def update_record(image: AVATAR):
 async def delete_record(username: str):
     try:
 
-        cursor.execute("update user set avatar = null where username = %s", (username,))
+        cursor.execute(
+            "update user set avatar = null where username = %s", (username,))
         conn.commit()
-        
+
         return {"message": f"Record image with ID {username} has been deleted"}
     except Exception as e:
         return e
-    
+
 
 @app.put("/put_info_student")
 async def updateInfoStudent(record: UPDATEINFO):
-    try: 
-       
-        cursor.execute(f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {record.username};")
+    try:
+
+        cursor.execute(
+            f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {record.username};")
         conn.commit()
-        cursor.execute(f"update user set email = \"{record.email}\" where username = {record.username};")
+        cursor.execute(
+            f"update user set email = \"{record.email}\" where username = {record.username};")
         conn.commit()
 
-        return {"message": "Record updated successfully"}
-    
+        return {"message": "Record updated successfully", "Status": True}
+
     except Exception as e:
-        return e
+        return {"Status": False, "message": e}
 
 
 @app.put("/change_pass")
 async def changePassWord(info: UPDATEPASSWORD):
-    try: 
-        cursor.execute(f"select pass_word from user where username = {info.username}")
+    try:
+        cursor.execute(
+            f"select pass_word from user where username = {info.username}")
         data = cursor.fetchall()
         if (len(data) > 0):
             pwd_bytes = info.current_pass.encode('utf-8')
             check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
             if check_pwd:
-                cursor.execute(f"update user set pass_word = %s where username = {info.username}", (bcrypt.hashpw(info.new_pass.encode('utf8'), bcrypt.gensalt()), ))
+                cursor.execute(f"update user set pass_word = %s where username = {info.username}", (
+                    bcrypt.hashpw(info.new_pass.encode('utf8'), bcrypt.gensalt()), ))
                 conn.commit()
                 return {"Status": True, "message": "Update password successfully"}
             else:
                 return {"Status": False, "message": "Mật khẩu cũ không trùng khớp"}
-        else: 
+        else:
             return {"Status": False, "message": "Tài khoản không tồn tại"}
-        
+
     except Exception as e:
         return {"Error": e}
+
+
+@app.post("/get_info_subject_register")
+async def getInfoSubjectRegister(user: User):
+
+    statement1 = f"""
+                    select 
+                        {int(getTime()["semester"])} as ki,
+                        {int(getTime()["year"])} as nh,
+                        {int(getTime()["year"])} + 1 as nhs,
+                        day(curdate()) as ngay,
+                        month(curdate()) as thang,
+                        year(curdate()) as nam,
+                        sv.ho_ten as ho_ten,
+                        date_format(sv.ngsinh, '%d/%m/%Y') as ngsinh,
+                        sv.ma_sv as ma_sv,
+                        (select concat(sv.lop, ' ', nganh.ten_nganh)) as lop
+
+                    from 
+                        sinh_vien sv 
+                        inner join nganh on nganh.ma_nganh = sv.ma_nganh
+                        inner join dang_ky dk on dk.ma_sv = sv.ma_sv
+                        inner join lich_hoc lh on lh.ma_lh = dk.ma_lh
+
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username}
+
+                    group by
+                        sv.ma_sv
+
+                """
+
+    cursor.execute(statement1)
+    data1 = cursor.fetchall()
+
+    statement2 = f"""
+                    select 
+                        row_number() over() as stt,
+                        lh.ma_hp as ma_hp,
+                        hp.ten_hp as ten_hp,
+                        hp.so_tin as so_tin,
+                        lh.ma_lop as ma_lop,
+                        lh.thoi_gian as lich_hoc
+
+                    from 
+                        lich_hoc lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join hoc_ki hk on hk.ma_hk = lh.ma_hk
+                        inner join dang_ky dk on dk.ma_lh = lh.ma_lh
+                        inner join sinh_vien sv on sv.ma_sv = dk.ma_sv
+
+                    where 
+                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username} and dk.diem_tx is null
+
+                """
+
+    cursor.execute(statement2)
+    data2 = cursor.fetchall()
+
+    for subject in data2:
+        unicode_data = subject["lich_hoc"]
+        subject["lich_hoc"] = json.loads(unicode_data)
+
+    data1[0]["items"] = data2
+
+    return {"info_subject_register": data1}
 
 
 origins = ["http://localhost:5173"]
@@ -980,7 +1002,7 @@ origins = ["http://localhost:5173"]
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
