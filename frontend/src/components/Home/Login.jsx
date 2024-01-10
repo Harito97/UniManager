@@ -40,8 +40,8 @@ const Login = ({ handleForgot }) => {
 
   return (
     <>
-        <span class="mb-3 text-2xl font-bold">Welcome back!</span>
-        <span class="mb-8 font-light text-gray-400">
+        <span className="mb-3 text-2xl font-bold">Welcome back!</span>
+        <span className="mb-8 font-light text-gray-400">
           Hãy nhập thông tin đăng nhập của bạn
         </span>
         <Form layout="vertical" onFinish={onFinish}>

@@ -30,9 +30,9 @@ const Forgot = ({ handleForgot }) => {
 
   return (
     <>
-      <span class="mb-3 text-2xl font-bold">Quên mật khẩu?</span>
-      <span class="font-light text-gray-400">Nhập tên đăng nhập của bạn</span>
-      <span class="mb-8 font-light text-gray-400">
+      <span className="mb-3 text-2xl font-bold">Quên mật khẩu?</span>
+      <span className="font-light text-gray-400">Nhập tên đăng nhập của bạn</span>
+      <span className="mb-8 font-light text-gray-400">
         Mật khẩu mới sẽ được gửi về email của bạn
       </span>
       <Form layout="vertical" onFinish={handleSubmit}>

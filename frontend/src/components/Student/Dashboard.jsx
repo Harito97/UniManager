@@ -10,264 +10,79 @@ import { Space, Table, Badge, Dropdown } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-// const columns = [
-//   {
-//     title: "Mã môn học",
-//     dataIndex: "ma_hp",
-//     key: "ma_hp",
-//   },
-//   {
-//     title: "Môn học",
-//     dataIndex: "ten_hp",
-//     key: "ten_hp",
-//   },
-//   {
-//     title: "Số tín chỉ",
-//     dataIndex: "so_tin",
-//     key: "so_tin",
-//   },
-//   {
-//     title: "Điểm hệ 10",
-//     dataIndex: "he10",
-//     key: "he10",
-//   },
-//   {
-//     title: "Điểm chữ",
-//     dataIndex: "diem",
-//     key: "diem",
-//   },
-//   {
-//     title: "Điểm hệ 4",
-//     dataIndex: "he4",
-//     key: "he4",
-//   },
-// ];
-
-// const expand_columns = [
-//   {
-//     title: "STT",
-//     dataIndex: "index",
-//     key: "stt",
-//     render: (text, record, index) => index + 1,
-//   },
-//   {
-//     title: "Bản chất kỳ thi",
-//     dataIndex: "type",
-//     key: "type",
-//   },
-//   {
-//     title: "Hệ số",
-//     dataIndex: "he_so",
-//     key: "he_so",
-//   },
-//   {
-//     title: "Lần thi",
-//     dataIndex: "lan",
-//     key: "lan",
-//   },
-//   {
-//     title: "Điểm",
-//     dataIndex: "diem",
-//     key: "diem",
-//   },
-// ];
-
-// // Data mẫu, sau sẽ dùng api để lấy
-// const semesters = [
-//   {
-//     ki: 1,
-//     nam: 2022,
-//     data: [
-//       {
-//         ma_hp: "MAT3507",
-//         ten_hp: "Cơ sở dữ liệu",
-//         so_tin: "4",
-//         he10: 8.4,
-//         diem: "B+",
-//         he4: 3.5,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//       {
-//         ma_hp: "MAT3372",
-//         ten_hp: "Các thành phần phần mềm",
-//         so_tin: "4",
-//         he10: 10,
-//         diem: "A+",
-//         he4: 4.0,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//       {
-//         ma_hp: "MAT2503",
-//         ten_hp: "Giải tích 3",
-//         so_tin: "4",
-//         he10: 9.3,
-//         diem: "A+",
-//         he4: 4.0,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     ki: 2,
-//     nam: 2022,
-//     data: [
-//       {
-//         ma_hp: "MAT3507",
-//         ten_hp: "Cơ sở dữ liệu",
-//         so_tin: "4",
-//         he10: 8.4,
-//         diem: "B+",
-//         he4: 3.5,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//       {
-//         ma_hp: "MAT3372",
-//         ten_hp: "Các thành phần phần mềm",
-//         so_tin: "4",
-//         he10: 10,
-//         diem: "A+",
-//         he4: 4.0,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//       {
-//         ma_hp: "MAT2503",
-//         ten_hp: "Giải tích 3",
-//         so_tin: "4",
-//         he10: 9.3,
-//         diem: "A+",
-//         he4: 4.0,
-//         expand: [
-//           {
-//             type: "Thi cuối kì",
-//             he_so: 0.6,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Giữa kì",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//           {
-//             type: "Thường xuyên",
-//             he_so: 0.2,
-//             lan: 1,
-//             diem: 10,
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
-
-const expandedRowRender = (record) => {
-  return (
-    <Table
-      columns={window.expand_columns}
-      dataSource={record.expand}
-      size="small"
-      pagination={false}
-    />
-  );
-};
-
 const Dashboard = ({ user }) => {
+  const columns = [
+    {
+      title: "Mã môn học",
+      dataIndex: "ma_hp",
+      key: "ma_hp",
+    },
+    {
+      title: "Môn học",
+      dataIndex: "ten_hp",
+      key: "ten_hp",
+    },
+    {
+      title: "Số tín chỉ",
+      dataIndex: "so_tin",
+      key: "so_tin",
+    },
+    {
+      title: "Điểm hệ 10",
+      dataIndex: "he10",
+      key: "he10",
+    },
+    {
+      title: "Điểm chữ",
+      dataIndex: "diem",
+      key: "diem",
+    },
+    {
+      title: "Điểm hệ 4",
+      dataIndex: "he4",
+      key: "he4",
+    },
+  ];
+
+  const expand_columns = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "stt",
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Bản chất kỳ thi",
+      dataIndex: "type",
+      key: "type",
+    },
+    {
+      title: "Hệ số",
+      dataIndex: "he_so",
+      key: "he_so",
+    },
+    {
+      title: "Lần thi",
+      dataIndex: "lan",
+      key: "lan",
+    },
+    {
+      title: "Điểm",
+      dataIndex: "diem",
+      key: "diem",
+    },
+  ];
+  const expandedRowRender = (record) => {
+    return (
+      <Table
+        columns={expand_columns}
+        dataSource={record.expand}
+        size="small"
+        pagination={false}
+      />
+    );
+  };
+
   const [tong_so_tin, setTongSoTin] = useState(null);
   const [tong_so_tin_tich_luy, setTongSoTinTichLuy] = useState(null);
   const [gpa, setGpa] = useState(null);
@@ -275,13 +90,15 @@ const Dashboard = ({ user }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseOverView = await axios.post('http://localhost:8000/overview', {
-          username: user
-        });
-        const data = responseOverView.data;
-        setTongSoTin(data.tong_so_tin);
-        setTongSoTinTichLuy(data.tong_so_tin_tich_luy);
-        setGpa(data.gpa);
+        await axios
+          .post("http://localhost:8000/overview", {
+            username: user,
+          })
+          .then((res) => {
+            setTongSoTin(res.data.tong_so_tin);
+            setTongSoTinTichLuy(res.data.tong_so_tin_tich_luy);
+            setGpa(res.data.gpa);
+          });
       } catch (error) {
         console.log(error);
       }
@@ -290,23 +107,18 @@ const Dashboard = ({ user }) => {
     fetchData();
   }, [user]);
 
-
-  const [columns, setColumns] = useState([]);
-  const [expand_columns, setExpand_Columns] = useState([]);
   const [semesters, setSemester] = useState([]);
-
-  window.expand_columns = expand_columns;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseGrade = await axios.post('http://localhost:8000/grade', {
-          username: user
-        });
-        const data = responseGrade.data;
-        setColumns(data.columns);
-        setExpand_Columns(data.expand_columns);
-        setSemester(data.data);
+        await axios
+          .post("http://localhost:8000/grade", {
+            username: user,
+          })
+          .then((res) => {
+            setSemester(res.data.data);
+          });
       } catch (error) {
         console.log(error);
       }

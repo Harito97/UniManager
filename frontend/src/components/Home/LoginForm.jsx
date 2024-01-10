@@ -24,9 +24,9 @@ const LoginPopup = () => {
             <div className="flex flex-col justify-center p-8 md:p-14">
               <a
                 href="#"
-                class="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
+                className="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white"
               >
-                <img class="mr-2 h-8 w-8" src={HusLogo} alt="logo" />
+                <img className="mr-2 h-8 w-8" src={HusLogo} alt="logo" />
                 HUS
               </a>
               {/* Login Form section */}
@@ -37,11 +37,11 @@ const LoginPopup = () => {
               )}
               {/* Image section section */}
             </div>
-            <div class="relative">
+            <div className="relative">
               <img
                 src={showForgot ? ForgotImg : LoginImg}
                 alt="img"
-                class="hidden h-full w-[400px] rounded-r-2xl object-cover md:block"
+                className="hidden h-full w-[400px] rounded-r-2xl object-cover md:block"
               />
             </div>
           </motion.div>
