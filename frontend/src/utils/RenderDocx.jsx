@@ -8,8 +8,7 @@ import axios from "axios";
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
-const generateDocument = (user, data) => {
-
+const generateDocument = (user) => {
   loadFile("/template/input.docx", function (error, content) {
     if (error) {
       throw error;
@@ -20,57 +19,78 @@ const generateDocument = (user, data) => {
       linebreaks: true,
     });
 
-    //Data mẫu
-    doc.setData({
-      ki: data.ki,
-      nh: data.nh,
-      nhs: data.nhs,
-      ngay: data.ngay,
-      thang: data.thang,
-      nam: data.nam,
-      ho_ten: data.ho_ten,
-      ngsinh: data.ngsinh,
-      ma_sv: data.ma_sv,
-      lop: data.log,
-      items: data.items,
-      total: 6,
-      render: (scope) => {
-        return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
-      },
-    });
-    try {
-      doc.render();
-    } catch (error) {
-      function replaceErrors(key, value) {
-        if (value instanceof Error) {
-          return Object.getOwnPropertyNames(value).reduce(function (
-            error,
-            key,
-          ) {
-            error[key] = value[key];
-            return error;
-          }, {});
-        }
-        return value;
-      }
-      console.log(JSON.stringify({ error: error }, replaceErrors));
-
-      if (error.properties && error.properties.errors instanceof Array) {
-        const errorMessages = error.properties.errors
-          .map(function (error) {
-            return error.properties.explanation;
+    const fetchData = async () => {
+      try {
+        await axios
+          .post("http://localhost:8000/get_info_subject_register", {
+            username: user,
           })
-          .join("\n");
-        console.log("errorMessages", errorMessages);
+          .then((res) => {
+            const data = res.data.info_subject_register[0];
+            let total = 0;
+            data.items.forEach((row) => (total += row.so_tin));
+            console.log(data);
+            doc.setData({
+              ki: data.ki,
+              nh: data.nh,
+              nhs: data.nhs,
+              ngay: data.ngay,
+              thang: data.thang,
+              nam: data.nam,
+              ho_ten: data.ho_ten,
+              ngsinh: data.ngsinh,
+              ma_sv: data.ma_sv,
+              lop: data.log,
+              items: data.items,
+              render: (scope) => {
+                return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
+              },
+              total: total,
+            });
+            try {
+              doc.render();
+            } catch (error) {
+              function replaceErrors(key, value) {
+                if (value instanceof Error) {
+                  return Object.getOwnPropertyNames(value).reduce(function (
+                    error,
+                    key,
+                  ) {
+                    error[key] = value[key];
+                    return error;
+                  }, {});
+                }
+                return value;
+              }
+              console.log(JSON.stringify({ error: error }, replaceErrors));
+
+              if (
+                error.properties &&
+                error.properties.errors instanceof Array
+              ) {
+                const errorMessages = error.properties.errors
+                  .map(function (error) {
+                    return error.properties.explanation;
+                  })
+                  .join("\n");
+                console.log("errorMessages", errorMessages);
+              }
+              throw error;
+            }
+            const out = doc.getZip().generate({
+              type: "blob",
+              mimeType:
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            });
+            saveAs(out, "ket-qua-dang-ki-mon-hoc.docx");
+          });
+      } catch (error) {
+        console.log(error);
       }
-      throw error;
-    }
-    const out = doc.getZip().generate({
-      type: "blob",
-      mimeType:
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    });
-    saveAs(out, "ket-qua-dang-ki-mon-hoc.docx");
+    };
+
+    fetchData();
+    //Data mẫu
   });
 };
 
