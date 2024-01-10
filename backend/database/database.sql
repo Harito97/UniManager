@@ -85,9 +85,9 @@ create table if not exists chuong_trinh_hoc(
 create table if not exists dang_ky(
 	ma_lh int not null,
     ma_sv varchar(8) not null,
-    diem_tx decimal(3,2),
-    diem_gk decimal(3,2),
-    diem_ck decimal(3,2),
+    diem_tx decimal(4,2),
+    diem_gk decimal(4,2),
+    diem_ck decimal(4,2),
     primary key (ma_lh, ma_sv)
 );
 
@@ -114,7 +114,7 @@ create table if not exists user(
 	username varchar(8) not null,
     pass_word binary(60) not null,
     email varchar(100) not null,
-    access_level varchar(4) not null,
+    access_level varchar(5) not null,
     avatar varchar(255),
     primary key (username)
 );
