@@ -326,68 +326,6 @@ async def sendOverView(user: User, request: Request):
 
 @app.post("/grade")
 async def sendGrade(user: User, request: Request):
-
-    columns = [
-        {
-            "title": "Mã môn học",
-            "dataIndex": "ma_hp",
-            "key": "ma_hp",
-        },
-        {
-            "title": "Môn học",
-            "dataIndex": "ten_hp",
-            "key": "ten_hp",
-        },
-        {
-            "title": "Số tín chỉ",
-            "dataIndex": "so_tin",
-            "key": "so_tin",
-        },
-        {
-            "title": "Điểm hệ 10",
-            "dataIndex": "he10",
-            "key": "he10",
-        },
-        {
-            "title": "Điểm chữ",
-            "dataIndex": "diem",
-            "key": "diem",
-        },
-        {
-            "title": "Điểm hệ 4",
-            "dataIndex": "he4",
-            "key": "he4",
-        },
-    ]
-
-    expand_columns = [
-        {
-            "title": "STT",
-            "dataIndex": "stt",
-            "key": "stt",
-        },
-        {
-            "title": "Bản chất kỳ thi",
-            "dataIndex": "type",
-            "key": "type",
-        },
-        {
-            "title": "Hệ số",
-            "dataIndex": "he_so",
-            "key": "he_so",
-        },
-        {
-            "title": "Lần thi",
-            "dataIndex": "lan",
-            "key": "lan",
-        },
-        {
-            "title": "Điểm",
-            "dataIndex": "diem",
-            "key": "diem",
-        },
-    ]
-
     current_year = datetime.now().year
 
     cursor.execute(f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
@@ -436,9 +374,9 @@ async def sendGrade(user: User, request: Request):
         for semester in year:
             list_objects = []
             for object in semester:
-                list_objects.append([{"stt": 1, "type": "Thi cuối kì", "he_so": object["he_so_ck"], "lan": object["so_lan_hoc"], "diem": object["diem_ck"]},
-                                {"stt": 2, "type": "Giữa kì", "he_so": object["he_so_gk"], "lan": object["so_lan_hoc"], "diem": object["diem_gk"]},
-                                {"stt": 3, "type": "Thường xuyên", "he_so": object["he_so_tx"], "lan": object["so_lan_hoc"], "diem": object["diem_tx"]}])
+                list_objects.append([{"type": "Thi cuối kì", "he_so": object["he_so_ck"], "lan": object["so_lan_hoc"], "diem": object["diem_ck"]},
+                                {"type": "Giữa kì", "he_so": object["he_so_gk"], "lan": object["so_lan_hoc"], "diem": object["diem_gk"]},
+                                {"type": "Thường xuyên", "he_so": object["he_so_tx"], "lan": object["so_lan_hoc"], "diem": object["diem_tx"]}])
             list_semesters.append(list_objects)
         data_expand.append(list_semesters)
 
@@ -521,7 +459,7 @@ async def sendGrade(user: User, request: Request):
                 break
             data.append({"ki": semester, "nam": year, "data": data_sum_grade[year-nam_bat_dau][semester-1]})
 
-    return {"columns": columns, "expand_columns": expand_columns, "data": data}
+    return {"data": data}
 
 
 @app.post("/subject_learned")
