@@ -130,7 +130,6 @@ async def verify_user(request: Request):
         return {"Status": True, "decoded": decoded}
     else:
         return {"Status": False, "Error": "Bạn chưa đăng nhập"}
-    
 
     
 @app.post("/login")
@@ -1054,5 +1053,5 @@ app.add_middleware(
 )
 
 
-# if __name__ == "__main__":
-#     uvicorn.run("render:app", port=8000)
+if __name__ == "__main__":
+    uvicorn.run("render:app", port=8000)
