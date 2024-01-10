@@ -145,8 +145,6 @@ const Manager = ({ ma_lh }) => {
     },
   ];
 
-  // Data mẫu
-  // Sau này lấy data bằng cách lấy ra các sinh viên có ma_lh này
   const [dataStudentClass, setDataStudentClass] = useState([]);
 
   useEffect(() => {
@@ -166,36 +164,6 @@ const Manager = ({ ma_lh }) => {
 
     fetchData();
   }, [ma_lh]);
-  // const [data, setData] = useState([
-  //   {
-  //     ma_sv: 21002110,
-  //     ho_ten: "Nguyễn Văn A",
-  //     diem_tx: 10,
-  //     diem_gk: 9,
-  //     diem_ck: 8,
-  //   },
-  //   {
-  //     ma_sv: 21002111,
-  //     ho_ten: "Nguyễn Văn B",
-  //     diem_tx: null,
-  //     diem_gk: null,
-  //     diem_ck: null,
-  //   },
-  //   {
-  //     ma_sv: 21002112,
-  //     ho_ten: "Nguyễn Văn C",
-  //     diem_tx: null,
-  //     diem_gk: null,
-  //     diem_ck: null,
-  //   },
-  //   {
-  //     ma_sv: 21002113,
-  //     ho_ten: "Nguyễn Văn D",
-  //     diem_tx: null,
-  //     diem_gk: null,
-  //     diem_ck: null,
-  //   },
-  // ]);
 
   //Data hệ số, lấy từ bảng lịch học có ma_lh trùng
   const [factorData, setFactorData] = useState({});
@@ -239,9 +207,6 @@ const Manager = ({ ma_lh }) => {
   };
 
   const onFactorFinish = (values) => {
-    //TODO: Update hệ số trong bảng lich_hoc có ma_lh tương ứng
-    // Lưu ý, các values đang là String, cần parseFloat trước khi gửi
-
     const he_so_tx = parseFloat(values.he_so_tx);
     const he_so_gk = parseFloat(values.he_so_gk);
     const he_so_ck = parseFloat(values.he_so_ck);
@@ -262,12 +227,6 @@ const Manager = ({ ma_lh }) => {
   };
 
   const onFinish = (values) => {
-    // console.log(values);
-    //TODO: Update data trong bảng dang_ki của ma_lh ma_sv với values đã save
-    // Lưu ý các giá trị đang là kiểu String, cần parseFloat và làm tròn đến số thập phân thứ 2 trước khi update vào server
-    // ma_sv = editingRow
-    // values chứ các thuộc tính diem_tx, diem_gk, diem_ck
-
     const diem_tx = parseFloat(values.diem_tx);
     const diem_gk = parseFloat(values.diem_gk);
     const diem_ck = parseFloat(values.diem_ck);
