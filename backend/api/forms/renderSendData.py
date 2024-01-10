@@ -642,7 +642,7 @@ async def registeredSubject(user: User):
                         lh.ma_lop as "ma_lop",
                         group_concat(gv.ho_ten) as "ten_gv",
                         lh.thoi_gian as "lich_hoc",
-                        1 as "lan"
+                        (select count(*) from dang_ky dk2, lich_hoc lh2 where dk2.ma_lh = lh2.ma_lh and lh2.ma_hp = lh.ma_hp and dk2.ma_sv = "21002500") as "lan"
 
                     from 
                         lich_hoc lh
