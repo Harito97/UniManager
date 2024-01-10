@@ -17,22 +17,6 @@ const UserProfile = ({ user }) => {
   const [passForm] = Form.useForm();
   const [imgURL, setimgURL] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await axios.post('http://localhost:8000/get_avatar', {
-  //         username: user,
-  //       })
-  //       .then((res) => setimgURL(res.data.avatar));
-
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user]);
-
   const uploadImage = (values) => {
     const imageRef = ref(storage, `images/${values.file.name + v4()}`);
     uploadBytes(imageRef, values.file).then((snapshot) => {
