@@ -7,3 +7,50 @@ Function
     |___Manager Subject (môn học / học phần)
     |___Manager TKB (quản lý / đánh giá hiệu quả của các TKB cũ)
     |___Xếp TKB mới phù hợp với nhu cầu của sinh viên (học liền mạch / hạn chế time ở trường); phù hợp sức khỏe giảng viên
+
+Đặc tả các yêu cầu của bài toán
+    Hard Constraints
+        1. A classroom is not assigned to more than one lecture at the same time.
+            <=> 1 lớp học chỉ dạy 1 học phần (đã đảm bảo bằng cách xây dựng csdl)
+        2. An instructor cannot teach more than one class at the same time.
+            <=> 1 giáo viên không dạy 2 lớp học cùng lúc (tuy nhiên để khắc phục tình trạng thực hành 5h 
+            trên lịch trong khi thực tế chỉ dạy 2h thì sẽ nới lỏng ra là 1 giáo viên có thể dạy 2 hay nhiều
+            lớp học cùng 1 lúc nếu thuộc tính "_tinh_chat" == LT và số học sinh của các lớp học đó cộng lại
+            nhỏ hơn sức chứa tối đa của phòng học LT tổ chức tại đó). 
+            Như vậy đã khắc phục được nhược điểm ngớ ngẩn bấy lâu nay của web đăng ký học trường DH KHTN.
+            ? Liệu còn nhược điểm, vậy những môn mà giờ Thực hành các ca đều do cùng 1 giáo viên (or chỉ có 
+            1 trợ giảng) dạy thì dễ làm 2 ca phân ra nhiều buổi, muốn 2 ca gộp cùng 1 buổi để giảng viên không
+            mất công đi lại được không? 
+            Giải pháp: gộp các lớp học có chung "id_hoc_phan", "id_giang_vien". Ngoài ra đặc biệt hơn nếu các 
+            lớp học cùng được gộp chung phần giờ học lý thuyết thì càng được gom thành 1 nhóm con.
+        3. Courses for the same year-session students of a department cannot take place at the
+        same time.
+            <=> Các học phần nên học tại 1 học kỳ hiện tại của 1 khóa học sinh không được tổ chức trùng lịch.
+            Giải pháp: Xây dựng được danh sách các học phần ứng với mỗi khóa sinh viên kỳ này cần học (và có thể học)
+            Khi dùng giải thuật cần liên tục kiểm tra liệu phương án xếp lịch hiện tại có làm trùng hay không 
+        4. The classroom for a course should have enough capacity to take students registered
+        in the course.
+            <=> Phòng học phải chứa đủ tổng số sinh viên của các lớp học (đảm bảo cùng mã học phần) tại cùng thời 
+            gian tổ chức.
+            Lúc xếp phòng cho các lớp học phần cần kiểm tra thường xuyên 
+        5. The classroom should be well equipped with required facilities for the classes
+            <=> Phòng học cần có đầy đủ trang thiết bị hỗ trợ việc học (đã có trong csdl đảm bảo định nghĩa các loại phòng,
+            và cả các loại phòng được yêu cầu cho 1 học phần)
+            Tương tự lúc xếp ra 1 phương án mới cũng cần liên tục kiểm tra điều kiện này.
+    
+    Soft Constraints
+        1. The lectures are not assigned to time slots, which are in the instructor’s forbidden
+        time zones.
+            <=> Lớp học mà giảng viên được phân công dạy không diễn ra vào thời gian mà giảng viên không muốn dạy 
+            Giải pháp: Xây dựng 1 tập hợp yêu cầu về thời gian không muốn dạy của các giảng viên
+            Khi tìm phương án -> liên tục kiểm tra điều kiện này. 
+        2. Instructors daily lecture hours should be restricted to be within the allowed maximum
+        hours
+            <=> Số giờ giảng dạy của giảng viên trong 1 ngày phải nằm trong khoảng cho phép (<=8h)
+    
+    Additional Constraints (Đảm bảo nhiều quyền lợi người học hơn)
+        1. Các học phần của sinh viên được diễn ra liên tục để tránh thời gian rảnh bị phí phạm ở trên trường.
+            <=> Thực hiện gom nhóm các học phần có tập giao số sinh viên đăng ký là lớn rồi gom nhóm lại để
+            xếp lịch lại gần nhau.
+        2. Các lớp học mà 1 sinh viên có thể đăng ký (dựa trên lịch được xếp) nên có tập giao với danh sách mong
+        muốn học học phần đó của sinh viên đó kỳ này là lớn nhất. 
