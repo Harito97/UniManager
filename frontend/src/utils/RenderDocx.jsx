@@ -40,7 +40,7 @@ const generateDocument = (user) => {
               ho_ten: data.ho_ten,
               ngsinh: data.ngsinh,
               ma_sv: data.ma_sv,
-              lop: data.log,
+              lop: data.lop,
               items: data.items,
               render: (scope) => {
                 return `${scope.thu}-(${scope.bd}-${scope.kt})-${scope.phong} `;
