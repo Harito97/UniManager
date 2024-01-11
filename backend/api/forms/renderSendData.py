@@ -129,7 +129,7 @@ def subject(data):
 
 
 @app.get("/")
-async def verify_user(request: Request):
+async def verifyUser(request: Request):
     if "token" in request.cookies:
         token = request.cookies["token"]
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[
@@ -166,13 +166,13 @@ async def login(user: UserInfo, response: Response):
 
 
 @app.get("/logout")
-async def log_out(response: Response):
+async def logout(response: Response):
     response.delete_cookie("token")
     return {"Status": True}
 
 
 @app.post("/forgot_password")
-async def forgot_password(request: ForgotPassword):
+async def forgotPassword(request: ForgotPassword):
     # Truy vấn cơ sở dữ liệu để lấy thông tin người dùng dựa trên username (tùy thuộc vào cách bạn cài đặt)
     # Sau đó, bạn có thể tạo mật khẩu mới và lưu vào cơ sở dữ liệu
     # Sau khi tạo mật khẩu mới, gửi email chứa mật khẩu mới đến người dùng
@@ -255,9 +255,9 @@ async def forgot_password(request: ForgotPassword):
     return True
 
 
-@app.post("/semester_year_current")
-async def getCurrent(request: Request):
-    return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
+# @app.post("/semester_year_current")
+# async def getCurrent(request: Request):
+#     return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
 
 
 @app.get("/current_registration")
