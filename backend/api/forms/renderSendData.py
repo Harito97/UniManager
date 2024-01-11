@@ -255,9 +255,16 @@ async def forgotPassword(request: ForgotPassword):
     return True
 
 
-# @app.post("/semester_year_current")
-# async def getCurrent(request: Request):
-#     return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
+@app.get("/semester_year_current")
+async def getCurrent(request: Request):
+    cursor.execute("""select ma_hk 
+                   from hoc_ki
+                   where ng_bat_dau <= NOW() and ng_ket_thuc >= NOW()""")
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return {"Status": False}
+    else:
+        return {"Status": True, "current": data[0]}
 
 
 @app.get("/current_registration")
@@ -1006,6 +1013,18 @@ async def getInfoSubjectRegister(user: User):
     data1[0]["items"] = data2
 
     return {"info_subject_register": data1}
+
+@app.get("/get_total_student")
+async def getTotalStudent():
+    cursor.execute("SELECT COUNT(ma_sv) AS totalStudent FROM sinh_vien")
+    data = cursor.fetchall()
+    return data[0]
+
+@app.get("/get_total_teacher")
+async def getTotalTeacher():
+    cursor.execute("SELECT COUNT(ma_gv) AS totalTeacher FROM giang_vien")
+    data = cursor.fetchall()
+    return data[0]
 
 
 origins = ["http://localhost:5173"]
