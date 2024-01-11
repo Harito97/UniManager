@@ -29,9 +29,9 @@ Admin can:
 
 ## Technologies Used
 
-**Front-End:** <img src="https://cdn.svgporn.com/logos/react.svg" height="12" width="12"> React, <img src="https://cdn.svgporn.com/logos/tailwindcss-icon.svg" height="12" width="12"> TailwindCSS
+**Frontend:** <img src="https://cdn.svgporn.com/logos/react.svg" height="12" width="12"> React, <img src="https://cdn.svgporn.com/logos/tailwindcss-icon.svg" height="12" width="12"> TailwindCSS
 
-**Server:** <img src="https://cdn.svgporn.com/logos/fastapi-icon.svg" height="12" width="12"> FastAPI
+**API:** <img src="https://cdn.svgporn.com/logos/fastapi-icon.svg" height="12" width="12"> FastAPI
 
 **Database:** <img src="https://cdn.svgporn.com/logos/mysql-icon.svg" height="12" width="12">MySQL
 
