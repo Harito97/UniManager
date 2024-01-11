@@ -93,30 +93,34 @@ const Register = ({ user }) => {
               return 0;
             }
           })
-          .then((res) => {
-            if (res != 0) {
+          .then((ma_hk) => {
+            if (ma_hk != 0) {
               axios
                 .post("http://localhost:8000/subject_learned", {
                   username: user,
-                  ma_hk: res,
+                  ma_hk: ma_hk,
                 })
                 .then((res) => setDataSubjectLearned(res.data.subjectLearned));
             }
+            return ma_hk;
           })
-          .then(() => {
-            axios
-              .post("http://localhost:8000/registered_subject", {
-                username: user,
-              })
-              .then((res) => {
-                const data = res.data.subjectRegister;
-                data.forEach((obj) => {
-                  obj.status = false;
+          .then((ma_hk) => {
+            if (ma_hk != 0) {
+              axios
+                .post("http://localhost:8000/registered_subject", {
+                  username: user,
+                  ma_hk: ma_hk,
+                })
+                .then((res) => {
+                  const data = res.data.subjectRegister;
+                  data.forEach((obj) => {
+                    obj.status = false;
+                  });
+                  const updateSelected = data.map((obj) => obj.ma_lh);
+                  setSelected(updateSelected);
+                  setRegisteredData(data);
                 });
-                const updateSelected = data.map((obj) => obj.ma_lh);
-                setSelected(updateSelected);
-                setRegisteredData(data);
-              });
+            }
           })
           .finally(() => setLoading(false));
       } catch (error) {

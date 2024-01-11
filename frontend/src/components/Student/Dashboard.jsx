@@ -16,37 +16,37 @@ const Dashboard = ({ user }) => {
       title: "Mã môn học",
       dataIndex: "ma_hp",
       key: "ma_hp",
-      width: 150
+      width: 150,
     },
     {
       title: "Môn học",
       dataIndex: "ten_hp",
       key: "ten_hp",
-      width: 200
+      width: 200,
     },
     {
       title: "Số TC",
       dataIndex: "so_tin",
       key: "so_tin",
-      width: 60
+      width: 60,
     },
     {
       title: "Điểm hệ 10",
       dataIndex: "he10",
       key: "he10",
-      width: 60
+      width: 60,
     },
     {
       title: "Điểm chữ",
       dataIndex: "diem",
       key: "diem",
-      width: 60
+      width: 60,
     },
     {
       title: "Điểm hệ 4",
       dataIndex: "he4",
       key: "he4",
-      width: 60
+      width: 60,
     },
   ];
 
@@ -56,31 +56,31 @@ const Dashboard = ({ user }) => {
       dataIndex: "index",
       key: "stt",
       render: (text, record, index) => index + 1,
-      width: 50
+      width: 50,
     },
     {
       title: "Bản chất kỳ thi",
       dataIndex: "type",
       key: "type",
-      width: 200
+      width: 200,
     },
     {
       title: "Hệ số",
       dataIndex: "he_so",
       key: "he_so",
-      width: 60
+      width: 60,
     },
     {
       title: "Lần thi",
       dataIndex: "lan",
       key: "lan",
-      width: 60
+      width: 60,
     },
     {
       title: "Điểm",
       dataIndex: "diem",
       key: "diem",
-      width: 60
+      width: 60,
     },
   ];
   const expandedRowRender = (record) => {
@@ -200,32 +200,46 @@ const Dashboard = ({ user }) => {
             loading={false}
             className="w-2/3 overflow-auto shadow-lg max-lg:w-full"
           >
-            {semesters.map((semester) => (
+            {semesters.length == 0 ? (
               <>
-                <h1 className="pb-5 text-xl font-bold">
-                  KÌ {semester.ki} NĂM {semester.nam} - {semester.nam + 1}
-                </h1>
-                <div className="pb-5">
-                  <Table
-                    rowKey={(record) => record.ma_hp}
-                    columns={columns}
-                    expandable={{
-                      expandedRowRender: (record) => expandedRowRender(record),
-                      // defaultExpandedRowKeys: ["0"],
-                    }}
-                    dataSource={semester.data}
-                    pagination={false}
-                    size="small"
-                    scroll={{x: 590}}
-                  />
-                </div>
+                <Table
+                  columns={columns}
+                  pagination={false}
+                  size="small"
+                  scroll={{ x: 590 }}
+                />
               </>
-            ))}
+            ) : (
+              <>
+                {semesters.map((semester) => (
+                  <>
+                    <h1 className="pb-5 text-xl font-bold">
+                      KÌ {semester.ki} NĂM {semester.nam} - {semester.nam + 1}
+                    </h1>
+                    <div className="pb-5">
+                      <Table
+                        rowKey={(record) => record.ma_hp}
+                        columns={columns}
+                        expandable={{
+                          expandedRowRender: (record) =>
+                            expandedRowRender(record),
+                          // defaultExpandedRowKeys: ["0"],
+                        }}
+                        dataSource={semester.data}
+                        pagination={false}
+                        size="small"
+                        scroll={{ x: 590 }}
+                      />
+                    </div>
+                  </>
+                ))}
+              </>
+            )}
           </Card>
           <Card
             hoverable={true}
             loading={false}
-            className="w-1/3 shadow-lg max-lg:w-full self-start"
+            className="w-1/3 self-start shadow-lg max-lg:w-full"
           >
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit.

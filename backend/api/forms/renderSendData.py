@@ -328,8 +328,15 @@ async def sendOverView(user: User, request: Request):
         numerator += element["he4"]*element["so_tin"]
         denominator += element["so_tin"]
 
-    gpa = round(numerator/denominator, 2)
+    try:
+        gpa = round(numerator/denominator, 2)
+    except Exception as e:
+        gpa = 0.0
 
+    if tong_so_tin is None:
+        tong_so_tin = 0
+    if tong_so_tin_tich_luy is None:
+        tong_so_tin_tich_luy = 0
     # đang làm dở
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
@@ -580,7 +587,7 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
 
 
 @app.post("/registered_subject")
-async def registeredSubject(user: User):
+async def registeredSubject(user: UserSemester):
 
     statement = f"""
                     select 
@@ -600,7 +607,7 @@ async def registeredSubject(user: User):
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
-                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {user.ma_hk}
                     group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian
                     order by 
                         hp.ten_hp asc;
