@@ -53,10 +53,14 @@ danh_sach_nganh = [
 danh_sach_phong = []
 for i in range(1, 6):
     for k in range(1, 16):
-        if k < 10: danh_sach_phong.append((f'{i}0{k}-T{i}',80,f'Tầng {k}, tòa T{i}'))
-        else: danh_sach_phong.append((f'{i}{k}-T{i}',80,f'Tầng {k}, tòa T{i}'))
+        if k < 10: danh_sach_phong.append((f'{i}0{k}-T{i}',80,f'Phòng {i}0{k} tòa T{i}'))
+        else: danh_sach_phong.append((f'{i}{k}-T{i}',80,f'Phòng {i}{k} tòa T{i}'))
 
-# print(danh_sach_phong)
+with open('./backend/database/danh_sach_phong.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('phong,suc_chua,mo_ta\n')
+    for element in danh_sach_phong:
+        phong, suc_chua, mo_ta = element
+        file_a.write(f'{phong},{suc_chua},{mo_ta}\n')
 
 # Nhap vao database
 # try:
@@ -72,25 +76,7 @@ for i in range(1, 6):
 
 # Danh sach hoc phan tien quyet
 danh_sach_hoc_phan_tien_quyet = [
-    ("PHI1006", ""),
     ("PEC1008", "PHI1006"),
-    ("PHI1002", ""),
-    ("HIS1001", ""),
-    ("POL1001", ""),
-    ("FLF1107", ""),
-    ("FLF1307", ""),
-    ("FLF1407", ""),
-    ("INM1000", ""),
-    ("HIS1056", ""),
-    ("GEO1050", ""),
-    ("THL1057", ""),
-    ("MAT1060", ""),
-    ("PHY1070", ""),
-    ("PHY1020", ""),
-    ("PHY1100", ""),
-    ("PHY1103", ""),
-    ("MAT2400", ""),
-    ("MAT2501", ""),
     ("MAT2502", "MAT2501"),
     ("MAT2503", "MAT2502"),
     ("MAT2503", "MAT2400"),
@@ -109,14 +95,12 @@ danh_sach_hoc_phan_tien_quyet = [
     ("MAT2315", "MAT2323"),
     ("MAT2315", "MAT2506"),
     ("MAT2315", "MAT2034"),
-    ("MAT2506", ""),
     ("MAT2316", "INM1000"),
     ("MAT2317", "INM1000"),
     ("MAT2318", "INM1000"),
     ("MAT2319", "INM1000"),
     ("MAT3500", "MAT2400"),
     ("MAT3500", "MAT2501"),
-    ("MAT3557", ""),
     ("MAT3372", "MAT2316"),
     ("MAT3372", "MAT2317"),
     ("MAT3372", "MAT3218"),
@@ -172,11 +156,16 @@ danh_sach_hoc_phan_tien_quyet = [
     ("MAT3395", "MAT2323"),
     ("MAT3535", "MAT3514"),
     ("MAT3399", "MAT3533"),
-    ("MAT4083", ""),
     ("MAT3397", "MAT3533"),
     ("MAT3398", "MAT3533")
 ]
 
+with open('./backend/database/hoc_phan_tien_quyet.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('ma_hp,hp_tien_quyet\n')
+    for element in danh_sach_hoc_phan_tien_quyet:
+        ma_hp, hp_tien_quyet = element
+        file_a.write(f'{ma_hp},{hp_tien_quyet}\n')
+        
 # Nhap vao database
 # try:
 #     for element in danh_sach_hoc_phan_tien_quyet:
@@ -195,6 +184,12 @@ danh_sach_chuong_trinh = [
     ('KCT_98', 'QHT98'),
     ('KCT_93', 'QHT93') 
 ]
+
+with open('danh_sach_chuong_trinh.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('ma_ct,ma_nganh\n')
+    for element in danh_sach_chuong_trinh:
+        ma_ct, ma_nganh = element
+        file_a.write(f'{ma_ct},{ma_nganh}\n')
 
 # Nhap vao database        
 # try:
