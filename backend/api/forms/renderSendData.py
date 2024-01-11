@@ -238,7 +238,7 @@ async def forgotPassword(request: ForgotPassword):
                                 <p>Your password is: {pass_word}</p>
                                 <p>Please do not disclose login information to others!</p>
                             </div>
-                            </div>
+                            </div>  
                         </body>
                         </html>
                     """
@@ -491,7 +491,7 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
 
 
 @app.post("/subject_all")
-async def sendSubject(user: UserSemester, request: Request):
+async def sendSubject(user: UserSemester, request: Request):    
 
     statement = f"""
                     select
@@ -583,7 +583,7 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
 async def registeredSubject(user: User):
 
     statement = f"""
-                    select 
+                    select  
                         lh.ma_lh as "ma_lh",
                         hp.ten_hp as "ten_hp",
                         hp.so_tin as "so_tin",
@@ -996,7 +996,7 @@ async def getInfoSubjectRegister(user: User):
     return {"info_subject_register": data1}
 
 
-origins = ["http://localhost:5173"]
+origins = ["http://localhost:5173", "http://localhost:8000", "http://localhost:8001"]
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend
