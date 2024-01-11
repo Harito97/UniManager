@@ -225,7 +225,7 @@ const Dashboard = ({ user }) => {
           <Card
             hoverable={true}
             loading={false}
-            className="w-1/3 shadow-lg max-lg:w-full"
+            className="w-1/3 shadow-lg max-lg:w-full self-start"
           >
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
