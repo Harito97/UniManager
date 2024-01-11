@@ -64,7 +64,7 @@ const NotFound = () => {
             <div className="text-center text-base font-semibold">
               Redirecting in {timeLeft}
             </div>
-            <a href="/login" className="">
+            <a href="/" className="">
               <Button className="mt-4 bg-blue-500" type="primary">
                 Back to Login
               </Button>
