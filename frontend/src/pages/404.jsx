@@ -37,7 +37,10 @@ const NotFound = () => {
       path === "/teacher/dashboard" ||
       path === "/teacher/calendar" ||
       path === "/teacher/setting" ||
-      path === "/admin"
+      path === "/admin" ||
+      path === "/admin/dashboard" ||
+      path === "/admin/student_manager" ||
+      path === "/admin/teacher_manager"
     ) {
       setText("Sorry, you are not authorized to access this page.");
       setCode("403");
