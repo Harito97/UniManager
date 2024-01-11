@@ -54,3 +54,17 @@ Function
             xếp lịch lại gần nhau.
         2. Các lớp học mà 1 sinh viên có thể đăng ký (dựa trên lịch được xếp) nên có tập giao với danh sách mong
         muốn học học phần đó của sinh viên đó kỳ này là lớn nhất. 
+
+Tổng kết lại thu được mô tả như sau:
+The hard constraints:
+H1: 
+H2: 
+H3: 
+H4: 
+
+The soft constraints are:
+S1: 
+S1: 
+S3: 
+S4: 
+S5: 

@@ -82,6 +82,7 @@ create table if not exists HPTQ(
 create table if not exists CTH_HP(
     id_cth varchar(15) not null,
     id_hp varchar(15) not null,
+    hk_dx varchar(3) not null,
     primary key(id_cth, id_hp)
 );
 
