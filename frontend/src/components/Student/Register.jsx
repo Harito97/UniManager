@@ -62,7 +62,7 @@ const Register = ({ user }) => {
   const [selected, setSelected] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,7 +118,7 @@ const Register = ({ user }) => {
                 setRegisteredData(data);
               });
           })
-          .finally(() => console.log("Lấy dữ liệu hoàn tất"));
+          .finally(() => setLoading(false));
       } catch (error) {
         console.log(error);
       }
@@ -220,7 +220,6 @@ const Register = ({ user }) => {
   };
 
   const start = () => {
-    setLoading(true);
     try {
       for (let i = 0; i < selectedRowKeys.length; i++) {
         const add = axios.post("http://localhost:8000/post_dangky", {
@@ -290,7 +289,6 @@ const Register = ({ user }) => {
       obj.status = false;
     });
 
-    setLoading(false);
     setSelectedRowKeys([]);
     setDeSelected([]);
   };
@@ -445,7 +443,7 @@ const Register = ({ user }) => {
       theme={{
         components: {
           Table: {
-            rowHoverBg: "none"
+            rowHoverBg: "none",
           },
         },
       }}
@@ -481,6 +479,7 @@ const Register = ({ user }) => {
                 return "bg-yellow-200";
               }
             }}
+            loading={loading}
           />
         ) : (
           // Môn học theo ngành
@@ -497,6 +496,7 @@ const Register = ({ user }) => {
                 return "bg-yellow-200";
               }
             }}
+            loading={loading}
           />
         )}
         <h1 className="text-xl font-bold">
@@ -516,6 +516,7 @@ const Register = ({ user }) => {
               return "bg-pink-200";
             }
           }}
+          loading={loading}
         />
         <div className="flex justify-end gap-3">
           <Button
@@ -523,7 +524,6 @@ const Register = ({ user }) => {
             onClick={start}
             disabled={!(hasSelected || hasDeSelected)}
             // disabled={false}
-            loading={loading}
             className="bg-blue-500"
           >
             Ghi nhận
