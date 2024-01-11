@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 10, 2024 at 07:18 PM
+-- Generation Time: Jan 11, 2024 at 04:45 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -20,6 +20,57 @@ SET time_zone = "+00:00";
 --
 -- Database: `uni_manager`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `CaHoc`
+--
+
+CREATE TABLE `CaHoc` (
+  `id_hoc_phan` varchar(15) NOT NULL,
+  `tinh_chat` varchar(2) NOT NULL,
+  `so_ca` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `CaHoc`
+--
+
+INSERT INTO `CaHoc` (`id_hoc_phan`, `tinh_chat`, `so_ca`) VALUES
+('HIS1001', 'LT', 2),
+('MAT2317', 'LT', 3),
+('MAT2317', 'TH', 2),
+('MAT3148', 'LT', 3),
+('MAT3148', 'TH', 2),
+('MAT3372', 'LT', 3),
+('MAT3372', 'TH', 2),
+('MAT3378', 'LT', 3),
+('MAT3378', 'TH', 2),
+('MAT3379', 'LT', 3),
+('MAT3379', 'TH', 2),
+('MAT3500', 'BT', 2),
+('MAT3500', 'LT', 3),
+('MAT3505', 'LT', 3),
+('MAT3505', 'TH', 2),
+('MAT3507', 'LT', 3),
+('MAT3507', 'TH', 2),
+('MAT3514', 'LT', 3),
+('MAT3514', 'TH', 2),
+('MAT3533', 'LT', 3),
+('MAT3533', 'TH', 2),
+('MAT3541E', 'BT', 2),
+('MAT3541E', 'LT', 3),
+('MAT3550E', 'BT', 2),
+('MAT3550E', 'LT', 3),
+('MAT3557', 'LT', 3),
+('MAT3557', 'TH', 2),
+('MAT3558', 'LT', 3),
+('MAT3558', 'TH', 2),
+('PEC1008', 'LT', 2),
+('PHI1002', 'LT', 2),
+('PHI1006', 'LT', 3),
+('POL1001', 'LT', 2);
 
 -- --------------------------------------------------------
 
@@ -579,6 +630,12 @@ CREATE TABLE `TKB` (
 --
 
 --
+-- Indexes for table `CaHoc`
+--
+ALTER TABLE `CaHoc`
+  ADD PRIMARY KEY (`id_hoc_phan`,`tinh_chat`);
+
+--
 -- Indexes for table `ChuongTrinhHoc`
 --
 ALTER TABLE `ChuongTrinhHoc`
@@ -689,6 +746,12 @@ ALTER TABLE `TKB`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `CaHoc`
+--
+ALTER TABLE `CaHoc`
+  ADD CONSTRAINT `fk_hp` FOREIGN KEY (`id_hoc_phan`) REFERENCES `HocPhan` (`id`);
 
 --
 -- Constraints for table `CTH_HP`

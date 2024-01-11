@@ -72,6 +72,15 @@ create table if not exists MonHoc(
     primary key(id, id_hoc_phan)
 );
 
+create table if not exists CaHoc(
+    id_hoc_phan varchar(15) not null,
+    tinh_chat varchar(2) not null,
+    -- Eg: LT, BT, TH
+    so_ca int(1) not null,
+    -- Eg: 1, 2, 3
+    primary key(id_hoc_phan, tinh_chat)
+);
+
 -- Connection
 create table if not exists HPTQ(
     id_hp varchar(15) not null,
@@ -142,6 +151,8 @@ alter table MonHoc add constraint fk_mh foreign key (id_hoc_phan) references Hoc
 
 alter table PhongHoc add constraint fk_ph foreign key (id_loai_phong) references LoaiPhong(id);
 
+alter table CaHoc add constraint fk_hp foreign key (id_hoc_phan) references HocPhan(id);
+
 -- For connect table
 alter table HPTQ add constraint fk_HPTQ_hp foreign key (id_hp) references HocPhan(id);
 alter table HPTQ add constraint fk_HPTQ_hp_tq foreign key (id_hp_tq) references HocPhan(id);
@@ -171,7 +182,7 @@ alter table TKB add constraint fk_TKB_id_gv foreign key (id_gv) references Giang
 -- Thu tu do data lan luot la: 
 
 -- First: Object table
--- TaiKhoan = HocPhan = ChuongTrinhHoc = LoaiPhong > SinhVien = GiangVien = MonHoc = PhongHoc
+-- TaiKhoan = HocPhan = ChuongTrinhHoc = LoaiPhong > SinhVien = GiangVien = MonHoc = PhongHoc = CaHoc
 
 -- Second: Connect table
 -- HPTQ = CTH_HP = GV_HP = GV_MH = SV_HP = SV_MH = HP_LP = TKB
