@@ -10,7 +10,7 @@ const SomethingWentWrong = () => {
         subTitle="Sorry, something went wrong."
         extra={
           <a href="/">
-            <Button type="primary">Back Home</Button>
+            <Button type="primary">Reload</Button>
           </a>
         }
       />

@@ -18,12 +18,12 @@ const Sidebar = () => {
   useEffect(() => {}, []);
 
   const selectedKey = () => {
-    if (path === "/teacher/dashboard" || path === "/teacher") {
+    if (path === "/admin/dashboard" || path === "/admin") {
       return "1";
-    } else if (path === "/teacher/calendar") {
+    } else if (path === "/admin/student_manager") {
       return "2";
-    } else if (path === "/teacher/setting") {
-      return "-1";
+    } else if (path === "/admin/teacher_manager") {
+      return "3";
     }
   };
 
@@ -41,29 +41,17 @@ const Sidebar = () => {
           {
             key: "1",
             icon: <AppstoreOutlined />,
-            label: <Link to="/teacher/dashboard">Tổng quan</Link>,
+            label: <Link to="/admin/dashboard">Tổng quan</Link>,
           },
           {
             key: "2",
             icon: <CalendarOutlined />,
-            label: <Link to="/teacher/calendar">Lịch</Link>,
+            label: <Link to="/admin/student_manager">Quản lý sinh viên</Link>,
           },
           {
             key: "3",
-            icon: <AppstoreAddOutlined />,
-            label: <Link>Khác</Link>,
-            children: [
-              {
-                key: "5.1",
-                icon: <FileTextOutlined />,
-                label: <Link>Biểu mẫu</Link>,
-              },
-              {
-                key: "5.2",
-                icon: <QuestionCircleOutlined />,
-                label: <Link>Hỗ trợ</Link>,
-              },
-            ],
+            icon: <CalendarOutlined />,
+            label: <Link to="/admin/teacher_manager">Quản lý giáo viên</Link>,
           },
         ]}
       />

@@ -10,6 +10,7 @@ import StudentDashboard from "./components/Student/Dashboard";
 import StudentCalendar from "./components/Student/MyCalendar";
 import TeacherDashboard from "./components/Teacher/Dashboard";
 import TeacherCalendar from "./components/Teacher/MyCalendar";
+import AdminDashboard from "./components/Admin/Dashboard";
 import Manager from "./components/Teacher/Manager";
 import NotFound from "./pages/404";
 import Register from "./components/Student/Register";
@@ -19,6 +20,8 @@ import Form from "./components/Student/Form";
 import StudentProfile from "./components/Student/UserProfile";
 import TeacherProfile from "./components/Teacher/UserProfile";
 import axios from "axios";
+import StudentManager from "./components/Admin/StudentManager";
+import TeacherManager from "./components/Admin/TeacherManager";
 
 function App() {
   axios.defaults.withCredentials = true;
@@ -100,7 +103,24 @@ function App() {
             <Route exact path="*" element={<NotFound />} />
           )}
           {level === "AD" ? (
-            <Route path="/admin/" element={<Admin user={user} />}></Route>
+            <Route path="/admin/" element={<Admin user={user} />}>
+              <Route exact path="/admin/" element={<AdminDashboard />} />
+              <Route
+                exact
+                path="/admin/dashboard"
+                element={<AdminDashboard />}
+              />
+              <Route
+                exact
+                path="/admin/student_manager"
+                element={<StudentManager />}
+              />
+              <Route
+                exact
+                path="/admin/teacher_manager"
+                element={<TeacherManager />}
+              />
+            </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
           )}
