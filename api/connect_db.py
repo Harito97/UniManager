@@ -31,4 +31,8 @@ class ConnectDatabase:
         self.cursor.execute("""SELECT * FROM HP_LP""")
         data = self.cursor.fetchall()
         return [(item['id_hp'], item['id_lp']) for item in data]
+    
+    def get_cth_hp(self):
+        self.cursor.execute("""SELECT * FROM CTH_HP""")
+        return [(item['id_cth'], item['id_hp'], item['hk_dx']) for item in self.cursor.fetchall()]
 

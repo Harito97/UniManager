@@ -110,15 +110,16 @@ create table if not exists GV_MH(
 create table if not exists SV_HP(
     id_sv varchar(15) not null,
     id_hp varchar(15) not null,
-    diem_tx decimal(4,2),
-    diem_gk decimal(4,2),
-    diem_ck decimal(4,2),
+    diem_chu varchar(2),
     primary key(id_sv, id_hp)
 );
 
 create table if not exists SV_MH(
     id_sv varchar(15) not null,
     id_mh varchar(15) not null,
+    diem_tx decimal(4,2),
+    diem_gk decimal(4,2),
+    diem_ck decimal(4,2),
     primary key(id_sv, id_mh)
 );
 
