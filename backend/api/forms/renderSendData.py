@@ -813,12 +813,17 @@ async def sendScheduleExam(user: User):
                 """
     cursor.execute(statement)
     data = cursor.fetchall()
+    return_data = []
 
     for schedule in data:
-        unicode_data = schedule["lich_thi"]
-        schedule["lich_thi"] = json.loads(unicode_data)
+        try:
+            unicode_data = schedule["lich_thi"]
+            schedule["lich_thi"] = json.loads(unicode_data)
+            return_data.append(schedule)
+        except Exception as e:
+            pass
 
-    return {"exam": data}
+    return {"exam": return_data}
 
 
 @app.post("/info_student")
