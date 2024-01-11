@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Select, Popconfirm, Alert } from "antd";
+import { Button, Table, Select, Popconfirm, Alert, ConfigProvider } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
@@ -167,13 +167,13 @@ const Register = ({ user }) => {
         ));
       },
     },
-    { 
-      title: "Kiểu đăng kí", 
-      dataIndex: "type", 
+    {
+      title: "Kiểu đăng kí",
+      dataIndex: "type",
       width: 200,
       render: (_, record) => {
-        return <p>Đăng ký lần {record.lan}</p>
-      }   
+        return <p>Đăng ký lần {record.lan}</p>;
+      },
     },
     {
       title: "Huỷ",
@@ -441,7 +441,15 @@ const Register = ({ user }) => {
   }
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            rowHoverBg: "none"
+          },
+        },
+      }}
+    >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col justify-between sm:flex-row">
           <h1 className="text-xl font-bold">
@@ -504,8 +512,7 @@ const Register = ({ user }) => {
           rowClassName={(record) => {
             if (record.status) {
               return "bg-blue-200";
-            }
-            else {
+            } else {
               return "bg-pink-200";
             }
           }}
@@ -524,7 +531,7 @@ const Register = ({ user }) => {
           <Button onClick={() => generateDocument(user)}>Xuất file</Button>
         </div>
       </div>
-    </>
+    </ConfigProvider>
   );
 };
 
