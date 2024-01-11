@@ -1,0 +1,6 @@
+uvicorn
+bcrypt
+fastapi-mail
+fastapi
+mysql-connector-python
+pyjwt

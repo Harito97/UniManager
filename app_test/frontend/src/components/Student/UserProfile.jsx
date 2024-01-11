@@ -15,39 +15,16 @@ const UserProfile = ({ user }) => {
 
   const [form] = Form.useForm();
   const [passForm] = Form.useForm();
-  const [imgURL, settingURL] = useState(null);
-
-  // const uploadImage = (values) => {
-  //   const imageRef = ref(storage, `images/${values.file.name + v4()}`);
-  //   uploadBytes(imageRef, values.file).then((snapshot) => {
-  //     getDownloadURL(snapshot.ref).then((url) => {
-  //       //TODO: thay đổi đường link avatar trong DB
-  //       settingURL(url);
-  //       axios.put("http://localhost:8000/put_image", {
-  //         username: user,
-  //         avatar: url,
-  //       });
-  //     });
-  //   });
-  // };
-
-  // const [userData, setUserData] = useState([]);
+  const [imgURL, setimgURL] = useState(null);
 
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
-  //       await axios
-  //         .post("http://localhost:8000/info_student", {
-  //           username: user,
-  //         })
-  //         .then((res) => {
-  //           setUserData(res.data.info);
-  //           settingURL(res.data.info.avatar);
-  //           form.setFieldsValue({
-  //             sdt: res.data.info.sdt,
-  //             email: res.data.info.email,
-  //           });
-  //         });
+  //       await axios.post('http://localhost:8000/get_avatar', {
+  //         username: user,
+  //       })
+  //       .then((res) => setimgURL(res.data.avatar));
+
   //     } catch (error) {
   //       console.log(error);
   //     }
@@ -56,70 +33,109 @@ const UserProfile = ({ user }) => {
   //   fetchData();
   // }, [user]);
 
-  // const submitData = (values) => {
-  //   console.log(values);
-  //   //TODO: Update data tương ứng
-  //   // Gồm sdt và email
-  //   try {
-  //     axios.put('http://localhost:8000/put_info_student', {
-  //       username: user,
-  //       sdt: values.sdt,
-  //       email: values.email,
-  //     })
-  //     .then((res) => console.log(res.data.message));
-  //   }
+  const uploadImage = (values) => {
+    const imageRef = ref(storage, `images/${values.file.name + v4()}`);
+    uploadBytes(imageRef, values.file).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        //TODO: thay đổi đường link avatar trong DB
+        setimgURL(url);
+        axios.put("http://localhost:8000/put_image", {
+          username: user,
+          avatar: url,
+        });
+      });
+    });
+  };
+
+  const [userData, setUserData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios
+          .post("http://localhost:8000/info_student", {
+            username: user,
+          })
+          .then((res) => {
+            setUserData(res.data.info);
+            setimgURL(res.data.info.avatar);
+            form.setFieldsValue({
+              sdt: res.data.info.sdt,
+              email: res.data.info.email,
+            });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  const submitData = (values) => {
+    console.log(values);
+    //TODO: Update data tương ứng
+    // Gồm sdt và email
+    try {
+      axios.put('http://localhost:8000/put_info_student', {
+        username: user,
+        sdt: values.sdt,
+        email: values.email,
+      })
+      .then((res) => console.log(res.data.message));
+    }
    
-  //   catch(e) {
-  //     console.log(e);
-  //   }
-  // };
+    catch(e) {
+      console.log(e);
+    }
+  };
 
-  // const changePwd = (values) => {
-  //   console.log(values);
-  //   //TODO: Update data tương ứng
-  //   // Thay doi mat khau thanh new_pass
-  //   // Nhớ mã hoá nhé :))
-  //   console.log(values);
-  //   try {
-  //     axios.put('http://localhost:8000/change_pass', {
-  //       username: user,
-  //       current_pass: values.current_pass,
-  //       new_pass: values.new_pass,
-  //     })
-  //     .then((res) => {
-  //       if (res.data.Status) {
-  //         openSuccessNotification(
-  //           "Successfully!",
-  //           "Đổi mật khẩu thành công",
-  //         );
-  //         setTimeout(function() {
-  //         }, 700);
-  //       }
-  //       else {
-  //         openErrorNotification("Lỗi", res.data.message);
-  //         setTimeout(function() {
-  //         }, 700);
-  //       }
-  //     });
-  //   }
-  //   catch(e) {
-  //     console.log(e);
-  //   }
+  const changePwd = (values) => {
+    console.log(values);
+    //TODO: Update data tương ứng
+    // Thay doi mat khau thanh new_pass
+    // Nhớ mã hoá nhé :))
+    console.log(values);
+    try {
+      axios.put('http://localhost:8000/change_pass', {
+        username: user,
+        current_pass: values.current_pass,
+        new_pass: values.new_pass,
+      })
+      .then((res) => {
+        if (res.data.Status) {
+          openSuccessNotification(
+            "Successfully!",
+            "Đổi mật khẩu thành công",
+          );
+          setTimeout(function() {
+          }, 700);
+        }
+        else {
+          openErrorNotification("Lỗi", res.data.message);
+          setTimeout(function() {
+          }, 700);
+        }
+      });
+    }
+    catch(e) {
+      console.log(e);
+    }
 
-  // };
+  };
 
-  // const deleteAvatar = () => {
-  //   settingURL(null);
-  //   // TODO: chuyển giá trị avatar về null
-  //   try {
-  //     axios.delete("http://localhost:8000/delete_avatar/" + user, {
-  //       username: user,
-  //     });
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
+  const deleteAvatar = () => {
+    setimgURL(null);
+    //TODO: chuyển giá trị avatar về null
+    try {
+      axios.delete("http://localhost:8000/delete_avatar/" + user, {
+        username: user,
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
-  // };
+  };
 
   return (
     <>
