@@ -22,6 +22,7 @@ import TeacherProfile from "./components/Teacher/UserProfile";
 import axios from "axios";
 import StudentManager from "./components/Admin/StudentManager";
 import TeacherManager from "./components/Admin/TeacherManager";
+import Contact from "./components/Student/Contact";
 
 function App() {
   axios.defaults.withCredentials = true;
@@ -69,6 +70,7 @@ function App() {
               <Route exact path="/student/exam" element={<Exam />} />
               <Route exact path="/student/guide" element={<Guide />} />
               <Route exact path="/student/form" element={<Form />} />
+              <Route exact path="/student/contact" element={<Contact />} />
 
               <Route
                 exact

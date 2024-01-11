@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
 import { Menu } from "antd";
 import { Link } from "react-router-dom";
-import {
-  AppstoreOutlined,
-  ReconciliationOutlined,
-  CalendarOutlined,
-  AppstoreAddOutlined,
-  FileTextOutlined,
-  QuestionCircleOutlined,
-} from "@ant-design/icons";
+import { AppstoreOutlined, CalendarOutlined } from "@ant-design/icons";
+import { PiStudent } from "react-icons/pi";
+import { GiTeacher } from "react-icons/gi";
 import Logo from "../../assets/hus-logo.svg";
 
 const Sidebar = () => {
@@ -45,12 +40,12 @@ const Sidebar = () => {
           },
           {
             key: "2",
-            icon: <CalendarOutlined />,
+            icon: <PiStudent />,
             label: <Link to="/admin/student_manager">Quản lý sinh viên</Link>,
           },
           {
             key: "3",
-            icon: <CalendarOutlined />,
+            icon: <GiTeacher />,
             label: <Link to="/admin/teacher_manager">Quản lý giáo viên</Link>,
           },
         ]}

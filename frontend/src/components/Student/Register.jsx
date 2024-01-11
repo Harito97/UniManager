@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Select, Popconfirm, Alert } from "antd";
+import { Button, Table, Select, Popconfirm, Alert, ConfigProvider } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useContentContext } from "../Notification/ContentContext";
 import axios from "axios";
@@ -62,7 +62,7 @@ const Register = ({ user }) => {
   const [selected, setSelected] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Mảng chứa ma_lh đăng kí
   const [deSelected, setDeSelected] = useState([]); // Mảng chứa ma_lh bỏ đăng kí
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,32 +93,36 @@ const Register = ({ user }) => {
               return 0;
             }
           })
-          .then((res) => {
-            if (res != 0) {
+          .then((ma_hk) => {
+            if (ma_hk != 0) {
               axios
                 .post("http://localhost:8000/subject_learned", {
                   username: user,
-                  ma_hk: res,
+                  ma_hk: ma_hk,
                 })
                 .then((res) => setDataSubjectLearned(res.data.subjectLearned));
             }
+            return ma_hk;
           })
-          .then(() => {
-            axios
-              .post("http://localhost:8000/registered_subject", {
-                username: user,
-              })
-              .then((res) => {
-                const data = res.data.subjectRegister;
-                data.forEach((obj) => {
-                  obj.status = false;
+          .then((ma_hk) => {
+            if (ma_hk != 0) {
+              axios
+                .post("http://localhost:8000/registered_subject", {
+                  username: user,
+                  ma_hk: ma_hk,
+                })
+                .then((res) => {
+                  const data = res.data.subjectRegister;
+                  data.forEach((obj) => {
+                    obj.status = false;
+                  });
+                  const updateSelected = data.map((obj) => obj.ma_lh);
+                  setSelected(updateSelected);
+                  setRegisteredData(data);
                 });
-                const updateSelected = data.map((obj) => obj.ma_lh);
-                setSelected(updateSelected);
-                setRegisteredData(data);
-              });
+            }
           })
-          .finally(() => console.log("Lấy dữ liệu hoàn tất"));
+          .finally(() => setLoading(false));
       } catch (error) {
         console.log(error);
       }
@@ -167,13 +171,13 @@ const Register = ({ user }) => {
         ));
       },
     },
-    { 
-      title: "Kiểu đăng kí", 
-      dataIndex: "type", 
+    {
+      title: "Kiểu đăng kí",
+      dataIndex: "type",
       width: 200,
       render: (_, record) => {
-        return <p>Đăng ký lần {record.lan}</p>
-      }   
+        return <p>Đăng ký lần {record.lan}</p>;
+      },
     },
     {
       title: "Huỷ",
@@ -220,7 +224,6 @@ const Register = ({ user }) => {
   };
 
   const start = () => {
-    setLoading(true);
     try {
       for (let i = 0; i < selectedRowKeys.length; i++) {
         const add = axios.post("http://localhost:8000/post_dangky", {
@@ -290,7 +293,6 @@ const Register = ({ user }) => {
       obj.status = false;
     });
 
-    setLoading(false);
     setSelectedRowKeys([]);
     setDeSelected([]);
   };
@@ -441,7 +443,15 @@ const Register = ({ user }) => {
   }
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            rowHoverBg: "none",
+          },
+        },
+      }}
+    >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col justify-between sm:flex-row">
           <h1 className="text-xl font-bold">
@@ -473,6 +483,7 @@ const Register = ({ user }) => {
                 return "bg-yellow-200";
               }
             }}
+            loading={loading}
           />
         ) : (
           // Môn học theo ngành
@@ -489,6 +500,7 @@ const Register = ({ user }) => {
                 return "bg-yellow-200";
               }
             }}
+            loading={loading}
           />
         )}
         <h1 className="text-xl font-bold">
@@ -504,11 +516,11 @@ const Register = ({ user }) => {
           rowClassName={(record) => {
             if (record.status) {
               return "bg-blue-200";
-            }
-            else {
+            } else {
               return "bg-pink-200";
             }
           }}
+          loading={loading}
         />
         <div className="flex justify-end gap-3">
           <Button
@@ -516,7 +528,6 @@ const Register = ({ user }) => {
             onClick={start}
             disabled={!(hasSelected || hasDeSelected)}
             // disabled={false}
-            loading={loading}
             className="bg-blue-500"
           >
             Ghi nhận
@@ -524,7 +535,7 @@ const Register = ({ user }) => {
           <Button onClick={() => generateDocument(user)}>Xuất file</Button>
         </div>
       </div>
-    </>
+    </ConfigProvider>
   );
 };
 

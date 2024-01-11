@@ -34,6 +34,8 @@ const Sidebar = () => {
       return "-1";
     } else if (path === "/student/form") {
       return "5.1";
+    } else if (path === "/student/contact") {
+      return "5.2";
     }
   };
 
@@ -86,7 +88,7 @@ const Sidebar = () => {
               {
                 key: "5.2",
                 icon: <QuestionCircleOutlined />,
-                label: <Link>Hỗ trợ</Link>,
+                label: <Link to="/student/contact">Hỗ trợ</Link>,
               },
             ],
           },
