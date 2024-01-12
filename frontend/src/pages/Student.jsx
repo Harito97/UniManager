@@ -23,6 +23,7 @@ import StudentProfile from "../components/Student/UserProfile";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
 import TeamLogo from "../assets/logo/logo.png";
+import Contact from "../components/Student/Contact";
 
 const Student = ({ user }) => {
   axios.defaults.withCredentials = true;
@@ -149,6 +150,7 @@ const Student = ({ user }) => {
             <Route exact path="/exam" element={<Exam user={user} />} />
             <Route exact path="/guide" element={<Guide user={user} />} />
             <Route exact path="/form" element={<Form user={user} />} />
+            <Route exact path="/contact" element={<Contact user={user} />} />
 
             <Route
               exact

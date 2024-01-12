@@ -49,7 +49,7 @@ const Dashboard = ({ user }) => {
 
   const [selectedRow, setSelectedRow] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [classData, setClassData] = useState([]);
+  const [semester, setSemester] = useState([]);
 
   const showInfo = (record) => {
     setSelectedRow(record);

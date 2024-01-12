@@ -129,7 +129,7 @@ def subject(data):
 
 
 @app.get("/")
-async def verify_user(request: Request):
+async def verifyUser(request: Request):
     if "token" in request.cookies:
         token = request.cookies["token"]
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[
@@ -166,13 +166,13 @@ async def login(user: UserInfo, response: Response):
 
 
 @app.get("/logout")
-async def log_out(response: Response):
+async def logout(response: Response):
     response.delete_cookie("token")
     return {"Status": True}
 
 
 @app.post("/forgot_password")
-async def forgot_password(request: ForgotPassword):
+async def forgotPassword(request: ForgotPassword):
     # Truy vấn cơ sở dữ liệu để lấy thông tin người dùng dựa trên username (tùy thuộc vào cách bạn cài đặt)
     # Sau đó, bạn có thể tạo mật khẩu mới và lưu vào cơ sở dữ liệu
     # Sau khi tạo mật khẩu mới, gửi email chứa mật khẩu mới đến người dùng
@@ -238,7 +238,7 @@ async def forgot_password(request: ForgotPassword):
                                 <p>Your password is: {pass_word}</p>
                                 <p>Please do not disclose login information to others!</p>
                             </div>
-                            </div>
+                            </div>  
                         </body>
                         </html>
                     """
@@ -255,9 +255,16 @@ async def forgot_password(request: ForgotPassword):
     return True
 
 
-@app.post("/semester_year_current")
+@app.get("/semester_year_current")
 async def getCurrent(request: Request):
-    return {"semester": int(getTime()["semester"]), "year": int(getTime()["year"])}
+    cursor.execute("""select ma_hk 
+                   from hoc_ki
+                   where ng_bat_dau <= NOW() and ng_ket_thuc >= NOW()""")
+    data = cursor.fetchall()
+    if len(data) == 0:
+        return {"Status": False}
+    else:
+        return {"Status": True, "current": data[0]}
 
 
 @app.get("/current_registration")
@@ -328,8 +335,15 @@ async def sendOverView(user: User, request: Request):
         numerator += element["he4"]*element["so_tin"]
         denominator += element["so_tin"]
 
-    gpa = round(numerator/denominator, 2)
+    try:
+        gpa = round(numerator/denominator, 2)
+    except Exception as e:
+        gpa = 0.0
 
+    if tong_so_tin is None:
+        tong_so_tin = 0
+    if tong_so_tin_tich_luy is None:
+        tong_so_tin_tich_luy = 0
     # đang làm dở
 
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
@@ -491,7 +505,7 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
 
 
 @app.post("/subject_all")
-async def sendSubject(user: UserSemester, request: Request):
+async def sendSubject(user: UserSemester, request: Request):    
 
     statement = f"""
                     select
@@ -580,10 +594,10 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
 
 
 @app.post("/registered_subject")
-async def registeredSubject(user: User):
+async def registeredSubject(user: UserSemester):
 
     statement = f"""
-                    select 
+                    select  
                         lh.ma_lh as "ma_lh",
                         hp.ten_hp as "ten_hp",
                         hp.so_tin as "so_tin",
@@ -600,7 +614,7 @@ async def registeredSubject(user: User):
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
-                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {user.ma_hk}
                     group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian
                     order by 
                         hp.ten_hp asc;
@@ -813,12 +827,17 @@ async def sendScheduleExam(user: User):
                 """
     cursor.execute(statement)
     data = cursor.fetchall()
+    return_data = []
 
     for schedule in data:
-        unicode_data = schedule["lich_thi"]
-        schedule["lich_thi"] = json.loads(unicode_data)
+        try:
+            unicode_data = schedule["lich_thi"]
+            schedule["lich_thi"] = json.loads(unicode_data)
+            return_data.append(schedule)
+        except Exception as e:
+            pass
 
-    return {"exam": data}
+    return {"exam": return_data}
 
 
 @app.post("/info_student")
@@ -826,7 +845,7 @@ async def sendInfoStudent(user: User):
 
     statement = f"""
                     select
-                        sv.ho_ten, sv.gioi_tinh, sv.ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
+                        sv.ho_ten, sv.gioi_tinh, date_format(sv.ngsinh, '%d/%m/%Y') as ngsinh, sv.sdt, user.email, nganh.ten_nganh as nganh, sv.lop, user.avatar
                     from 
                         sinh_vien sv
                         inner join user on user.username = sv.ma_sv
@@ -995,8 +1014,20 @@ async def getInfoSubjectRegister(user: User):
 
     return {"info_subject_register": data1}
 
+@app.get("/get_total_student")
+async def getTotalStudent():
+    cursor.execute("SELECT COUNT(ma_sv) AS totalStudent FROM sinh_vien")
+    data = cursor.fetchall()
+    return data[0]
 
-origins = ["http://localhost:5173"]
+@app.get("/get_total_teacher")
+async def getTotalTeacher():
+    cursor.execute("SELECT COUNT(ma_gv) AS totalTeacher FROM giang_vien")
+    data = cursor.fetchall()
+    return data[0]
+
+
+origins = ["http://localhost:5173", "http://localhost:8000", "http://localhost:8001"]
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend

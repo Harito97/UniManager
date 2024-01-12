@@ -37,7 +37,10 @@ const NotFound = () => {
       path === "/teacher/dashboard" ||
       path === "/teacher/calendar" ||
       path === "/teacher/setting" ||
-      path === "/admin"
+      path === "/admin" ||
+      path === "/admin/dashboard" ||
+      path === "/admin/student_manager" ||
+      path === "/admin/teacher_manager"
     ) {
       setText("Sorry, you are not authorized to access this page.");
       setCode("403");
@@ -64,7 +67,7 @@ const NotFound = () => {
             <div className="text-center text-base font-semibold">
               Redirecting in {timeLeft}
             </div>
-            <a href="/login" className="">
+            <a href="/" className="">
               <Button className="mt-4 bg-blue-500" type="primary">
                 Back to Login
               </Button>
