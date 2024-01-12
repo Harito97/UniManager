@@ -103,13 +103,6 @@ create table if not exists sinh_vien(
     primary key (ma_sv)
 );
 
-create table if not exists sv_hp(
-	ma_hp varchar(10) not null,
-    ma_sv varchar(8) not null,
-    so_lan_hoc int not null,
-    primary key (ma_hp, ma_sv)
-);
-
 create table if not exists user(
 	username varchar(8) not null,
     pass_word binary(60) not null,
@@ -166,10 +159,6 @@ add constraint FK_ma_sv_user foreign key (ma_sv) references user(username);
 
 alter table giang_vien
 add constraint FK_ma_gv_user foreign key (ma_gv) references user(username);
-
-alter table sv_hp
-add constraint FK_sv_hp1 foreign key (ma_hp) references hoc_phan(ma_hp),
-add constraint FK_sv_hp2 foreign key (ma_sv) references sinh_vien(ma_sv);
 
 alter table dot_dki
 add constraint FK_hk_dot_dki foreign key (ma_hk) references hoc_ki(ma_hk);
