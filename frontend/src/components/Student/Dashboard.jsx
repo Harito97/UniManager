@@ -9,6 +9,7 @@ import {
 import { Space, Table, Badge, Dropdown } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
+import ImageGallery from "../ImageGallery";
 
 const Dashboard = ({ user }) => {
   const columns = [
@@ -241,12 +242,7 @@ const Dashboard = ({ user }) => {
             loading={false}
             className="w-1/3 self-start shadow-lg max-lg:w-full"
           >
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Aspernatur nobis cupiditate, excepturi optio molestiae impedit
-              deserunt officiis, ratione ab dolores maiores expedita, esse modi
-              consectetur nulla eos reprehenderit dolorum porro?
-            </p>
+            <ImageGallery />
           </Card>
         </div>
       </div>
