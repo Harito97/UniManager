@@ -199,7 +199,7 @@ const Dashboard = ({ user }) => {
           <Card
             hoverable={true}
             loading={false}
-            className="w-2/3 overflow-auto shadow-lg max-lg:w-full"
+            className="w-2/3 self-start overflow-auto shadow-lg max-lg:w-full"
           >
             {semesters.length == 0 ? (
               <>

@@ -32,16 +32,14 @@ const ChangePwdForm = ({ user }) => {
 
   return (
     <>
-      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6 2xl:col-span-2">
-        <h3 className="mb-4 text-xl font-semibold dark:text-white">
-          Đổi mật khẩu
-        </h3>
+      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 2xl:col-span-2">
+        <h3 className="mb-4 text-xl font-semibold ">Đổi mật khẩu</h3>
         <Form layout="vertical" onFinish={changePwd} form={passForm}>
           <div className="grid grid-cols-6 gap-6">
             <div className="col-span-6 sm:col-span-3">
               <Form.Item
                 label={
-                  <p className="block text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="block text-sm font-medium text-gray-900 ">
                     Mật khẩu hiện tại
                   </p>
                 }
@@ -56,7 +54,7 @@ const ChangePwdForm = ({ user }) => {
             <div className="col-span-6 sm:col-span-3">
               <Form.Item
                 label={
-                  <p className="block text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="block text-sm font-medium text-gray-900 ">
                     Mật khẩu mới
                   </p>
                 }
@@ -69,7 +67,7 @@ const ChangePwdForm = ({ user }) => {
               </Form.Item>
               <Form.Item
                 label={
-                  <p className="block text-sm font-medium text-gray-900 dark:text-white">
+                  <p className="block text-sm font-medium text-gray-900 ">
                     Nhập lại mật khẩu
                   </p>
                 }
