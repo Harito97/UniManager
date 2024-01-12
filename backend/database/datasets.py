@@ -4,6 +4,7 @@ from database_model import *
 import random
 from datetime import datetime, timedelta
 import bcrypt
+import csv
 
 # Danh sach hoc phan
 df = pd.read_excel("./backend/database/TKB-HKI-2023-2024.xlsx", engine="openpyxl")
@@ -233,7 +234,7 @@ def generate_names(count):
 
     return student_names
 # Danh sach ten giang vien
-danh_sach_ten_giang_vien = generate_names(101)
+danh_sach_ten_giang_vien = generate_names(100)
 # Danh sach ten sinh vien
 danh_sach_ten_sinh_vien = generate_names(200)
 
@@ -255,7 +256,7 @@ def generate_hanoi_addresses(count):
     return hanoi_addresses
 
 # Danh sach dia chi
-danh_sach_dia_chi_giang_vien = generate_hanoi_addresses(101)
+danh_sach_dia_chi_giang_vien = generate_hanoi_addresses(100)
 
 def generate_random_phone_number():
     phone_number = "0" + str(random.randint(9, 9))  # Random first digit
@@ -263,7 +264,7 @@ def generate_random_phone_number():
     return phone_number
 
 # Danh sach sdt
-danh_sach_sdt_giang_vien = [generate_random_phone_number() for _ in range(101)]
+danh_sach_sdt_giang_vien = [generate_random_phone_number() for _ in range(100)]
 danh_sach_sdt_sinh_vien = [generate_random_phone_number() for _ in range(200)]
 
 def generate_random_dates(start_date, end_date, count):
@@ -282,13 +283,13 @@ danh_sach_ngsinh_sinh_vien = generate_random_dates(start_date1, end_date1, 200)
 start_date2 = datetime(1960, 1, 1)
 end_date2 = datetime(1980, 12, 31)
 
-danh_sach_ngsinh_giang_vien = generate_random_dates(start_date2, end_date2, 101)
+danh_sach_ngsinh_giang_vien = generate_random_dates(start_date2, end_date2, 100)
 
 # Danh sach giang vien
 danh_sach_giang_vien = [
-    (f'{10000000 + i + 1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 101)
+    (f'{10000000 + i + 1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 100)
 ]
-
+danh_sach_ma_giang_vien = [f'{10000000 + i + 1}' for i in range(0, 100)]
 with open('./backend/database/danh_sach_giang_vien.csv', 'w', encoding='utf-8') as file_a:
     file_a.write('ma_gv,ho_ten,gioi_tinh,luong,ngsinh,sdt,dia_chi,ng_bat_dau,ng_ket_thuc\n')
     for element in danh_sach_giang_vien:
@@ -386,12 +387,16 @@ for i in range(len(danh_sach_ma_hoc_phan)):
     ma_hk = 'I'
     danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
 
-print(danh_sach_lich_hoc)
-# with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8') as file_a:
-#     file_a.write('ma_lh,ma_hp,ma_lop,so_luong,thoi_gian,ma_hk\n')
+# with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
+#     writer = csv.writer(file_a)
+#     writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
 #     for element in danh_sach_lich_hoc:
-#         ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk = element
-#         # print(ma_lh, ma_hp, ma_lop, so_luong, thoi_gian['Thu'], thoi_gian['Tiet'], ma_hk)
-#         # file_a.write(f'{ma_lh},{ma_hp},{ma_lop},{so_luong},{thoi_gian},{ma_hk}\n')
+#         writer.writerow(element)
+        
+danh_sach_lh_gv = [(ma_hp, ma_gv) for ma_hp, ma_gv in zip(hoc_phan_dict.keys(), danh_sach_ma_giang_vien)]
 
-danh_sach_lh_gv = []
+with open('./backend/database/danh_sach_gv_hp.csv', 'w', encoding='utf-8', newline='') as file_a:
+    writer = csv.writer(file_a)
+    writer.writerow(['ma_hp','ma_gv'])
+    for element in danh_sach_lh_gv:
+        writer.writerow(element)
