@@ -49,7 +49,7 @@ create table if not exists chuong_trinh(
 create table if not exists lich_hoc(
 	ma_lh int not null auto_increment,
     ma_hp varchar(10) not null,
-    ma_lop int not null,
+    ma_lop varchar(50) not null,
     so_luong int not null,
     thoi_gian json not null,
     ma_hk INT not null,

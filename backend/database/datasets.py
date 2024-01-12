@@ -374,7 +374,7 @@ for i in range(len(danh_sach_ma_hoc_phan)):
     elif count < 150: ma_hk = 221
     elif count < 200: ma_hk = 222
     elif count < 250: ma_hk = 231
-    elif count < 300: ma_hk = 232
+    else: ma_hk = 232
     count += 1
     danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
 
