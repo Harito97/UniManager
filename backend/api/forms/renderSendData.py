@@ -790,23 +790,28 @@ async def update_record(newRecord: DANGKY):
 
 
 @app.post("/download")
-async def download(id: ID):
+async def downloadForm(id: ID):
 
-    cursor.execute(f"select name, file from form where id = {id.id}")
-    result = cursor.fetchall()
+    try:
+        cursor.execute(f"select name, file from form where id = {id.id}")
+        result = cursor.fetchall()
 
-    file_data = result[0]["file"]
+        file_data = result[0]["file"]
 
-    ten = result[0]['name'].split(".")
+        ten = result[0]['name'].split(".")
 
-    if os.path.exists(rf"F:\{result[0]['name']}"):
-        file_list = glob.glob(f'F:\\{ten[0]}*')
-        temp_file_path = f"F:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
-    else:
-        temp_file_path = f"F:\{result[0]['name']}"
+        if os.path.exists(rf"F:\{result[0]['name']}"):
+            file_list = glob.glob(f'F:\\{ten[0]}*')
+            temp_file_path = f"F:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
+        else:
+            temp_file_path = f"F:\{result[0]['name']}"
 
-    with open(temp_file_path, "wb") as temp_file:
-        temp_file.write(base64.b64decode(file_data))
+        with open(temp_file_path, "wb") as temp_file:
+            temp_file.write(base64.b64decode(file_data))
+        return {"Status": True, "message": "Tải xuống form thành công!"}
+    
+    except Exception as e:
+        return {"Status": False, "message": "Quá trình tải xuống bị gián đoạn hoặc bị lỗi!"}
 
 
 @app.post("/schedule_exam")
