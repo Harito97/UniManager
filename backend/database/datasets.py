@@ -368,7 +368,7 @@ for i in range(len(danh_sach_ma_hoc_phan)):
     ma_hp = danh_sach_ma_hoc_phan[i][0]
     ma_lop = danh_sach_ma_hoc_phan[i][1]
     so_luong = 80
-    thoi_gian = {"thu": f"T{danh_sach_thu_tiet[i][0]}", "bd": f'{str(danh_sach_thu_tiet[i][1]).split('-')[0]}', "kt": f'{str(danh_sach_thu_tiet[i][1]).split('-')[1]}', "phong": f'{danh_sach_thu_tiet[2]}'}
+    thoi_gian = {"thu": f"T{danh_sach_thu_tiet[i][0]}", "bd": f'{str(danh_sach_thu_tiet[i][1]).split('-')[0]}', "kt": f'{str(danh_sach_thu_tiet[i][1]).split('-')[1]}', "phong": f'{danh_sach_thu_tiet[i][2]}'}
     if count < 50: ma_hk = 211
     elif count < 100: ma_hk = 212
     elif count < 150: ma_hk = 221
