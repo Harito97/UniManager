@@ -3,6 +3,7 @@ import pandas as pd
 from database_model import *
 import random
 from datetime import datetime, timedelta
+import bcrypt
 
 # Danh sach hoc phan
 df = pd.read_excel("./backend/database/TKB-HKI-2023-2024.xlsx", engine="openpyxl")
@@ -185,7 +186,7 @@ danh_sach_chuong_trinh = [
     ('KCT_93', 'QHT93') 
 ]
 
-with open('danh_sach_chuong_trinh.csv', 'w', encoding='utf-8') as file_a:
+with open('./backend/database/danh_sach_chuong_trinh.csv', 'w', encoding='utf-8') as file_a:
     file_a.write('ma_ct,ma_nganh\n')
     for element in danh_sach_chuong_trinh:
         ma_ct, ma_nganh = element
@@ -204,7 +205,7 @@ with open('danh_sach_chuong_trinh.csv', 'w', encoding='utf-8') as file_a:
     
 # Danh sach chuong trinh hoc
 df2 = pd.read_csv("./backend/database/danh_sach_chuong_trinh_hoc.csv")
-danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
+danh_sach_chuong_trinh_hoc = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2["ma_chuong_trinh"], df2["ma_nganh"], df2["ma_hp"], df2["nam"], df2["ki"])]
 
 # Nhap vao database
 # try:
@@ -217,61 +218,7 @@ danh_sach_chuong_trinh = [(a1, a2, a3, a4, a5) for a1, a2, a3, a4, a5 in zip(df2
 # except Exception as e:
 #     print(f"Error: {e}")
 
-# Danh sach ten giang vien
-danh_sach_ten_giang_vien = [
-    "Nguyen Thanh Hoa",
-    "Tran Minh Duc",
-    "Le Thi Mai Anh",
-    "Pham Van Hieu",
-    "Hoang Thi Linh",
-    "Vo Quoc Khanh",
-    "Ngo Thi Bich",
-    "Do Van Tuan",
-    "Luong Thi Ha",
-    "Nguyen Duc Thang",
-    "Tran Thi Thu Trang",
-    "Phan Van Quan",
-    "Mai Ngoc Lan",
-    "Bui Van Phuc",
-    "Nguyen Thi Thuy Duong",
-    "Hoang Van An",
-    "Le Thi Phuong Thao",
-    "Vu Ngoc Hien",
-    "Truong Minh Quang",
-    "Dang Thi Ngoc Thanh",
-    "Nguyen Quang Huy",
-    "Pham Thi Mai",
-    "Trinh Van Long",
-    "Vo Thi Nga",
-    "Le Van Thanh",
-    "Nguyen Thi Ngoc Anh",
-    "Do Quang Nam",
-    "Hoang Van Minh",
-    "Nguyen Thi Ha Vy",
-    "Tran Van Hien",
-    "Nguyen Van Binh",
-    "Luu Thi Kim Ngan",
-    "Nguyen Duc Khanh",
-    "Le Van Hoang",
-    "Pham Thi Thuy Linh",
-    "Truong Van Phuoc",
-    "Vu Thi Mai",
-    "Bui Van Hieu",
-    "Nguyen Thi Hong Ngoc",
-    "Hoang Van Cuong",
-    "Tran Thi Thanh Thuy",
-    "Phan Van Vinh",
-    "Nguyen Thi Hoai An",
-    "Vo Van Thanh",
-    "Le Thi Thanh Huyen",
-    "Do Van Hung",
-    "Nguyen Thi Mai Lan",
-    "Trinh Van Tung",
-    "Nguyen Van Tien",
-    "Nguyen Ha Khanh Linh"
-]
-
-def generate_student_names(count):
+def generate_names(count):
     first_names = ["Nguyen", "Tran", "Le", "Pham", "Hoang", "Vo", "Ngo", "Do", "Luong", "Truong", "Dang", "Mai", "Bui"]
     middle_names = ["Van", "Thi", "Minh", "Duc", "Thi", "Quang", "Van", "Thi", "Van", "Thi", "Van", "Van", "Van"]
     last_names = ["An", "Bao", "Chau", "Dung", "Lan", "Hieu", "Anh", "Cuong", "Diep", "Duong", "Ha", "Hung", "Huong",
@@ -285,9 +232,10 @@ def generate_student_names(count):
         student_names.append(full_name)
 
     return student_names
-
+# Danh sach ten giang vien
+danh_sach_ten_giang_vien = generate_names(50)
 # Danh sach ten sinh vien
-danh_sach_ten_sinh_vien = generate_student_names(200)
+danh_sach_ten_sinh_vien = generate_names(200)
 
 def generate_hanoi_addresses(count):
     streets = ["Hang Bai", "Trang Tien", "Ngo Quyen", "Dien Bien Phu", "Phan Boi Chau", "Ba Trieu", "Le Duan", "Hoang Dieu",
@@ -338,9 +286,14 @@ danh_sach_ngsinh_giang_vien = generate_random_dates(start_date2, end_date2, 50)
 
 # Danh sach giang vien
 danh_sach_giang_vien = [
-    (f'GV_{i+1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 50)
+    (f'{10000000 + i + 1}', danh_sach_ten_giang_vien[i], 'Nam' if i % 2 == 0 else 'Nu', round(random.random(), 2) * 100000, danh_sach_ngsinh_giang_vien[i], danh_sach_sdt_giang_vien[i], danh_sach_dia_chi_giang_vien[i], '2001/01/01', '2030/01/01') for i in range(0, 50)
 ]
 
+with open('./backend/database/danh_sach_giang_vien.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('ma_gv,ho_ten,gioi_tinh,luong,ngsinh,sdt,dia_chi,ng_bat_dau,ng_ket_thuc\n')
+    for element in danh_sach_giang_vien:
+        ma_gv, ho_ten, gioi_tinh, luong, ngsinh, sdt, dia_chi, ng_bat_dau, ng_ket_thuc = element
+        file_a.write(f'{ma_gv},{ho_ten},{gioi_tinh},{luong},{ngsinh},{sdt},{dia_chi},{ng_bat_dau},{ng_ket_thuc}\n')
 # Nhap vao database
 # try:
 #     for element in danh_sach_giang_vien:
@@ -357,6 +310,12 @@ danh_sach_sinh_vien = [
     (f'{21000000 + i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], random.choice(danh_sach_nganh)[0], 2021, f'K66A{i % 4 + 1}') for i in range(0, 200)
 ]
 
+with open('./backend/database/danh_sach_sinh_vien.csv','w',encoding='utf-8') as file_a:
+    file_a.write('ma_sv,ho_ten,gioi_tinh,ngsinh,sdt,ma_nganh,nam_bat_dau,lop\n')
+    for element in danh_sach_sinh_vien:
+        ma_sv, ho_ten, gioi_tinh, ngsinh, sdt, ma_nganh, nam_bat_dau, lop = element
+        file_a.write(f'{ma_sv},{ho_ten},{gioi_tinh},{ngsinh},{sdt},{ma_nganh},{nam_bat_dau},{lop}\n')
+        
 # Nhap vao database
 # try:
 #     for element in danh_sach_sinh_vien:
@@ -369,3 +328,49 @@ danh_sach_sinh_vien = [
 #     print(f"Error: {e}")
 
 danh_sach_lich_hoc = []
+
+password = "123456"
+pwdBytes = password.encode('utf-8')
+salt = bcrypt.gensalt()
+hashed = bcrypt.hashpw(pwdBytes, salt)
+
+danh_sach_user = [("admin101", hashed,"admin101@gmail.com","AD")]
+
+existing_username = dict()
+for element in danh_sach_giang_vien:
+    username = element[1].replace(" ", "").lower()
+    if username not in existing_username:
+        existing_username[username] = 1
+        pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+        email = username + "@gmail.com"
+        access_level = "GV"
+        danh_sach_user.append((username, pass_word, email, access_level))
+    else:
+        existing_username[username] += 1
+        new_username = username + str(existing_username[username])
+        pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+        email = new_username + "@gmail.com"
+        access_level = "GV"
+        danh_sach_user.append((new_username, pass_word, email, access_level))
+        
+for element in danh_sach_sinh_vien:
+    username = element[1].replace(" ", "").lower()
+    if username not in existing_username:
+        existing_username[username] = 1
+        pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+        email = username + "@gmail.com"
+        access_level = "SV"
+        danh_sach_user.append((username, pass_word, email, access_level))
+    else:
+        existing_username[username] += 1
+        new_username = username + str(existing_username[username])
+        pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+        email = new_username + "@gmail.com"
+        access_level = "SV"
+        danh_sach_user.append((new_username, pass_word, email, access_level))
+
+with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as file_a:
+    file_a.write('username,pass_word,email,access_level\n')
+    for element in danh_sach_user:
+        username, pass_word, email, access_level = element
+        file_a.write(f'{username},{pass_word},{email},{access_level}\n')
