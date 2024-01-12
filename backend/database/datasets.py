@@ -272,7 +272,7 @@ def generate_random_dates(start_date, end_date, count):
     for _ in range(count):
         random_days = random.randint(0, (end_date - start_date).days)
         random_date = start_date + timedelta(days=random_days)
-        date_list.append(random_date.strftime('%Y-%m-%d'))
+        date_list.append(random_date.strftime('%Y-%m-%d').replace("-","/"))
     return date_list
 
 start_date1 = datetime(2001, 1, 1)
@@ -329,12 +329,12 @@ danh_sach_sinh_vien = [
 # except Exception as e:
 #     print(f"Error: {e}")
 
-password = "123456"
-pwdBytes = password.encode('utf-8')
-salt = bcrypt.gensalt()
-hashed = bcrypt.hashpw(pwdBytes, salt)
+# password = "123456"
+# pwdBytes = password.encode('utf-8')
+# salt = bcrypt.gensalt()
+# hashed = bcrypt.hashpw(pwdBytes, salt)
 
-danh_sach_user = [("admin101", hashed,"admin101@gmail.com","AD")]
+# danh_sach_user = [("admin101", hashed,"admin101@gmail.com","AD")]
 
 # for element in danh_sach_giang_vien:
 #     username = element[0]
@@ -362,20 +362,27 @@ danh_sach_ma_hoc_phan = [(ma_hp, ma_lop) for ma_hp, ma_lop in zip(df["Mã \nhọ
 danh_sach_thu_tiet = [(thu, tiet, phong) for thu, tiet, phong in zip(df["Thứ"][1:],df["Tiết"][1:],df['GĐ'][1:])]
 
 danh_sach_lich_hoc = []
-# for i in range(len(danh_sach_ma_hoc_phan)):
-#     ma_lh = f'LH-{i}'
-#     ma_hp = danh_sach_ma_hoc_phan[i][0]
-#     ma_lop = danh_sach_ma_hoc_phan[i][1]
-#     so_luong = 80
-#     thoi_gian = {"thu": f"T{danh_sach_thu_tiet[i][0]}", "bd": f'{str(danh_sach_thu_tiet[i][1]).split('-')[0]}', "kt": f'{str(danh_sach_thu_tiet[i][1]).split('-')[1]}', "phong": f'{danh_sach_thu_tiet[2]}'}
-#     ma_hk = 1
-#     danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
+count = 0
+for i in range(len(danh_sach_ma_hoc_phan)):
+    ma_lh = f'LH-{i}'
+    ma_hp = danh_sach_ma_hoc_phan[i][0]
+    ma_lop = danh_sach_ma_hoc_phan[i][1]
+    so_luong = 80
+    thoi_gian = {"thu": f"T{danh_sach_thu_tiet[i][0]}", "bd": f'{str(danh_sach_thu_tiet[i][1]).split('-')[0]}', "kt": f'{str(danh_sach_thu_tiet[i][1]).split('-')[1]}', "phong": f'{danh_sach_thu_tiet[2]}'}
+    if count < 50: ma_hk = 211
+    elif count < 100: ma_hk = 212
+    elif count < 150: ma_hk = 221
+    elif count < 200: ma_hk = 222
+    elif count < 250: ma_hk = 231
+    elif count < 300: ma_hk = 232
+    count += 1
+    danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
 
-# with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
-#     writer = csv.writer(file_a)
-#     writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
-#     for element in danh_sach_lich_hoc:
-#         writer.writerow(element)
+with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
+    writer = csv.writer(file_a)
+    writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
+    for element in danh_sach_lich_hoc:
+        writer.writerow(element)
         
 danh_sach_lh_gv = [(ma_hp, ma_gv) for ma_hp, ma_gv in zip(hoc_phan_dict.keys(), danh_sach_ma_giang_vien)]
 
