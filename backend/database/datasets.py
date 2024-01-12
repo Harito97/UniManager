@@ -335,46 +335,29 @@ hashed = bcrypt.hashpw(pwdBytes, salt)
 
 danh_sach_user = [("admin101", hashed,"admin101@gmail.com","AD")]
 
-# existing_username = dict()
-# for element in danh_sach_giang_vien:
-#     username = element[1].replace(" ", "").lower()
-#     if username not in existing_username:
-#         existing_username[username] = 1
-#         pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-#         email = username + "@gmail.com"
-#         access_level = "GV"
-#         danh_sach_user.append((username, pass_word, email, access_level))
-#     else:
-#         existing_username[username] += 1
-#         new_username = username + str(existing_username[username])
-#         pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-#         email = new_username + "@gmail.com"
-#         access_level = "GV"
-#         danh_sach_user.append((new_username, pass_word, email, access_level))
+for element in danh_sach_giang_vien:
+    username = element[0]
+    pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+    email = username + "@gmail.com"
+    access_level = "GV"
+    avatar = "None"
+    danh_sach_user.append((username, pass_word, email, access_level, avatar))
         
-# for element in danh_sach_sinh_vien:
-#     username = element[1].replace(" ", "").lower()
-#     if username not in existing_username:
-#         existing_username[username] = 1
-#         pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-#         email = username + "@gmail.com"
-#         access_level = "SV"
-#         danh_sach_user.append((username, pass_word, email, access_level))
-#     else:
-#         existing_username[username] += 1
-#         new_username = username + str(existing_username[username])
-#         pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-#         email = new_username + "@gmail.com"
-#         access_level = "SV"
-#         danh_sach_user.append((new_username, pass_word, email, access_level))
+for element in danh_sach_sinh_vien:
+    username = element[0]
+    pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+    email = username + "@gmail.com"
+    access_level = "SV"
+    avatar = "None"
+    danh_sach_user.append((username, pass_word, email, access_level, avatar))
 
-# with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as file_a:
-#     file_a.write('username,pass_word,email,access_level\n')
-#     for element in danh_sach_user:
-#         username, pass_word, email, access_level = element
-#         file_a.write(f'{username},{pass_word},{email},{access_level}\n')
+with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as file_a:
+    writer = csv.writer(file_a)
+    writer.writerow(['username','pass_word','email','access_level','avatar'])
+    for element in danh_sach_user:
+        writer.writerow(element)
         
-danh_sach_ma_hoc_phan = [(ma_hp, ma_lop) for ma_lop, ma_hp in zip(df["Mã \nhọc phần"][1:],df['Mã lớp \n học phần'][1:])]
+danh_sach_ma_hoc_phan = [(ma_hp, ma_lop) for ma_hp, ma_lop in zip(df["Mã \nhọc phần"][1:],df['Mã lớp \n học phần'][1:])]
 danh_sach_thu_tiet = [(thu, tiet) for thu, tiet in zip(df["Thứ"][1:],df["Tiết"][1:])]
 
 danh_sach_lich_hoc = []
@@ -387,11 +370,11 @@ for i in range(len(danh_sach_ma_hoc_phan)):
     ma_hk = 'I'
     danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
 
-# with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
-#     writer = csv.writer(file_a)
-#     writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
-#     for element in danh_sach_lich_hoc:
-#         writer.writerow(element)
+with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
+    writer = csv.writer(file_a)
+    writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
+    for element in danh_sach_lich_hoc:
+        writer.writerow(element)
         
 danh_sach_lh_gv = [(ma_hp, ma_gv) for ma_hp, ma_gv in zip(hoc_phan_dict.keys(), danh_sach_ma_giang_vien)]
 
