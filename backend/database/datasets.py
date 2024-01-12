@@ -250,7 +250,7 @@ def generate_hanoi_addresses(count):
 
     hanoi_addresses = []
     for _ in range(count):
-        address = f"{random.choice(streets)}, {random.choice(districts)}, Hanoi"
+        address = f"{random.choice(streets)},{random.choice(districts)},Hanoi"
         hanoi_addresses.append(address)
 
     return hanoi_addresses
@@ -291,10 +291,11 @@ danh_sach_giang_vien = [
 ]
 danh_sach_ma_giang_vien = [f'{10000000 + i + 1}' for i in range(0, 100)]
 with open('./backend/database/danh_sach_giang_vien.csv', 'w', encoding='utf-8') as file_a:
-    file_a.write('ma_gv,ho_ten,gioi_tinh,luong,ngsinh,sdt,dia_chi,ng_bat_dau,ng_ket_thuc\n')
+    writer = csv.writer(file_a)
+    writer.writerow(['ma_gv','ho_ten','gioi_tinh','luong','ngsinh','sdt','dia_chi','ng_bat_dau','ng_ket_thuc'])
     for element in danh_sach_giang_vien:
-        ma_gv, ho_ten, gioi_tinh, luong, ngsinh, sdt, dia_chi, ng_bat_dau, ng_ket_thuc = element
-        file_a.write(f'{ma_gv},{ho_ten},{gioi_tinh},{luong},{ngsinh},{sdt},{dia_chi},{ng_bat_dau},{ng_ket_thuc}\n')
+        writer.writerow(element)
+    
 # Nhap vao database
 # try:
 #     for element in danh_sach_giang_vien:
@@ -311,11 +312,11 @@ danh_sach_sinh_vien = [
     (f'{21000000 + i + 1}', danh_sach_ten_sinh_vien[i], 'Nu' if i % 2 == 0 else 'Nam', danh_sach_ngsinh_sinh_vien[i], danh_sach_sdt_sinh_vien[i], random.choice(danh_sach_nganh)[0], 2021, f'K66A{i % 4 + 1}') for i in range(0, 200)
 ]
 
-with open('./backend/database/danh_sach_sinh_vien.csv','w',encoding='utf-8') as file_a:
-    file_a.write('ma_sv,ho_ten,gioi_tinh,ngsinh,sdt,ma_nganh,nam_bat_dau,lop\n')
-    for element in danh_sach_sinh_vien:
-        ma_sv, ho_ten, gioi_tinh, ngsinh, sdt, ma_nganh, nam_bat_dau, lop = element
-        file_a.write(f'{ma_sv},{ho_ten},{gioi_tinh},{ngsinh},{sdt},{ma_nganh},{nam_bat_dau},{lop}\n')
+# with open('./backend/database/danh_sach_sinh_vien.csv','w',encoding='utf-8') as file_a:
+#     file_a.write('ma_sv,ho_ten,gioi_tinh,ngsinh,sdt,ma_nganh,nam_bat_dau,lop\n')
+#     for element in danh_sach_sinh_vien:
+#         ma_sv, ho_ten, gioi_tinh, ngsinh, sdt, ma_nganh, nam_bat_dau, lop = element
+#         file_a.write(f'{ma_sv},{ho_ten},{gioi_tinh},{ngsinh},{sdt},{ma_nganh},{nam_bat_dau},{lop}\n')
         
 # Nhap vao database
 # try:
@@ -335,51 +336,51 @@ hashed = bcrypt.hashpw(pwdBytes, salt)
 
 danh_sach_user = [("admin101", hashed,"admin101@gmail.com","AD")]
 
-for element in danh_sach_giang_vien:
-    username = element[0]
-    pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-    email = username + "@gmail.com"
-    access_level = "GV"
-    avatar = "None"
-    danh_sach_user.append((username, pass_word, email, access_level, avatar))
+# for element in danh_sach_giang_vien:
+#     username = element[0]
+#     pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+#     email = username + "@gmail.com"
+#     access_level = "GV"
+#     avatar = "None"
+#     danh_sach_user.append((username, pass_word, email, access_level, avatar))
         
-for element in danh_sach_sinh_vien:
-    username = element[0]
-    pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
-    email = username + "@gmail.com"
-    access_level = "SV"
-    avatar = "None"
-    danh_sach_user.append((username, pass_word, email, access_level, avatar))
+# for element in danh_sach_sinh_vien:
+#     username = element[0]
+#     pass_word = bcrypt.hashpw(element[0].encode('utf8'),bcrypt.gensalt())
+#     email = username + "@gmail.com"
+#     access_level = "SV"
+#     avatar = "None"
+#     danh_sach_user.append((username, pass_word, email, access_level, avatar))
 
-with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as file_a:
-    writer = csv.writer(file_a)
-    writer.writerow(['username','pass_word','email','access_level','avatar'])
-    for element in danh_sach_user:
-        writer.writerow(element)
+# with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as file_a:
+#     writer = csv.writer(file_a)
+#     writer.writerow(['username','pass_word','email','access_level','avatar'])
+#     for element in danh_sach_user:
+#         writer.writerow(element)
         
 danh_sach_ma_hoc_phan = [(ma_hp, ma_lop) for ma_hp, ma_lop in zip(df["Mã \nhọc phần"][1:],df['Mã lớp \n học phần'][1:])]
-danh_sach_thu_tiet = [(thu, tiet, phong) for thu, tiet in zip(df["Thứ"][1:],df["Tiết"][1:],df['GĐ'])]
+danh_sach_thu_tiet = [(thu, tiet, phong) for thu, tiet, phong in zip(df["Thứ"][1:],df["Tiết"][1:],df['GĐ'][1:])]
 
 danh_sach_lich_hoc = []
-for i in range(len(danh_sach_ma_hoc_phan)):
-    ma_lh = f'LH-{i}'
-    ma_hp = danh_sach_ma_hoc_phan[i][0]
-    ma_lop = danh_sach_ma_hoc_phan[i][1]
-    so_luong = 80
-    thoi_gian = {"Thu": f"{danh_sach_thu_tiet[i][0]}", "Tiet": f'{danh_sach_thu_tiet[i][1]}'}
-    ma_hk = 'I'
-    danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
+# for i in range(len(danh_sach_ma_hoc_phan)):
+#     ma_lh = f'LH-{i}'
+#     ma_hp = danh_sach_ma_hoc_phan[i][0]
+#     ma_lop = danh_sach_ma_hoc_phan[i][1]
+#     so_luong = 80
+#     thoi_gian = {"thu": f"T{danh_sach_thu_tiet[i][0]}", "bd": f'{str(danh_sach_thu_tiet[i][1]).split('-')[0]}', "kt": f'{str(danh_sach_thu_tiet[i][1]).split('-')[1]}', "phong": f'{danh_sach_thu_tiet[2]}'}
+#     ma_hk = 1
+#     danh_sach_lich_hoc.append((ma_lh, ma_hp, ma_lop, so_luong, thoi_gian, ma_hk))
 
-with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
-    writer = csv.writer(file_a)
-    writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
-    for element in danh_sach_lich_hoc:
-        writer.writerow(element)
+# with open('./backend/database/danh_sach_lich_hoc.csv', 'w', encoding='utf-8', newline='') as file_a:
+#     writer = csv.writer(file_a)
+#     writer.writerow(['ma_lh', 'ma_hp', 'ma_lop', 'so_luong', 'thoi_gian', 'ma_hk'])
+#     for element in danh_sach_lich_hoc:
+#         writer.writerow(element)
         
 danh_sach_lh_gv = [(ma_hp, ma_gv) for ma_hp, ma_gv in zip(hoc_phan_dict.keys(), danh_sach_ma_giang_vien)]
 
-with open('./backend/database/danh_sach_gv_hp.csv', 'w', encoding='utf-8', newline='') as file_a:
-    writer = csv.writer(file_a)
-    writer.writerow(['ma_hp','ma_gv'])
-    for element in danh_sach_lh_gv:
-        writer.writerow(element)
+# with open('./backend/database/danh_sach_gv_hp.csv', 'w', encoding='utf-8', newline='') as file_a:
+#     writer = csv.writer(file_a)
+#     writer.writerow(['ma_hp','ma_gv'])
+#     for element in danh_sach_lh_gv:
+#         writer.writerow(element)
