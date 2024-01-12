@@ -358,7 +358,7 @@ with open('./backend/database/danh_sach_user.csv', 'w', encoding='utf-8') as fil
         writer.writerow(element)
         
 danh_sach_ma_hoc_phan = [(ma_hp, ma_lop) for ma_hp, ma_lop in zip(df["Mã \nhọc phần"][1:],df['Mã lớp \n học phần'][1:])]
-danh_sach_thu_tiet = [(thu, tiet) for thu, tiet in zip(df["Thứ"][1:],df["Tiết"][1:])]
+danh_sach_thu_tiet = [(thu, tiet, phong) for thu, tiet in zip(df["Thứ"][1:],df["Tiết"][1:],df['GĐ'])]
 
 danh_sach_lich_hoc = []
 for i in range(len(danh_sach_ma_hoc_phan)):
