@@ -1,14 +1,27 @@
 import React from "react";
 import { Button, Form, Input, Table, Modal } from "antd";
 import { useContentContext } from "../Notification/ContentContext";
+import axios from "axios";
 
-const Contact = () => {
+const Contact = ({user}) => {
   const { openSuccessNotification, openErrorNotification } =
     useContentContext();
 
-  const onFinish = () => {
+  const onFinish = (values) => {
     openSuccessNotification("Thành công", "Đã gửi yêu cầu!");
     form.resetFields();
+    try {
+      axios.post('http://localhost:8000/send_support', {
+      username: user,
+      email: values.email,
+      title: values.title,
+      content: values.content
+      })
+      .then((res) => console.log(res.message));
+    } catch (e) {
+      console.log(e);
+    }
+    
   };
 
   const [form] = Form.useForm();
