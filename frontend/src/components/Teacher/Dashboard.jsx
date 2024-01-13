@@ -95,7 +95,6 @@ const Dashboard = ({ user }) => {
   }, [user]);
 
   useEffect(() => {
-    console.log("hello");
     setTableLoading(true);
     const fetchData = async () => {
       try {
@@ -106,7 +105,6 @@ const Dashboard = ({ user }) => {
               ma_hk: selectedSemester.value,
             })
             .then((res) => {
-              console.log(res.data)
               setDataSchedule(res.data.schedule);
               setTableLoading(false);
             });
@@ -126,13 +124,12 @@ const Dashboard = ({ user }) => {
     return (
       <>
         <div className="flex flex-col justify-between sm:flex-row">
-          <h1 className="text-xl font-bold">
-            Các lớp giảng dạy - {selectedSemester.label}
-          </h1>
+          <h1 className="text-xl font-bold m-1">Các lớp giảng dạy</h1>
           <Select
             defaultValue={option[0].value}
             options={option}
             onChange={onTableChange}
+            className="m-1"
           ></Select>
         </div>
         <Table
