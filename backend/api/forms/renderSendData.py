@@ -505,7 +505,7 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
 
 
 @app.post("/subject_all")
-async def sendSubject(user: UserSemester, request: Request):    
+async def sendSubject(user: UserSemester, request: Request):
 
     statement = f"""
                     select
@@ -632,7 +632,8 @@ async def registeredSubject(user: UserSemester):
 
 
 @app.post("/teaching_schedule")
-async def sendSchedule(user: User, request: Request):
+async def sendSchedule(user: UserSemester, request: Request):
+    print(user)
 
     statement = f"""
                     select 
@@ -640,6 +641,7 @@ async def sendSchedule(user: User, request: Request):
                         hp.ten_hp as "ten_hp",
                         lh.ma_hp as "ma_hp",
                         lh.ma_lop as "ma_lop",
+                        lh.ma_hk as "ma_hk",
                         (
                             select count(*) 
                             from dang_ky dk 
@@ -652,7 +654,7 @@ async def sendSchedule(user: User, request: Request):
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                    where gv.ma_gv = {user.username} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    where gv.ma_gv = {user.username} and lh.ma_hk = {user.ma_hk}
                     group by lh.ma_hp
                     order by hp.ten_hp;
                 """
@@ -1014,11 +1016,13 @@ async def getInfoSubjectRegister(user: User):
 
     return {"info_subject_register": data1}
 
+
 @app.get("/get_total_student")
 async def getTotalStudent():
     cursor.execute("SELECT COUNT(ma_sv) AS totalStudent FROM sinh_vien")
     data = cursor.fetchall()
     return data[0]
+
 
 @app.get("/get_total_teacher")
 async def getTotalTeacher():
@@ -1027,7 +1031,16 @@ async def getTotalTeacher():
     return data[0]
 
 
-origins = ["http://localhost:5173", "http://localhost:8000", "http://localhost:8001"]
+@app.get("/get_all_semester")
+async def getTotalTeacher():
+    cursor.execute(
+        "SELECT ma_hk FROM hoc_ki WHERE NOT ng_bat_dau > NOW() ORDER BY ng_bat_dau DESC;")
+    data = cursor.fetchall()
+    return [{"value": item["ma_hk"], "label": f'Học kì {item["ma_hk"] % 10} năm học 20{item["ma_hk"] // 10} - 20{item["ma_hk"]//10 + 1}'} for item in data]
+
+
+origins = ["http://localhost:5173",
+           "http://localhost:8000", "http://localhost:8001"]
 
 
 # Cập nhật các URL cho phù hợp với URL của ứng dụng frontend

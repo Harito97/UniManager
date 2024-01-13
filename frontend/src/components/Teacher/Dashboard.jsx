@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, Modal } from "antd";
+import { Button, Table, Modal, Select } from "antd";
 import Manager from "./Manager";
 import axios from "axios";
-
+import Loading from "../../pages/Loading";
 
 const Dashboard = ({ user }) => {
   const columns = [
@@ -10,6 +10,11 @@ const Dashboard = ({ user }) => {
       title: "STT",
       dataIndex: "index",
       render: (text, record, index) => index + 1,
+      width: 50,
+    },
+    {
+      title: "Mã HK",
+      dataIndex: "ma_hk",
       width: 50,
     },
     { title: "Môn học", dataIndex: "ten_hp", width: 300 },
@@ -47,9 +52,13 @@ const Dashboard = ({ user }) => {
     },
   ];
 
+  const [option, setOption] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [semester, setSemester] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tableLoading, setTableLoading] = useState(true);
+  const [selectedSemester, setSelectedSemester] = useState(null);
 
   const showInfo = (record) => {
     setSelectedRow(record);
@@ -60,54 +69,98 @@ const Dashboard = ({ user }) => {
     setShowModal(false);
   };
 
+  const onTableChange = (value, option) => {
+    setSelectedSemester(option);
+  };
 
   const [dataSchedule, setDataSchedule] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseSchedule = await axios.post('http://localhost:8000/teaching_schedule', {
-          username: user
-        });
-        const data = responseSchedule.data;
-        setDataSchedule(data.schedule);
+        await axios
+          .get("http://localhost:8000/get_all_semester")
+          .then((res) => {
+            setOption(res.data);
+            setSelectedSemester(res.data[0]);
+            setLoading(false);
+          });
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [user]);
-  console.log(dataSchedule)
 
-  return (
-    <>
-      <h1 className="pb-5 text-xl font-bold">Các lớp đang giảng dạy</h1>
-      <Table
-        rowKey={(record) => record.ma_lh}
-        columns={columns}
-        dataSource={dataSchedule}
-        pagination={false}
-        scroll={{ x: 810 }}
-      ></Table>
-      <Modal
-        open={showModal}
-        onCancel={handleModalCancel}
-        footer={null}
-        width={window.innerWidth > 800 ? 800 : "auto"}
-        className="overflow-auto"
-      >
-        {selectedRow && (
-          <>
-            <h1 className="pb-3 text-xl font-bold">
-              Danh sách sinh viên lớp {selectedRow.ma_hp} {selectedRow.ma_lop}
-            </h1>
-            <Manager ma_lh={selectedRow.ma_lh} />
-          </>
-        )}
-      </Modal>
-    </>
-  );
+  useEffect(() => {
+    console.log("hello");
+    setTableLoading(true);
+    const fetchData = async () => {
+      try {
+        if (selectedSemester !== null) {
+          await axios
+            .post("http://localhost:8000/teaching_schedule", {
+              username: user,
+              ma_hk: selectedSemester.value,
+            })
+            .then((res) => {
+              console.log(res.data)
+              setDataSchedule(res.data.schedule);
+              setTableLoading(false);
+            });
+        }
+      } catch (error) {
+        console.log(error);
+        setTableLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedSemester]);
+
+  if (loading) {
+    return <Loading />;
+  } else {
+    return (
+      <>
+        <div className="flex flex-col justify-between sm:flex-row">
+          <h1 className="text-xl font-bold">
+            Các lớp giảng dạy - {selectedSemester.label}
+          </h1>
+          <Select
+            defaultValue={option[0].value}
+            options={option}
+            onChange={onTableChange}
+          ></Select>
+        </div>
+        <Table
+          rowKey={(record) => record.ma_lh}
+          columns={columns}
+          dataSource={dataSchedule}
+          pagination={false}
+          scroll={{ x: 860 }}
+        ></Table>
+        <Modal
+          open={showModal}
+          onCancel={handleModalCancel}
+          footer={null}
+          width={window.innerWidth > 800 ? 800 : "auto"}
+          className="overflow-auto"
+        >
+          {selectedRow && (
+            <>
+              <h1 className="pb-3 text-xl font-bold">
+                Danh sách sinh viên lớp {selectedRow.ma_hp} {selectedRow.ma_lop}
+              </h1>
+              <Manager ma_lh={selectedRow.ma_lh} />
+            </>
+          )}
+        </Modal>
+      </>
+    );
+  }
 };
 
 export default Dashboard;
