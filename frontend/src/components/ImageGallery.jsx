@@ -4,15 +4,15 @@ import bg from "../assets/background.jpg";
 const ImageGallery = () => {
   return (
     <>
-      <div class="relative">
+      <div className="relative">
         <img
           src="https://source.unsplash.com/1000x1000/?nature"
           alt="img"
-          class="h-full rounded-xl object-cover"
+          className="h-full rounded-xl object-cover"
         />
 
-        <div class="absolute bottom-10 right-6 rounded bg-white bg-opacity-30 p-6 drop-shadow-lg backdrop-blur-sm">
-          <span class="xl:text-xl text-white">
+        <div className="absolute bottom-10 right-6 rounded bg-white bg-opacity-30 p-6 drop-shadow-lg backdrop-blur-sm">
+          <span className="xl:text-xl text-white">
             It does not matter
             <br />
             how slowly you go

@@ -713,10 +713,10 @@ async def sendCoefficient(lop: Class):
 @app.post("/guide")
 async def sendGuide():
 
-    ma_hk = str(getTime()["year"])[-2:] + str(getTime()["semester"])
+    # ma_hk = str(getTime()["year"])[-2:] + str(getTime()["semester"])
 
     cursor.execute(
-        f"select dot as dot, date_format(ng_bat_dau, '%d-%m-%Y') as time_start, date_format(ng_ket_thuc, '%d-%m-%Y') as time_end from dot_dki where ma_hk = {ma_hk}")
+        f"select dot as dot, ma_hk as ma_hk, date_format(ng_bat_dau, '%d-%m-%Y') as time_start, date_format(ng_ket_thuc, '%d-%m-%Y') as time_end from dot_dki where ng_bat_dau >= NOW() OR (ng_bat_dau < NOW() AND ng_ket_thuc >= NOW())")
     data = cursor.fetchall()
 
     return {"guide": data}

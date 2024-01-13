@@ -9,7 +9,7 @@ const Guide = ({user}) => {
      key: "dot",
      render: (_, record) => (
       <p>
-        Đợt {record.dot}
+        Đợt {record.dot} - {record.ma_hk}
       </p>
     ),},
     {title: "Ngày bắt đầu",
