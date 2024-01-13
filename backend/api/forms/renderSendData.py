@@ -214,7 +214,7 @@ async def forgotPassword(request: ForgotPassword):
     # Cấu hình kết nối cho FastMail
     conf = ConnectionConfig(
         MAIL_USERNAME="nguyenvanthang_t66@hus.edu.vn",
-        MAIL_PASSWORD="dpsa liaw qhep rnef",
+        MAIL_PASSWORD="your_password_email",
         MAIL_FROM="nguyenvanthang_t66@hus.edu.vn",
         MAIL_PORT=587,
         MAIL_SERVER="smtp.gmail.com",
@@ -1064,7 +1064,7 @@ async def sendSupport(content: CONTENT):
     # Cấu hình kết nối cho FastMail
     conf = ConnectionConfig(
         MAIL_USERNAME=content.email,
-        MAIL_PASSWORD=data[0]["pass_word"],
+        MAIL_PASSWORD="your_password_email",
         MAIL_FROM=content.email,
         MAIL_PORT=587,
         MAIL_SERVER="smtp.gmail.com",
