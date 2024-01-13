@@ -14,7 +14,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "../components/Admin/Sidebar";
 import Dashboard from "../components/Admin/Dashboard";
 import UserManager from "../components/Admin/UserManager";
-import TeacherManager from "../components/Admin/TeacherManager";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
 import TeamLogo from "../assets/logo/logo.png";
@@ -127,7 +126,6 @@ const Admin = ({ user }) => {
             <Route exact path="/" element={<Dashboard />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
             <Route exact path="/user_manager" element={<UserManager />} />
-            <Route exact path="/teacher_manager" element={<TeacherManager />} />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

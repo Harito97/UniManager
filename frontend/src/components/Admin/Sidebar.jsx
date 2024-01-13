@@ -17,8 +17,6 @@ const Sidebar = () => {
       return "1";
     } else if (path === "/admin/user_manager") {
       return "2";
-    } else if (path === "/admin/teacher_manager") {
-      return "3";
     }
   };
 
@@ -42,11 +40,6 @@ const Sidebar = () => {
             key: "2",
             icon: <PiStudent />,
             label: <Link to="/admin/user_manager">Quản lý người dùng</Link>,
-          },
-          {
-            key: "3",
-            icon: <GiTeacher />,
-            label: <Link to="/admin/teacher_manager">Quản lý giáo viên</Link>,
           },
         ]}
       />

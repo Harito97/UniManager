@@ -21,7 +21,6 @@ import StudentProfile from "./components/Student/UserProfile";
 import TeacherProfile from "./components/Teacher/UserProfile";
 import axios from "axios";
 import UserManager from "./components/Admin/UserManager";
-import TeacherManager from "./components/Admin/TeacherManager";
 import Contact from "./components/Student/Contact";
 
 function App() {
@@ -116,11 +115,6 @@ function App() {
                 exact
                 path="/admin/user_manager"
                 element={<UserManager />}
-              />
-              <Route
-                exact
-                path="/admin/teacher_manager"
-                element={<TeacherManager />}
               />
             </Route>
           ) : (
