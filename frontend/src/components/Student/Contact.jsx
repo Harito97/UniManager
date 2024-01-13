@@ -11,7 +11,7 @@ const Contact = ({user}) => {
     openSuccessNotification("Thành công", "Đã gửi yêu cầu!");
     form.resetFields();
     try {
-      axios.post('http://localhost:8000/send_support', {
+      axios.post('http://localhost:8000/send_report', {
       username: user,
       email: values.email,
       title: values.title,

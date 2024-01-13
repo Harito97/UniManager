@@ -139,7 +139,7 @@ def subject(data):
 
 def generate_random_password(length=8):
     # Chuỗi ký tự cho mật khẩu
-    characters = string.ascii_letters + string.digits 
+    characters = string.ascii_letters + string.digits
 
     # Tạo mật khẩu ngẫu nhiên
     password = ''.join(secrets.choice(characters) for _ in range(length))
@@ -1055,12 +1055,19 @@ async def getTotalTeacher():
     return [{"value": item["ma_hk"], "label": f'Học kì {item["ma_hk"] % 10} năm học 20{item["ma_hk"] // 10} - 20{item["ma_hk"]//10 + 1}'} for item in data]
 
 
+@app.post("/send_report")
+async def send_report(report: CONTENT):
+    cursor.execute(
+        f"INSERT INTO report VALUES(NULL, %s, %s, %s, %s)", (report.username, report.email, report.title, report.content))
+    conn.commit()
+
+
 # @app.post("/send_support")
 # async def sendSupport(content: CONTENT):
 
 #     cursor.execute(f"select pass_word from user where username = {content.username}")
 #     data = cursor.fetchall()
-    
+
 #     # Cấu hình kết nối cho FastMail
 #     conf = ConnectionConfig(
 #         MAIL_USERNAME=content.email,
@@ -1091,7 +1098,7 @@ async def getTotalTeacher():
 
 
 origins = ["http://localhost:5173",
-           "http://localhost:8000", 
+           "http://localhost:8000",
            "http://localhost:8001"]
 
 
