@@ -633,8 +633,6 @@ async def registeredSubject(user: UserSemester):
 
 @app.post("/teaching_schedule")
 async def sendSchedule(user: UserSemester, request: Request):
-    print(user)
-
     statement = f"""
                     select 
                         lh.ma_lh as "ma_lh",
