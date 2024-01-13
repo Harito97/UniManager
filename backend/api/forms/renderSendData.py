@@ -1055,39 +1055,39 @@ async def getTotalTeacher():
     return [{"value": item["ma_hk"], "label": f'Học kì {item["ma_hk"] % 10} năm học 20{item["ma_hk"] // 10} - 20{item["ma_hk"]//10 + 1}'} for item in data]
 
 
-@app.post("/send_support")
-async def sendSupport(content: CONTENT):
+# @app.post("/send_support")
+# async def sendSupport(content: CONTENT):
 
-    cursor.execute(f"select pass_word from user where username = {content.username}")
-    data = cursor.fetchall()
+#     cursor.execute(f"select pass_word from user where username = {content.username}")
+#     data = cursor.fetchall()
     
-    # Cấu hình kết nối cho FastMail
-    conf = ConnectionConfig(
-        MAIL_USERNAME=content.email,
-        MAIL_PASSWORD="your_password_email",
-        MAIL_FROM=content.email,
-        MAIL_PORT=587,
-        MAIL_SERVER="smtp.gmail.com",
-        MAIL_STARTTLS=True,
-        MAIL_SSL_TLS=False,
-        USE_CREDENTIALS=True,
-        VALIDATE_CERTS=True,
-        MAIL_FROM_NAME=content.email,
-    )
+#     # Cấu hình kết nối cho FastMail
+#     conf = ConnectionConfig(
+#         MAIL_USERNAME=content.email,
+#         MAIL_PASSWORD="your_password_email",
+#         MAIL_FROM=content.email,
+#         MAIL_PORT=587,
+#         MAIL_SERVER="smtp.gmail.com",
+#         MAIL_STARTTLS=True,
+#         MAIL_SSL_TLS=False,
+#         USE_CREDENTIALS=True,
+#         VALIDATE_CERTS=True,
+#         MAIL_FROM_NAME=content.email,
+#     )
 
-    # Khởi tạo FastMail
-    fastMail = FastMail(conf)
+#     # Khởi tạo FastMail
+#     fastMail = FastMail(conf)
 
-    # Gửi email
-    message = MessageSchema(
-        subject=content.title,
-        recipients=["nguyenvanthang_t66@hus.edu.vn"],
-        body=content.content,
-        subtype=MessageType.html,
-    )
-    await fastMail.send_message(message)
+#     # Gửi email
+#     message = MessageSchema(
+#         subject=content.title,
+#         recipients=["nguyenvanthang_t66@hus.edu.vn"],
+#         body=content.content,
+#         subtype=MessageType.html,
+#     )
+#     await fastMail.send_message(message)
 
-    return {"message": "Send email support successful!"}
+#     return {"message": "Send email support successful!"}
 
 
 origins = ["http://localhost:5173",
