@@ -13,7 +13,7 @@ import Sider from "antd/es/layout/Sider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "../components/Admin/Sidebar";
 import Dashboard from "../components/Admin/Dashboard";
-import StudentManager from "../components/Admin/StudentManager";
+import UserManager from "../components/Admin/UserManager";
 import TeacherManager from "../components/Admin/TeacherManager";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
@@ -124,22 +124,10 @@ const Admin = ({ user }) => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard user={user} />} />
-            <Route
-              exact
-              path="/dashboard"
-              element={<Dashboard user={user} />}
-            />
-            <Route
-              exact
-              path="/student_manager"
-              element={<StudentManager user={user} />}
-            />
-            <Route
-              exact
-              path="/teacher_manager"
-              element={<TeacherManager user={user} />}
-            />
+            <Route exact path="/" element={<Dashboard />} />
+            <Route exact path="/dashboard" element={<Dashboard />} />
+            <Route exact path="/user_manager" element={<UserManager />} />
+            <Route exact path="/teacher_manager" element={<TeacherManager />} />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

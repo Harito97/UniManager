@@ -1048,11 +1048,40 @@ async def getTotalTeacher():
 
 
 @app.get("/get_all_semester")
-async def getTotalTeacher():
+async def getSemesterFormat():
     cursor.execute(
         "SELECT ma_hk FROM hoc_ki WHERE NOT ng_bat_dau > NOW() ORDER BY ng_bat_dau DESC;")
     data = cursor.fetchall()
     return [{"value": item["ma_hk"], "label": f'Học kì {item["ma_hk"] % 10} năm học 20{item["ma_hk"] // 10} - 20{item["ma_hk"]//10 + 1}'} for item in data]
+
+
+@app.get("/get_semester")
+async def getSemester():
+    cursor.execute("SELECT * FROM hoc_ki ORDER BY ma_hk DESC")
+    return cursor.fetchall()
+
+
+@app.get("/get_regis")
+async def getRegis():
+    cursor.execute("SELECT * FROM dot_dki ORDER BY ma_hk DESC")
+    return cursor.fetchall()
+
+
+@app.delete("/delete_regis/{ma_hk}_{dot}")
+async def delRegis(ma_hk: int, dot: int):
+    cursor.execute("DELETE FROM dot_dki WHERE dot = %s AND ma_hk = %s",
+                   (dot, ma_hk))
+    conn.commit()
+
+
+@app.delete("/delete_semester/{ma_hk}")
+async def delSemes(ma_hk: int):
+    try:
+        cursor.execute(f"DELETE FROM hoc_ki WHERE ma_hk = {ma_hk}")
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
 
 
 @app.post("/send_report")

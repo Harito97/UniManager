@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "antd";
+import { Card, Modal } from "antd";
 import { PiStudent } from "react-icons/pi";
 import { GiTeacher } from "react-icons/gi";
 import { FaCalendarDay } from "react-icons/fa";
 import axios from "axios";
+import SemesterConfig from "./SemesterConfig";
 
 const Dashboard = () => {
   const [totalStudent, setTotalStudent] = useState(null);
   const [totalTeacher, setTotalTeacher] = useState(null);
   const [semester, setSemester] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,12 +132,24 @@ const Dashboard = () => {
                   </>
                 )}
               </div>
-              <div className="flex items-center rounded-full bg-[#b36f16] p-4 text-2xl text-white hover:shadow-xl xl:text-3xl">
+              <div
+                onClick={() => setOpenModal(true)}
+                className="flex items-center rounded-full bg-[#b36f16] p-4 text-2xl text-white hover:shadow-xl xl:text-3xl"
+              >
                 <FaCalendarDay />
               </div>
             </div>
           </Card>
         </div>
+        <Modal
+          open={openModal}
+          onCancel={() => setOpenModal(false)}
+          footer={null}
+          // width={window.innerWidth > 800 ? 800 : "auto"}
+          className="overflow-auto"
+        >
+          <SemesterConfig />
+        </Modal>
       </>
     );
   }

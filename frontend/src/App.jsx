@@ -20,7 +20,7 @@ import Form from "./components/Student/Form";
 import StudentProfile from "./components/Student/UserProfile";
 import TeacherProfile from "./components/Teacher/UserProfile";
 import axios from "axios";
-import StudentManager from "./components/Admin/StudentManager";
+import UserManager from "./components/Admin/UserManager";
 import TeacherManager from "./components/Admin/TeacherManager";
 import Contact from "./components/Student/Contact";
 
@@ -114,8 +114,8 @@ function App() {
               />
               <Route
                 exact
-                path="/admin/student_manager"
-                element={<StudentManager />}
+                path="/admin/user_manager"
+                element={<UserManager />}
               />
               <Route
                 exact
