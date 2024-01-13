@@ -701,7 +701,7 @@ async def sendStudentClass(lop: Class):
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join sinh_vien sv on dk.ma_sv = sv.ma_sv
-                    where dk.ma_lh = {lop.ma_lh} and lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])}
+                    where dk.ma_lh = {lop.ma_lh}
                 """
 
     cursor.execute(statement)
@@ -969,13 +969,12 @@ async def changePassWord(info: UPDATEPASSWORD):
 
 
 @app.post("/get_info_subject_register")
-async def getInfoSubjectRegister(user: User):
-
+async def getInfoSubjectRegister(user: UserSemester):
     statement1 = f"""
                     select 
-                        {int(getTime()["semester"])} as ki,
-                        {int(getTime()["year"])} as nh,
-                        {int(getTime()["year"])} + 1 as nhs,
+                        {user.ma_hk % 10} as ki,
+                        {f"20{user.ma_hk // 10}"} as nh,
+                        {f"20{user.ma_hk // 10 + 1}"} as nhs,
                         day(curdate()) as ngay,
                         month(curdate()) as thang,
                         year(curdate()) as nam,
@@ -991,7 +990,7 @@ async def getInfoSubjectRegister(user: User):
                         inner join lich_hoc lh on lh.ma_lh = dk.ma_lh
 
                     where 
-                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username}
+                        lh.ma_hk = {user.ma_hk} and dk.ma_sv = {user.username}
 
                     group by
                         sv.ma_sv
@@ -1018,7 +1017,7 @@ async def getInfoSubjectRegister(user: User):
                         inner join sinh_vien sv on sv.ma_sv = dk.ma_sv
 
                     where 
-                        lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} and dk.ma_sv = {user.username} and dk.diem_tx is null
+                        lh.ma_hk = {user.ma_hk} and dk.ma_sv = {user.username} and dk.diem_tx is null
 
                 """
 
