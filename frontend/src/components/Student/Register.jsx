@@ -176,7 +176,7 @@ const Register = ({ user }) => {
       dataIndex: "type",
       width: 200,
       render: (_, record) => {
-        return <p>Đăng ký lần {record.lan}</p>;
+        return <p>Đăng ký lần {record.lan + 1}</p>;
       },
     },
     {
@@ -532,7 +532,7 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
-          <Button onClick={() => generateDocument(user)}>Xuất file</Button>
+          <Button onClick={() => generateDocument(user, semester)}>Xuất file</Button>
         </div>
       </div>
     </ConfigProvider>

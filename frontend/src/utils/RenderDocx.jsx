@@ -8,7 +8,7 @@ import axios from "axios";
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
-const generateDocument = (user) => {
+const generateDocument = (user, semester) => {
   loadFile("/template/input.docx", function (error, content) {
     if (error) {
       throw error;
@@ -24,12 +24,12 @@ const generateDocument = (user) => {
         await axios
           .post("http://localhost:8000/get_info_subject_register", {
             username: user,
+            ma_hk: semester
           })
           .then((res) => {
             const data = res.data.info_subject_register[0];
             let total = 0;
             data.items.forEach((row) => (total += row.so_tin));
-            console.log(data);
             doc.setData({
               ki: data.ki,
               nh: data.nh,
