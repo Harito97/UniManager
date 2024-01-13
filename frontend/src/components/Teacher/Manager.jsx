@@ -7,12 +7,13 @@ const Manager = ({ ma_lh }) => {
   const [showModal, setShowModel] = useState(false);
   const { openSuccessNotification, openErrorNotification } =
     useContentContext();
+  const [currentPage, setCurrentPage] = useState(null);
 
   const columns = [
     {
       title: "STT",
       dataIndex: "index",
-      render: (text, record, index) => index + 1,
+      render: (text, record, index) => (currentPage - 1) * 10 + index + 1,
       width: 50,
     },
     { title: "MSV", dataIndex: "ma_sv", width: 100 },
@@ -159,6 +160,7 @@ const Manager = ({ ma_lh }) => {
           })
           .then((res) => {
             setDataStudentClass(res.data.studentClass);
+            setCurrentPage(1);
           });
       } catch (error) {
         console.log(error);
@@ -376,7 +378,12 @@ const Manager = ({ ma_lh }) => {
           columns={columns}
           dataSource={dataStudentClass}
           scroll={{ x: 730 }}
-          pagination={false}
+          pagination={{
+            onChange: (page) => {
+              setCurrentPage(page);
+            },
+            current: currentPage,
+          }}
           size="small"
         ></Table>
       </Form>
