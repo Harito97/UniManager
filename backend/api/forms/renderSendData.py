@@ -1082,6 +1082,28 @@ async def delSemes(ma_hk: int):
         return True
     except Exception as e:
         return False
+    
+class Semes(BaseModel):
+    ma_hk: int
+    ng_bat_dau: str
+    ng_ket_thuc: str
+
+class Regis(BaseModel):
+    dot: int
+    ma_hk: int
+    ng_bat_dau: str
+    ng_ket_thuc: str
+
+
+@app.post("/add_semes")
+async def addSemes(semes: Semes):
+    cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)", (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+    conn.commit()
+    
+@app.post("/add_regis")
+async def addRegis(semes: Regis):
+    cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)", (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+    conn.commit()
 
 
 @app.post("/send_report")
