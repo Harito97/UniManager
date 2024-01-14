@@ -32,7 +32,7 @@ const ChangePwdForm = ({ user }) => {
 
   return (
     <>
-      <div className="md:w-[700px] mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 2xl:col-span-2">
+      <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 2xl:col-span-2">
         <h3 className="mb-4 text-xl font-semibold ">Đổi mật khẩu</h3>
         <Form layout="vertical" onFinish={changePwd} form={passForm}>
           <div className="grid grid-cols-6 gap-6">
