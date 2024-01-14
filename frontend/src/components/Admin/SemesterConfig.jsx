@@ -156,11 +156,18 @@ const SemesterConfig = () => {
       ng_bat_dau: ng_bat_dau,
       ng_ket_thuc: ng_ket_thuc,
     };
-    const updateSemesterData = [newRecord, ...semesterData];
-    setSemesterData(updateSemesterData);
-    axios.post("http://localhost:8000/add_semes/", newRecord);
-    DKform.resetFields();
-    setOpenHKForm(false);
+
+    axios.post("http://localhost:8000/add_semes/", newRecord).then((res) => {
+      if (res.data) {
+        openSuccessNotification("Thành công", `Đã thêm học kì ${values.ma_hk}`);
+        const updateSemesterData = [newRecord, ...semesterData];
+        setSemesterData(updateSemesterData);
+        HKform.resetFields();
+        setOpenHKForm(false);
+      } else {
+        openErrorNotification("Lỗi", "Học kì đã tồn tại");
+      }
+    });
   };
 
   const onRegisAdd = (values) => {
@@ -184,11 +191,21 @@ const SemesterConfig = () => {
       ng_bat_dau: ng_bat_dau,
       ng_ket_thuc: ng_ket_thuc,
     };
-    const updateRegisData = [newRecord, ...regisData];
-    setRegisData(updateRegisData);
-    axios.post("http://localhost:8000/add_regis/", newRecord);
-    DKform.resetFields();
-    setOpenDKForm(false);
+
+    axios.post("http://localhost:8000/add_regis/", newRecord).then((res) => {
+      if (res.data) {
+        openSuccessNotification(
+          "Thành công",
+          `Đã thêm đợt ${values.dot} của học kì ${values.ma_hk}`,
+        );
+        const updateRegisData = [newRecord, ...regisData];
+        setRegisData(updateRegisData);
+        DKform.resetFields();
+        setOpenDKForm(false);
+      } else {
+        openErrorNotification("Lỗi", "Đợt đăng kí đã tồn tại");
+      }
+    });
   };
 
   return (
@@ -222,14 +239,38 @@ const SemesterConfig = () => {
       >
         <p className="mb-5 text-xl font-bold">Thêm học kì</p>
         <Form form={HKform} onFinish={onSemesAdd}>
-          <Form.Item label="Mã HK" name="ma_hk">
+          <Form.Item
+            label="Mã HK"
+            name="ma_hk"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Ngày BĐ" name="ng_bat_dau">
-            <DatePicker />
+          <Form.Item
+            label="Ngày BĐ"
+            name="ng_bat_dau"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
           </Form.Item>
-          <Form.Item label="Ngày KT" name="ng_ket_thuc">
-            <DatePicker />
+          <Form.Item
+            label="Ngày KT"
+            name="ng_ket_thuc"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
           </Form.Item>
           <Button htmlType="submit">Ghi nhận</Button>
         </Form>
@@ -243,17 +284,53 @@ const SemesterConfig = () => {
       >
         <p className="mb-5 text-xl font-bold">Thêm đợt đăng kí</p>
         <Form form={DKform} onFinish={onRegisAdd}>
-          <Form.Item label="Đợt" name="dot">
+          <Form.Item
+            label="Đợt"
+            name="dot"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Mã HK" name="ma_hk">
-            <Input />
+          <Form.Item
+            label="Mã HK"
+            name="ma_hk"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select placeholder="Chọn mã học kì" allowClear>
+              {semesterData.map((item) => (
+                <Select.Option value={item.ma_hk}>{item.ma_hk}</Select.Option>
+              ))}
+            </Select>
           </Form.Item>
-          <Form.Item label="Ngày BĐ" name="ng_bat_dau">
-            <DatePicker />
+          <Form.Item
+            label="Ngày BĐ"
+            name="ng_bat_dau"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
           </Form.Item>
-          <Form.Item label="Ngày KT" name="ng_ket_thuc">
-            <DatePicker />
+          <Form.Item
+            label="Ngày KT"
+            name="ng_ket_thuc"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
           </Form.Item>
           <Button htmlType="submit">Ghi nhận</Button>
         </Form>

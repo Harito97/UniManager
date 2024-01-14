@@ -1100,16 +1100,25 @@ class Regis(BaseModel):
 
 @app.post("/add_semes")
 async def addSemes(semes: Semes):
-    cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)",
-                   (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
-    conn.commit()
+    try:
+        cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)",
+                       (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
 
 
 @app.post("/add_regis")
 async def addRegis(semes: Regis):
-    cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)",
-                   (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
-    conn.commit()
+
+    try:
+        cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)",
+                       (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
 
 
 @app.post("/send_report")
@@ -1130,7 +1139,8 @@ async def reset(user: User):
 
 @app.get("/get_all_user")
 async def get_all_user():
-    cursor.execute("SELECT username, access_level FROM user")
+    cursor.execute(
+        "SELECT username, access_level FROM user WHERE access_level != \'AD\'")
     return cursor.fetchall()
 
 
