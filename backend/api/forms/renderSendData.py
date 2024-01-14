@@ -1036,14 +1036,14 @@ async def getInfoSubjectRegister(user: UserSemester):
 
 @app.get("/get_total_student")
 async def getTotalStudent():
-    cursor.execute("SELECT COUNT(ma_sv) AS totalStudent FROM sinh_vien")
+    cursor.execute("SELECT COUNT(username) AS totalStudent FROM user WHERE access_level ='SV'")
     data = cursor.fetchall()
     return data[0]
 
 
 @app.get("/get_total_teacher")
 async def getTotalTeacher():
-    cursor.execute("SELECT COUNT(ma_gv) AS totalTeacher FROM giang_vien")
+    cursor.execute("SELECT COUNT(username) AS totalTeacher FROM user WHERE access_level ='GV'")
     data = cursor.fetchall()
     return data[0]
 

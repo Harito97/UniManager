@@ -17,6 +17,7 @@ import UserManager from "../components/Admin/UserManager";
 import axios from "axios";
 import { useContentContext } from "../components/Notification/ContentContext";
 import TeamLogo from "../assets/logo/logo.png";
+import UserProfile from "../components/Teacher/UserProfile";
 
 const Admin = ({ user }) => {
   axios.defaults.withCredentials = true;
@@ -38,14 +39,19 @@ const Admin = ({ user }) => {
   // Navigation Menu Options
   const items = [
     {
-      label: "Logout",
+      label: "Profile",
       key: "1",
+      icon: <SettingOutlined />,
+    },
+    {
+      label: "Logout",
+      key: "2",
       icon: <PoweroffOutlined />,
     },
   ];
 
   const handleMenuClick = (e) => {
-    if (e.key === "1") {
+    if (e.key === "2") {
       //Logout
       axios.get("http://localhost:8000/logout");
       openSuccessNotification(
@@ -56,7 +62,7 @@ const Admin = ({ user }) => {
         window.location.replace("/");
       }, 2000);
     } else {
-      window.location.replace("/teacher/setting");
+      window.location.replace("/admin/setting");
     }
   };
 
@@ -126,6 +132,7 @@ const Admin = ({ user }) => {
             <Route exact path="/" element={<Dashboard />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
             <Route exact path="/user_manager" element={<UserManager />} />
+            <Route exact path="/setting" element={<UserProfile user={user} />} />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

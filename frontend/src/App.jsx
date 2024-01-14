@@ -116,6 +116,11 @@ function App() {
                 path="/admin/user_manager"
                 element={<UserManager />}
               />
+              <Route
+                exact
+                path="/admin/setting"
+                element={<TeacherProfile />}
+              />
             </Route>
           ) : (
             <Route exact path="*" element={<NotFound />} />
