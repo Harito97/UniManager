@@ -1,3 +1,4 @@
+import random
 from pydantic import BaseModel
 from fastapi import FastAPI, Request, Response
 import mysql.connector
@@ -1082,11 +1083,13 @@ async def delSemes(ma_hk: int):
         return True
     except Exception as e:
         return False
-    
+
+
 class Semes(BaseModel):
     ma_hk: int
     ng_bat_dau: str
     ng_ket_thuc: str
+
 
 class Regis(BaseModel):
     dot: int
@@ -1097,12 +1100,15 @@ class Regis(BaseModel):
 
 @app.post("/add_semes")
 async def addSemes(semes: Semes):
-    cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)", (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+    cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)",
+                   (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
     conn.commit()
-    
+
+
 @app.post("/add_regis")
 async def addRegis(semes: Regis):
-    cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)", (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
+    cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)",
+                   (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
     conn.commit()
 
 
@@ -1111,6 +1117,52 @@ async def send_report(report: CONTENT):
     cursor.execute(
         f"INSERT INTO report VALUES(NULL, %s, %s, %s, %s)", (report.username, report.email, report.title, report.content))
     conn.commit()
+
+
+@app.put("/reset_pass")
+async def reset(user: User):
+    password = ''.join(random.choice(string.printable) for i in range(8))
+    cursor.execute(f"UPDATE user SET pass_word = %s WHERE username = %s",
+                   (bcrypt.hashpw(password.encode(), bcrypt.gensalt()), user.username))
+    conn.commit()
+    return {"new_pass": password}
+
+
+@app.get("/get_all_user")
+async def get_all_user():
+    cursor.execute("SELECT username, access_level FROM user")
+    return cursor.fetchall()
+
+
+@app.delete("/delete_user/{username}_{access_level}")
+async def delete_user(username: str, access_level: str):
+    if (access_level == "SV"):
+        cursor.execute(f"DELETE FROM report WHERE ma_sv = {username}")
+        cursor.execute(f"DELETE FROM dang_ky WHERE ma_sv = {username}")
+        cursor.execute(f"DELETE FROM sinh_vien WHERE ma_sv = {username}")
+    elif (access_level == "GV"):
+        cursor.execute(f"DELETE FROM lh_gv WHERE ma_gv = {username}")
+        cursor.execute(f"DELETE FROM gv_hp WHERE ma_gv = {username}")
+        cursor.execute(f"DELETE FROM giang_vien WHERE ma_gv = {username}")
+    cursor.execute(f"DELETE FROM user WHERE username = {username}")
+    conn.commit()
+
+
+class UserWithLevel(BaseModel):
+    username: str
+    access_level: str
+    email: str
+
+
+@app.post("/add_new_user")
+async def add_new_user(user: UserWithLevel):
+    try:
+        cursor.execute("INSERT INTO user VALUES(%s, %s, %s, %s, NULL)",
+                       (user.username, bcrypt.hashpw(user.username.encode(), bcrypt.gensalt()), user.email, user.access_level))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(e)
 
 
 # @app.post("/send_support")
