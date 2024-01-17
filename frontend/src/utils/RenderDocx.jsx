@@ -8,7 +8,7 @@ import axios from "axios";
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
-const generateDocument = (user, semester) => {
+const generateDocument = (semester, token) => {
   loadFile("/template/input.docx", function (error, content) {
     if (error) {
       throw error;
@@ -22,10 +22,16 @@ const generateDocument = (user, semester) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/get_info_subject_register", {
-            username: user,
-            ma_hk: semester
-          })
+          .get(
+            "http://localhost:8000/get_info_subject_register/" +
+              semester.toString(),
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+            },
+          )
           .then((res) => {
             const data = res.data.info_subject_register[0];
             let total = 0;

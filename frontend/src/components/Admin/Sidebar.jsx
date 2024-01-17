@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { AppstoreOutlined, CalendarOutlined } from "@ant-design/icons";
 import { PiStudent } from "react-icons/pi";
 import { GiTeacher } from "react-icons/gi";
+import { FaCalendarDay } from "react-icons/fa";
 import Logo from "../../assets/hus-logo.svg";
 
 const Sidebar = () => {
@@ -17,6 +18,8 @@ const Sidebar = () => {
       return "1";
     } else if (path === "/admin/user_manager") {
       return "2";
+    } else if (path === "/admin/class") {
+      return "3";
     }
   };
 
@@ -40,6 +43,11 @@ const Sidebar = () => {
             key: "2",
             icon: <PiStudent />,
             label: <Link to="/admin/user_manager">Quản lý người dùng</Link>,
+          },
+          {
+            key: "3",
+            icon: <FaCalendarDay />,
+            label: <Link to="/admin/class">Quản lý học phần</Link>,
           },
         ]}
       />

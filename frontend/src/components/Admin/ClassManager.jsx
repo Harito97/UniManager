@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Modal, Select } from "antd";
-import Manager from "./Manager";
+import Manager from "../Teacher/Manager";
 import axios from "axios";
 import Loading from "../../pages/Loading";
 import { useContentContext } from "../../context/UserContext";
 
-const Dashboard = () => {
+const ClassManager = () => {
   const { getToken } = useContentContext();
-
   const columns = [
     {
       title: "STT",
@@ -32,6 +31,14 @@ const Dashboard = () => {
       ),
     },
     { title: "Số SV", dataIndex: "da_dk", width: 60 },
+    {
+      title: "Giáo viên",
+      dataIndex: "ten_gv",
+      width: 150,
+      render: (_, record) => {
+        // return record.ten_gv.map((n) => <p>{n}</p>);
+      },
+    },
     {
       title: "Lịch học",
       dataIndex: "lich_hoc",
@@ -104,7 +111,7 @@ const Dashboard = () => {
         if (selectedSemester !== null) {
           await axios
             .get(
-              "http://localhost:8000/teaching_schedule/" +
+              "http://localhost:8000/all_schedule/" +
                 selectedSemester.value.toString(),
               {
                 headers: {
@@ -133,7 +140,7 @@ const Dashboard = () => {
     return (
       <>
         <div className="flex flex-col justify-between sm:flex-row">
-          <h1 className="m-1 text-xl font-bold">Các lớp giảng dạy</h1>
+          <h1 className="m-1 text-xl font-bold">Danh sách học phần</h1>
           <Select
             defaultValue={option[0].value}
             options={option}
@@ -145,8 +152,9 @@ const Dashboard = () => {
           rowKey={(record) => record.ma_lh}
           columns={columns}
           dataSource={dataSchedule}
-          pagination={false}
-          scroll={{ x: 860 }}
+          // pagination={false}
+          size="small"
+          scroll={{ x: 1010 }}
         ></Table>
         <Modal
           open={showModal}
@@ -169,4 +177,4 @@ const Dashboard = () => {
   }
 };
 
-export default Dashboard;
+export default ClassManager;

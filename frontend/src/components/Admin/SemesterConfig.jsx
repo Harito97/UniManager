@@ -11,10 +11,10 @@ import {
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 
 const SemesterConfig = () => {
-  const { openSuccessNotification, openErrorNotification } =
+  const { openSuccessNotification, openErrorNotification, getToken } =
     useContentContext();
   const [semesterData, setSemesterData] = useState([]);
   const [regisData, setRegisData] = useState([]);
@@ -98,6 +98,12 @@ const SemesterConfig = () => {
     axios
       .delete(
         "http://localhost:8000/delete_semester/" + record.ma_hk.toString(),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken(),
+          },
+        },
       )
       .then((res) => {
         if (res.data) {
@@ -105,6 +111,10 @@ const SemesterConfig = () => {
             (item) => item.ma_hk !== record.ma_hk,
           );
           setSemesterData(updateSemesterData);
+          openSuccessNotification(
+            "Thành công",
+            `Đã xoá học kì ${record.ma_hk}`,
+          );
         } else {
           openErrorNotification(
             "Có lỗi xảy ra!",
@@ -120,11 +130,21 @@ const SemesterConfig = () => {
         record.ma_hk.toString() +
         "_" +
         record.dot.toString(),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      },
     );
     const updateRegisData = regisData.filter(
       (item) => !(item.ma_hk === record.ma_hk && item.dot === record.dot),
     );
     setRegisData(updateRegisData);
+    openSuccessNotification(
+      "Thành công",
+      `Đã xoá đợt ${record.dot} của học kì ${record.ma_hk}`,
+    );
   };
 
   const onSelectChange = (value) => {
@@ -157,17 +177,27 @@ const SemesterConfig = () => {
       ng_ket_thuc: ng_ket_thuc,
     };
 
-    axios.post("http://localhost:8000/add_semes/", newRecord).then((res) => {
-      if (res.data) {
-        openSuccessNotification("Thành công", `Đã thêm học kì ${values.ma_hk}`);
-        const updateSemesterData = [newRecord, ...semesterData];
-        setSemesterData(updateSemesterData);
-        HKform.resetFields();
-        setOpenHKForm(false);
-      } else {
-        openErrorNotification("Lỗi", "Học kì đã tồn tại");
-      }
-    });
+    axios
+      .post("http://localhost:8000/add_semes", newRecord, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      })
+      .then((res) => {
+        if (res.data) {
+          openSuccessNotification(
+            "Thành công",
+            `Đã thêm học kì ${values.ma_hk}`,
+          );
+          const updateSemesterData = [newRecord, ...semesterData];
+          setSemesterData(updateSemesterData);
+          HKform.resetFields();
+          setOpenHKForm(false);
+        } else {
+          openErrorNotification("Lỗi", "Học kì đã tồn tại");
+        }
+      });
   };
 
   const onRegisAdd = (values) => {
@@ -192,20 +222,27 @@ const SemesterConfig = () => {
       ng_ket_thuc: ng_ket_thuc,
     };
 
-    axios.post("http://localhost:8000/add_regis/", newRecord).then((res) => {
-      if (res.data) {
-        openSuccessNotification(
-          "Thành công",
-          `Đã thêm đợt ${values.dot} của học kì ${values.ma_hk}`,
-        );
-        const updateRegisData = [newRecord, ...regisData];
-        setRegisData(updateRegisData);
-        DKform.resetFields();
-        setOpenDKForm(false);
-      } else {
-        openErrorNotification("Lỗi", "Đợt đăng kí đã tồn tại");
-      }
-    });
+    axios
+      .post("http://localhost:8000/add_regis", newRecord, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      })
+      .then((res) => {
+        if (res.data) {
+          openSuccessNotification(
+            "Thành công",
+            `Đã thêm đợt ${values.dot} của học kì ${values.ma_hk}`,
+          );
+          const updateRegisData = [newRecord, ...regisData];
+          setRegisData(updateRegisData);
+          DKform.resetFields();
+          setOpenDKForm(false);
+        } else {
+          openErrorNotification("Lỗi", "Đợt đăng kí đã tồn tại");
+        }
+      });
   };
 
   return (

@@ -1,21 +1,29 @@
 import React from "react";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 
-const ChangePwdForm = ({ user }) => {
-  const { openSuccessNotification, openErrorNotification } =
+const ChangePwdForm = () => {
+  const { openSuccessNotification, openErrorNotification, getToken } =
     useContentContext();
   const [passForm] = Form.useForm();
 
   const changePwd = (values) => {
     try {
       axios
-        .put("http://localhost:8000/change_pass", {
-          username: user,
-          current_pass: values.current_pass,
-          new_pass: values.new_pass,
-        })
+        .put(
+          "http://localhost:8000/change_pass",
+          {
+            current_pass: values.current_pass,
+            new_pass: values.new_pass,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        )
         .then((res) => {
           if (res.data.Status) {
             openSuccessNotification("Successfully!", "Đổi mật khẩu thành công");

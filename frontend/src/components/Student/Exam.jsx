@@ -2,9 +2,11 @@ import { Table } from "antd";
 import React, { useState, useEffect } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useContentContext } from "../../context/UserContext";
 
-const Exam = ({ user }) => {
+const Exam = () => {
   const [loading, setLoading] = useState(true);
+  const { getToken } = useContentContext();
 
   const columns = [
     {
@@ -86,8 +88,11 @@ const Exam = ({ user }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/schedule_exam", {
-            username: user,
+          .get("http://localhost:8000/schedule_exam", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           })
           .then((res) => setExam(res.data.exam))
           .finally(() => setLoading(false));
@@ -97,7 +102,7 @@ const Exam = ({ user }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, []);
 
   return (
     <>

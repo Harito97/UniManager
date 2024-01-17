@@ -18,15 +18,15 @@ import MyCalendar from "../components/Teacher/MyCalendar";
 import Manager from "../components/Teacher/Manager";
 import TeacherProfile from "../components/Teacher/UserProfile";
 import axios from "axios";
-import { useContentContext } from "../components/Notification/ContentContext";
+import { useContentContext } from "../context/UserContext";
 import TeamLogo from "../assets/logo/logo.png";
 
-const Teacher = ({ user }) => {
+const Teacher = () => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  let { openSuccessNotification } = useContentContext();
+  let { openSuccessNotification, handleLogout, user } = useContentContext();
 
   const handleResize = () => {
     if (window.innerWidth >= 768) {
@@ -55,7 +55,7 @@ const Teacher = ({ user }) => {
   const handleMenuClick = (e) => {
     if (e.key === "2") {
       //Logout
-      axios.get("http://localhost:8000/logout");
+      handleLogout();
       openSuccessNotification(
         "Bạn đã đăng xuất!",
         `Trang sẽ chuyển hướng sau vài giây...`,
@@ -131,23 +131,11 @@ const Teacher = ({ user }) => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard user={user} />} />
-            <Route
-              exact
-              path="/dashboard"
-              element={<Dashboard user={user} />}
-            />
-            <Route exact path="/classes" element={<Manager user={user} />} />
-            <Route
-              exact
-              path="/calendar"
-              element={<MyCalendar user={user} />}
-            />
-            <Route
-              exact
-              path="/setting"
-              element={<TeacherProfile user={user} />}
-            />
+            <Route exact path="/" element={<Dashboard />} />
+            <Route exact path="/dashboard" element={<Dashboard />} />
+            <Route exact path="/classes" element={<Manager />} />
+            <Route exact path="/calendar" element={<MyCalendar />} />
+            <Route exact path="/setting" element={<TeacherProfile />} />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

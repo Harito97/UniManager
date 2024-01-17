@@ -9,14 +9,15 @@ import {
   Popconfirm,
   Form,
   Select,
+  DatePicker,
 } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 
 const UserManager = () => {
-  const { openSuccessNotification, openErrorNotification } =
+  const { openSuccessNotification, openErrorNotification, getToken } =
     useContentContext();
   const [userData, setUserData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -36,6 +37,7 @@ const UserManager = () => {
   const success = (new_pass) => {
     Modal.success({
       content: `Mật khẩu mới là ${new_pass}`,
+      okButtonProps: { className: "bg-blue-500" },
     });
   };
 
@@ -147,8 +149,32 @@ const UserManager = () => {
     const fetchData = async () => {
       try {
         await axios
-          .get("http://localhost:8000/get_all_user")
+          .get("http://localhost:8000/get_all_user", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          })
           .then((res) => setUserData(res.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios
+          .get("http://localhost:8000/get_all_major", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          })
+          .then((res) => setOptions(res.data));
       } catch (error) {
         console.log(error);
       }
@@ -159,9 +185,18 @@ const UserManager = () => {
 
   const handleChangePass = (record) => {
     axios
-      .put("http://localhost:8000/reset_pass", {
-        username: record.username,
-      })
+      .put(
+        "http://localhost:8000/reset_pass",
+        {
+          username: record.username,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + getToken(),
+          },
+        },
+      )
       .then((res) => {
         success(res.data.new_pass);
       });
@@ -174,11 +209,18 @@ const UserManager = () => {
         record.username +
         "_" +
         record.access_level,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      },
     );
     const updateUserData = userData.filter(
       (item) => item.username !== record.username,
     );
     setUserData(updateUserData);
+    openSuccessNotification("Thành công", `Đã xoá user ${record.username}`);
   };
 
   const columns = [
@@ -243,20 +285,63 @@ const UserManager = () => {
   ];
 
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
+  const [options, setOptions] = useState([]);
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
 
   const onFinish = (values) => {
-    axios.post("http://localhost:8000/add_new_user", values).then((res) => {
-      if (res.data) {
-        openSuccessNotification(
-          "Thành công",
-          `Đã thêm user ${values.username}`,
-        );
-        form.resetFields();
-      } else {
-        openErrorNotification("Lỗi", "Tên đăng nhập đã tồn tại!");
-      }
-    });
+    axios
+      .post("http://localhost:8000/add_new_sv", values, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      })
+      .then((res) => {
+        if (res.data) {
+          openSuccessNotification(
+            "Thành công",
+            `Đã thêm user ${values.username}`,
+          );
+          const updateUserData = [
+            { username: values.username, access_level: "SV" },
+            ...userData,
+          ];
+          setUserData(updateUserData);
+          form.resetFields();
+        } else {
+          openErrorNotification("Lỗi", "Tên đăng nhập đã tồn tại!");
+        }
+      });
+    // form.resetFields();
+  };
+
+  const onFinish2 = (values) => {
+    console.log(values);
+    axios
+      .post("http://localhost:8000/add_new_gv", values, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
+      })
+      .then((res) => {
+        if (res.data) {
+          openSuccessNotification(
+            "Thành công",
+            `Đã thêm user ${values.username}`,
+          );
+          const updateUserData = [
+            { username: values.username, access_level: "GV" },
+            ...userData,
+          ];
+          setUserData(updateUserData);
+          form2.resetFields();
+        } else {
+          openErrorNotification("Lỗi", "Tên đăng nhập đã tồn tại!");
+        }
+      });
     // form.resetFields();
   };
 
@@ -271,10 +356,18 @@ const UserManager = () => {
       <Button
         onClick={() => setOpenModal(true)}
         type="primary"
+        className="mr-5 bg-blue-500"
+      >
+        Thêm sinh viên
+      </Button>
+      <Button
+        onClick={() => setOpenModal2(true)}
+        type="primary"
         className="bg-blue-500"
       >
-        Thêm user
+        Thêm giảng viên
       </Button>
+      {/* Sinh viên */}
       <Modal
         open={openModal}
         onCancel={() => setOpenModal(false)}
@@ -282,8 +375,130 @@ const UserManager = () => {
         // width={window.innerWidth > 800 ? 800 : "auto"}
         className="overflow-auto"
       >
-        <p className="mb-5 text-xl font-bold">Thêm người dùng</p>
+        <p className="mb-5 text-xl font-bold">Thêm sinh viên</p>
         <Form form={form} onFinish={onFinish}>
+          <Form.Item
+            required
+            label="Mã sinh viên"
+            name="username"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Họ và tên"
+            name="ho_ten"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Giới tính"
+            name="gioi_tinh"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select allowClear>
+              <Select.Option value="Nam">Nam</Select.Option>
+              <Select.Option value="Nữ">Nữ</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label="Ngày sinh"
+            name="ngsinh"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
+          </Form.Item>
+          <Form.Item
+            label="SĐT"
+            name="sdt"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="tel" pattern="^\d{10}" />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Ngành học"
+            name="ma_nganh"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select options={options} allowClear></Select>
+          </Form.Item>
+          <Form.Item
+            required
+            label="Năm bắt đầu"
+            name="nam_bat_dau"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Lớp"
+            name="lop"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="email" />
+          </Form.Item>
+          <Button htmlType="submit">Ghi nhận</Button>
+        </Form>
+      </Modal>
+      {/* Giảng viên */}
+      <Modal
+        open={openModal2}
+        onCancel={() => setOpenModal2(false)}
+        footer={null}
+        // width={window.innerWidth > 800 ? 800 : "auto"}
+        className="overflow-auto"
+      >
+        <p className="mb-5 text-xl font-bold">Thêm giáo viên</p>
+        <Form form={form2} onFinish={onFinish2}>
           <Form.Item
             required
             label="Tên đăng nhập"
@@ -298,18 +513,87 @@ const UserManager = () => {
           </Form.Item>
           <Form.Item
             required
-            label="Quyền hạn"
-            name="access_level"
+            label="Họ và tên"
+            name="ho_ten"
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Select placeholder="Chọn quyền hạn cho tài khoản trên" allowClear>
-              <Select.Option value="SV">SV</Select.Option>
-              <Select.Option value="GV">GV</Select.Option>
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Giới tính"
+            name="gioi_tinh"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Select allowClear>
+              <Select.Option value="Nam">Nam</Select.Option>
+              <Select.Option value="Nữ">Nữ</Select.Option>
             </Select>
+          </Form.Item>
+          <Form.Item
+            label="Ngày sinh"
+            name="ngsinh"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
+          </Form.Item>
+          <Form.Item
+            label="SĐT"
+            name="sdt"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="tel" pattern="^\d{10}" />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Lương"
+            name="luong"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            label="Địa chỉ"
+            name="dia_chi"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Ngày bắt đầu"
+            name="ng_bat_dau"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker allowClear />
           </Form.Item>
           <Form.Item
             required

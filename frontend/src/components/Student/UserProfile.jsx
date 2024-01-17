@@ -6,12 +6,12 @@ import ImgCrop from "antd-img-crop";
 import { storage } from "../../constants/Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 import axios from "axios";
 import ChangePwdForm from "../Home/ChangePwdForm";
 
-const UserProfile = ({ user }) => {
-  const { openSuccessNotification, openErrorNotification } =
+const UserProfile = () => {
+  const { openSuccessNotification, openErrorNotification, getToken, user } =
     useContentContext();
 
   const [form] = Form.useForm();
@@ -24,10 +24,18 @@ const UserProfile = ({ user }) => {
       getDownloadURL(snapshot.ref).then((url) => {
         //TODO: thay đổi đường link avatar trong DB
         setimgURL(url);
-        axios.put("http://localhost:8000/put_image", {
-          username: user,
-          avatar: url,
-        });
+        axios.put(
+          "http://localhost:8000/put_image",
+          {
+            avatar: url,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        );
       });
     });
   };
@@ -38,8 +46,11 @@ const UserProfile = ({ user }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/info_student", {
-            username: user,
+          .get("http://localhost:8000/info_student", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           })
           .then((res) => {
             setUserData(res.data.info);
@@ -55,16 +66,24 @@ const UserProfile = ({ user }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, []);
 
   const submitData = (values) => {
     try {
       axios
-        .put("http://localhost:8000/put_info_student", {
-          username: user,
-          sdt: values.sdt,
-          email: values.email,
-        })
+        .put(
+          "http://localhost:8000/put_info_student",
+          {
+            sdt: values.sdt,
+            email: values.email,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        )
         .then((res) => {
           if (res.data.Status) {
             openSuccessNotification(
@@ -80,34 +99,15 @@ const UserProfile = ({ user }) => {
     }
   };
 
-  const changePwd = (values) => {
-    try {
-      axios
-        .put("http://localhost:8000/change_pass", {
-          username: user,
-          current_pass: values.current_pass,
-          new_pass: values.new_pass,
-        })
-        .then((res) => {
-          if (res.data.Status) {
-            openSuccessNotification("Successfully!", "Đổi mật khẩu thành công");
-            setTimeout(function () {}, 700);
-          } else {
-            openErrorNotification("Lỗi", res.data.message);
-            setTimeout(function () {}, 700);
-          }
-        });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const deleteAvatar = () => {
     setimgURL(null);
     //TODO: chuyển giá trị avatar về null
     try {
-      axios.delete("http://localhost:8000/delete_avatar/" + user, {
-        username: user,
+      axios.delete("http://localhost:8000/delete_avatar", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + getToken(),
+        },
       });
     } catch (e) {
       console.log(e);
@@ -182,9 +182,7 @@ const UserProfile = ({ user }) => {
         </div>
         <div className="col-span-2">
           <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 2xl:col-span-2">
-            <h3 className="mb-4 text-xl font-semibold ">
-              Thông tin chung
-            </h3>
+            <h3 className="mb-4 text-xl font-semibold ">Thông tin chung</h3>
             <Form layout="vertical" form={form} onFinish={submitData}>
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
@@ -215,7 +213,7 @@ const UserProfile = ({ user }) => {
               <Button htmlType="submit">Ghi nhận</Button>
             </Form>
           </div>
-          <ChangePwdForm user={user} />
+          <ChangePwdForm />
         </div>
       </div>
     </>

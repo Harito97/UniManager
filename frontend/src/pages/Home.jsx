@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Background from "../assets/background.jpg";
 import LoginForm from "../components/Home/LoginForm";
-import { useContentContext } from "../components/Notification/ContentContext";
+import { useContentContext } from "../context/UserContext";
 
-function Home({ level }) {
-  const { openSuccessNotification } = useContentContext();
+function Home() {
+  const { user, level, openSuccessNotification } = useContentContext();
   if (level !== null) {
-    openSuccessNotification(
-      "Bạn đã đăng nhập trước đó!",
-      `Trang sẽ chuyển hướng sau vài giây...`,
-    );
+    openSuccessNotification("Đăng nhập thành công!", `Welcome back ${user}!`);
     setTimeout(() => {
       if (level === "SV") {
         window.location.replace("/student");
@@ -33,7 +30,7 @@ function Home({ level }) {
   return (
     <>
       <div style={bgImage}>
-        <LoginForm/>
+        <LoginForm />
       </div>
     </>
   );

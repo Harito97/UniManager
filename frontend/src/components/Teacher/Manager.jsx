@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Form, Input, Table, Modal } from "antd";
 import axios from "axios";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 
 const Manager = ({ ma_lh }) => {
   const [showModal, setShowModel] = useState(false);
-  const { openSuccessNotification, openErrorNotification } =
+  const { openSuccessNotification, openErrorNotification, getToken } =
     useContentContext();
   const [currentPage, setCurrentPage] = useState(null);
 
@@ -155,8 +155,11 @@ const Manager = ({ ma_lh }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/student_class", {
-            ma_lh: ma_lh,
+          .get("http://localhost:8000/student_class/" + ma_lh.toString(), {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           })
           .then((res) => {
             setDataStudentClass(res.data.studentClass);
@@ -177,9 +180,15 @@ const Manager = ({ ma_lh }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/coefficient_subject", {
-            ma_lh: ma_lh,
-          })
+          .get(
+            "http://localhost:8000/coefficient_subject/" + ma_lh.toString(),
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + getToken(),
+              },
+            },
+          )
           .then((res) => {
             setFactorData(res.data.coefficient);
           });
@@ -218,12 +227,21 @@ const Manager = ({ ma_lh }) => {
 
     try {
       axios
-        .put("http://localhost:8000/put_coefficient", {
-          ma_lh: ma_lh,
-          he_so_tx: isNaN(he_so_tx) ? null : he_so_tx,
-          he_so_gk: isNaN(he_so_gk) ? null : he_so_gk,
-          he_so_ck: isNaN(he_so_ck) ? null : he_so_ck,
-        })
+        .put(
+          "http://localhost:8000/put_coefficient",
+          {
+            ma_lh: ma_lh,
+            he_so_tx: isNaN(he_so_tx) ? null : he_so_tx,
+            he_so_gk: isNaN(he_so_gk) ? null : he_so_gk,
+            he_so_ck: isNaN(he_so_ck) ? null : he_so_ck,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        )
         .then((res) => {
           if (res.data.Status) {
             openSuccessNotification("Thành công", "Cập nhật hệ số thành công");
@@ -246,13 +264,22 @@ const Manager = ({ ma_lh }) => {
 
     try {
       axios
-        .put("http://localhost:8000/put_dangky", {
-          ma_lh: ma_lh,
-          ma_sv: editingRow,
-          diem_tx: isNaN(diem_tx) ? null : parseFloat(diem_tx.toFixed(2)),
-          diem_gk: isNaN(diem_gk) ? null : parseFloat(diem_gk.toFixed(2)),
-          diem_ck: isNaN(diem_ck) ? null : parseFloat(diem_ck.toFixed(2)),
-        })
+        .put(
+          "http://localhost:8000/put_dangky",
+          {
+            ma_lh: ma_lh,
+            ma_sv: editingRow,
+            diem_tx: isNaN(diem_tx) ? null : parseFloat(diem_tx.toFixed(2)),
+            diem_gk: isNaN(diem_gk) ? null : parseFloat(diem_gk.toFixed(2)),
+            diem_ck: isNaN(diem_ck) ? null : parseFloat(diem_ck.toFixed(2)),
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        )
         .then((res) => {
           if (res.data.Status) {
             openSuccessNotification(

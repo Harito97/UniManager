@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Table, Select, Popconfirm, Alert, ConfigProvider } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { useContentContext } from "../Notification/ContentContext";
+import { useContentContext } from "../../context/UserContext";
 import axios from "axios";
 import generateDocument from "../../utils/RenderDocx";
 
@@ -43,9 +43,9 @@ const courses_table = [
   },
 ];
 
-const Register = ({ user }) => {
+const Register = () => {
   // axios.defaults.withCredentials = true;
-  const { openSuccessNotification, openErrorNotification } =
+  const { openSuccessNotification, openErrorNotification, getToken } =
     useContentContext();
   const [dataMajor, setDataMajor] = useState([]);
   // const [dataAll, setDataAll] = useState(data2);
@@ -75,16 +75,23 @@ const Register = ({ user }) => {
               setSemester(ma_hk);
 
               axios
-                .post("http://localhost:8000/subject_major", {
-                  username: user,
-                  ma_hk: ma_hk,
-                })
+                .get(
+                  "http://localhost:8000/subject_major/" + ma_hk.toString(),
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + getToken(),
+                    },
+                  },
+                )
                 .then((res) => setDataMajor(res.data.dataMajor));
 
               axios
-                .post("http://localhost:8000/subject_all", {
-                  username: user,
-                  ma_hk: ma_hk,
+                .get("http://localhost:8000/subject_all/" + ma_hk.toString(), {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + getToken(),
+                  },
                 })
                 .then((res) => setDataAll(res.data.dataAll));
               return ma_hk;
@@ -96,10 +103,15 @@ const Register = ({ user }) => {
           .then((ma_hk) => {
             if (ma_hk != 0) {
               axios
-                .post("http://localhost:8000/subject_learned", {
-                  username: user,
-                  ma_hk: ma_hk,
-                })
+                .get(
+                  "http://localhost:8000/subject_learned/" + ma_hk.toString(),
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + getToken(),
+                    },
+                  },
+                )
                 .then((res) => setDataSubjectLearned(res.data.subjectLearned));
             }
             return ma_hk;
@@ -107,10 +119,16 @@ const Register = ({ user }) => {
           .then((ma_hk) => {
             if (ma_hk != 0) {
               axios
-                .post("http://localhost:8000/registered_subject", {
-                  username: user,
-                  ma_hk: ma_hk,
-                })
+                .get(
+                  "http://localhost:8000/registered_subject/" +
+                    ma_hk.toString(),
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: "Bearer " + getToken(),
+                    },
+                  },
+                )
                 .then((res) => {
                   const data = res.data.subjectRegister;
                   data.forEach((obj) => {
@@ -226,14 +244,18 @@ const Register = ({ user }) => {
   const start = () => {
     try {
       for (let i = 0; i < selectedRowKeys.length; i++) {
-        const add = axios.post("http://localhost:8000/post_dangky", {
-          ma_lh: selectedRowKeys[i],
-          ma_sv: user,
-          diem_tx: null,
-          diem_gk: null,
-          diem_ck: null,
-        });
-        console.log(add);
+        axios.post(
+          "http://localhost:8000/post_dangky",
+          {
+            ma_lh: selectedRowKeys[i],
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
+          },
+        );
       }
     } catch (e) {
       console.log(e);
@@ -241,17 +263,15 @@ const Register = ({ user }) => {
 
     try {
       for (let i = 0; i < deSelected.length; i++) {
-        const deleted = axios.delete(
-          "http://localhost:8000/delete_dangky/" +
-            deSelected[i].toString() +
-            "_" +
-            user,
+        axios.delete(
+          "http://localhost:8000/delete_dangky/" + deSelected[i].toString(),
           {
-            ma_lh: deSelected[i],
-            ma_sv: user,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           },
         );
-        console.log(deleted);
       }
     } catch (e) {
       console.log(e);
@@ -532,7 +552,9 @@ const Register = ({ user }) => {
           >
             Ghi nhận
           </Button>
-          <Button onClick={() => generateDocument(user, semester)}>Xuất file</Button>
+          <Button onClick={() => generateDocument(semester, getToken())}>
+            Xuất file
+          </Button>
         </div>
       </div>
     </ConfigProvider>

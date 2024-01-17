@@ -15,16 +15,17 @@ import Sidebar from "../components/Admin/Sidebar";
 import Dashboard from "../components/Admin/Dashboard";
 import UserManager from "../components/Admin/UserManager";
 import axios from "axios";
-import { useContentContext } from "../components/Notification/ContentContext";
+import { useContentContext } from "../context/UserContext";
 import TeamLogo from "../assets/logo/logo.png";
 import UserProfile from "../components/Teacher/UserProfile";
+import ClassManager from "../components/Admin/ClassManager";
 
-const Admin = ({ user }) => {
+const Admin = () => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  let { openSuccessNotification } = useContentContext();
+  let { openSuccessNotification, handleLogout, user } = useContentContext();
 
   const handleResize = () => {
     if (window.innerWidth >= 768) {
@@ -53,7 +54,7 @@ const Admin = ({ user }) => {
   const handleMenuClick = (e) => {
     if (e.key === "2") {
       //Logout
-      axios.get("http://localhost:8000/logout");
+      handleLogout();
       openSuccessNotification(
         "Bạn đã đăng xuất!",
         `Trang sẽ chuyển hướng sau vài giây...`,
@@ -132,7 +133,12 @@ const Admin = ({ user }) => {
             <Route exact path="/" element={<Dashboard />} />
             <Route exact path="/dashboard" element={<Dashboard />} />
             <Route exact path="/user_manager" element={<UserManager />} />
-            <Route exact path="/setting" element={<UserProfile user={user} />} />
+            <Route exact path="/class" element={<ClassManager />} />
+            <Route
+              exact
+              path="/setting"
+              element={<UserProfile/>}
+            />
           </Routes>
         </Content>
         <Footer className="pt-0 text-center">

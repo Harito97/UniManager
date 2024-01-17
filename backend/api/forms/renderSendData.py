@@ -1,11 +1,14 @@
 import random
+from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
+from fastapi.responses import FileResponse
 import mysql.connector
-
+from typing import Annotated
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from datetime import datetime
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import uvicorn
 import bcrypt
 import jwt
@@ -25,8 +28,9 @@ app = FastAPI()
 host = "localhost"
 user = "root"
 database = "csdl_web"
-SECURITY_ALGORITHM = 'HS256'
-SECRET_KEY = 'super-secret-key'
+ALGORITHM = 'HS256'
+SECRET_KEY = '3662c8e331272168e4eadb96ab89f9f7551a6df8856fe2d07092cec36c32b5b0'
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 db_status = False
 
 try:
@@ -67,13 +71,6 @@ class Class(BaseModel):
 
 class DANGKY(BaseModel):
     ma_lh: int | None = None
-    ma_sv: str | None = None
-    diem_tx: float | None = None
-    # he_so_tx: float | None = None
-    diem_gk: float | None = None
-    # he_so_gk: float | None = None
-    diem_ck: float | None = None
-    # he_so_ck: float | None = None
 
 
 class COEFFICIENT(BaseModel):
@@ -88,24 +85,20 @@ class ID(BaseModel):
 
 
 class AVATAR(BaseModel):
-    username: str | None = None
     avatar: str | None = None
 
 
 class UPDATEINFO(BaseModel):
-    username: str | None = None
     sdt: str | None = None
     email: str | None = None
 
 
 class UPDATEPASSWORD(BaseModel):
-    username: str | None = None
     current_pass: str | None = None
     new_pass: str | None = None
 
 
 class CONTENT(BaseModel):
-    username: str | None = None
     email: str | None = None
     title: str | None = None
     content: str | None = None
@@ -148,47 +141,147 @@ def generate_random_password(length=8):
     return password
 
 
-@app.get("/")
-async def verifyUser(request: Request):
-    if "token" in request.cookies:
-        token = request.cookies["token"]
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=[
-                             SECURITY_ALGORITHM])
-        return {"Status": True, "decoded": decoded}
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def verify_password(plain_password, hashed_password):
+    return bcrypt.checkpw(plain_password.encode("utf-8"), bytes(hashed_password))
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str
+
+
+class UserInfor(BaseModel):
+    username: str
+    access_level: str
+
+
+class UserInDB(UserInfor):
+    pass_word: bytes
+
+
+def get_user(username: str):
+    cursor.execute(
+        "select * from user where username = \"{}\"".format(username))
+    data = cursor.fetchall()
+    if len(data) > 0:
+        user_dict = data[0]
+        return UserInDB(**user_dict)
+
+
+def authenticate_user(username: str, password: str):
+    user = get_user(username)
+    if not user:
+        return False
+    if not verify_password(password, user.pass_word):
+        return False
+    return user
+
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        return {"Status": False, "Error": "Bạn chưa đăng nhập"}
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
-@app.post("/login")
-async def login(user: UserInfo, response: Response):
-    if not db_status:
-        return {"Status": False, "Error": "Không thể kết nối với CSDL"}
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        cursor.execute(
-            "select * from user where username = \"{}\"".format(user.username))
-        data = cursor.fetchall()
-        if (len(data) > 0):
-            pwd_bytes = user.password.encode('utf-8')
-            check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
-            if (check_pwd):
-                print({"username": data[0]["username"],
-                      "access_level": data[0]["access_level"]})
-                token = jwt.encode({"username": data[0]["username"], "access_level": data[0]
-                                   ["access_level"]}, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
-                response.set_cookie(key="token", value=token, httponly=True)
-                return {"Status": True, "level": data[0]["access_level"]}
-            else:
-                return {"Status": False, "Error": "Mật khẩu không chính xác"}
-        else:
-            return {"Status": False, "Error": f"Không tồn tại username {user.username}"}
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("username")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
     except Exception as e:
-        return {"Error": e}
+        raise credentials_exception
+    user = get_user(username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
 
 
-@app.get("/logout")
-async def logout(response: Response):
-    response.delete_cookie("token")
-    return {"Status": True}
+async def get_current_active_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    # if current_user.disabled:
+    #     raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
+@app.post("/token")
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+) -> Token:
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"username": user.username}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")
+
+
+@app.get("/users/me/", response_model=UserInfor)
+async def read_users_me(
+    current_user: Annotated[UserInfor, Depends(get_current_active_user)]
+):
+    return current_user
+
+# @app.get("/")
+# async def verifyUser(request: Request):
+#     if "token" in request.cookies:
+#         token = request.cookies["token"]
+#         decoded = jwt.decode(token, SECRET_KEY, algorithms=[
+#                              ALGORITHM])
+#         return {"Status": True, "decoded": decoded}
+#     else:
+#         return {"Status": False, "Error": "Bạn chưa đăng nhập"}
+
+
+# @app.post("/login")
+# async def login(user: UserInfo, response: Response):
+#     if not db_status:
+#         return {"Status": False, "Error": "Không thể kết nối với CSDL"}
+#     try:
+#         cursor.execute(
+#             "select * from user where username = \"{}\"".format(user.username))
+#         data = cursor.fetchall()
+#         if (len(data) > 0):
+#             pwd_bytes = user.password.encode('utf-8')
+#             check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
+#             if (check_pwd):
+#                 print({"username": data[0]["username"],
+#                       "access_level": data[0]["access_level"]})
+#                 token = jwt.encode({"username": data[0]["username"], "access_level": data[0]
+#                                    ["access_level"]}, SECRET_KEY, algorithm=ALGORITHM)
+#                 response.set_cookie(key="token", value=token, httponly=True)
+#                 return {"Status": True, "level": data[0]["access_level"]}
+#             else:
+#                 return {"Status": False, "Error": "Mật khẩu không chính xác"}
+#         else:
+#             return {"Status": False, "Error": f"Không tồn tại username {user.username}"}
+#     except Exception as e:
+#         return {"Error": e}
 
 
 @app.post("/forgot_password")
@@ -202,21 +295,26 @@ async def forgotPassword(request: ForgotPassword):
                                 when {request.username} in (select ma_sv from sinh_vien) then (select ho_ten from sinh_vien where ma_sv = {request.username})
                                 else (select ho_ten from giang_vien where ma_gv = {request.username})
                             end as ho_ten,
-                            email, pass_word from user where username = {request.username}
+                            email from user where username = {request.username}
                    """)
 
     data = cursor.fetchall()
 
-    ho_ten, email, pass_word = data[0]['ho_ten'], data[0]['email'], data[0]['pass_word']
-
     if len(data) == 0:
         return False
 
+    ho_ten, email = data[0]['ho_ten'], data[0]['email']
+    pass_word = generate_random_password()
+
+    cursor.execute(f"UPDATE user SET pass_word = %s WHERE username = %s",
+                   (bcrypt.hashpw(pass_word.encode(), bcrypt.gensalt()), request.username))
+    conn.commit()
+
     # Cấu hình kết nối cho FastMail
     conf = ConnectionConfig(
-        MAIL_USERNAME="nguyenvanthang_t66@hus.edu.vn",
-        MAIL_PASSWORD="your_password_email",
-        MAIL_FROM="nguyenvanthang_t66@hus.edu.vn",
+        MAIL_USERNAME="imlda1053@gmail.com",
+        MAIL_PASSWORD="",
+        MAIL_FROM="imlda1053@gmail.com",
         MAIL_PORT=587,
         MAIL_SERVER="smtp.gmail.com",
         MAIL_STARTTLS=True,
@@ -300,18 +398,21 @@ async def currentPeriod():
         return {"Status": True, "current": data[0]}
 
 
-@app.post("/overview")
-async def sendOverView(user: User, request: Request):
+@app.get("/overview")
+async def sendOverView(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
 
     cursor.execute(f"""select sum(hp.so_tin) as tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
+                   where dk.diem_ck is not null and ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp""")
 
     tong_so_tin = cursor.fetchall()[0]["tin"]
 
     cursor.execute(f"""select sum(subquery.so_tin) as so_tin from (select distinct(lh.ma_hp), hp.so_tin
                    from hoc_phan hp, lich_hoc lh, dang_ky dk
-                   where dk.diem_ck is not null and ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
+                   where dk.diem_ck is not null and ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hp = hp.ma_hp and 
                          dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck >= 4) as subquery
                    """)
 
@@ -321,7 +422,7 @@ async def sendOverView(user: User, request: Request):
                     with dk as (
                         select dk.ma_lh, dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck as total_score
                         from dang_ky dk, lich_hoc lh
-                        where ma_sv = {user.username} and lh.ma_lh = dk.ma_lh
+                        where ma_sv = {current_user.username} and lh.ma_lh = dk.ma_lh
                     )
 
                     select subquery.ma_hp, subquery.he4, subquery.so_tin
@@ -369,12 +470,16 @@ async def sendOverView(user: User, request: Request):
     return {"tong_so_tin": tong_so_tin, "tong_so_tin_tich_luy": tong_so_tin_tich_luy, "gpa": gpa}
 
 
-@app.post("/grade")
-async def sendGrade(user: User, request: Request):
+@app.get("/grade")
+async def sendGrade(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
+
     current_year = datetime.now().year
 
     cursor.execute(
-        f"select nam_bat_dau from sinh_vien where ma_sv = {user.username}")
+        f"select nam_bat_dau from sinh_vien where ma_sv = {current_user.username}")
     nam_bat_dau = cursor.fetchall()[0]["nam_bat_dau"]
 
     data_component_grade = []
@@ -388,7 +493,7 @@ async def sendGrade(user: User, request: Request):
             statement = f"""
                             select lh.ma_hp, 1 as "so_lan_hoc", lh.he_so_ck, dk.diem_ck, lh.he_so_gk, dk.diem_gk, lh.he_so_tx, dk.diem_tx
                             from hoc_phan hp, lich_hoc lh, dang_ky dk, hoc_ki hk
-                            where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {user.username} and 
+                            where dk.diem_ck is not null and lh.ma_hp = hp.ma_hp and dk.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dk.ma_sv = {current_user.username} and 
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\")
                             group by lh.ma_lh;
@@ -437,7 +542,7 @@ async def sendGrade(user: User, request: Request):
                             with dk as (
                             select dk.ma_lh, dk.diem_tx * lh.he_so_tx + dk.diem_gk * lh.he_so_gk + dk.diem_ck * lh.he_so_ck as total_score
                             from dang_ky dk, lich_hoc lh
-                            where ma_sv = {user.username} and dk.ma_lh = lh.ma_lh
+                            where ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh
                             )
                             select 
                                 lh.ma_hp,
@@ -468,7 +573,7 @@ async def sendGrade(user: User, request: Request):
                                 end as he4
                             from
                                 hoc_phan hp, lich_hoc lh, dk, hoc_ki hk, dang_ky
-                            where dang_ky.diem_ck is not null and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dang_ky.ma_lh = dk.ma_lh and dang_ky.ma_sv = {user.username} and
+                            where dang_ky.diem_ck is not null and lh.ma_hp = hp.ma_hp and dang_ky.ma_lh = lh.ma_lh and lh.ma_hk = hk.ma_hk and dang_ky.ma_lh = dk.ma_lh and dang_ky.ma_sv = {current_user.username} and
                                 hk.ma_hk in (select hk.ma_hk WHERE (select RIGHT(cast(hk.ma_hk as char), 1)) = \"{semester}\" and  
                                 (select concat("20", LEFT(cast(hk.ma_hk as char), 2))) = \"{year}\");
                         """
@@ -507,8 +612,11 @@ async def sendGrade(user: User, request: Request):
     return {"data": data}
 
 
-@app.post("/subject_learned")
-async def sendSubjectLearned(user: UserSemester, request: Request):
+@app.get("/subject_learned/{ma_hk}")
+async def sendSubjectLearned(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
+
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select 
@@ -516,7 +624,7 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
                         lh.ma_hp as "ma_hp"
                     from 
                         lich_hoc lh, dang_ky dk
-                    where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hk != {user.ma_hk}
+                    where dk.ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh and lh.ma_hk != {ma_hk}
 
                 """
     cursor.execute(statement)
@@ -524,8 +632,10 @@ async def sendSubjectLearned(user: UserSemester, request: Request):
     return {"subjectLearned": data}
 
 
-@app.post("/subject_all")
-async def sendSubject(user: UserSemester, request: Request):
+@app.get("/subject_all/{ma_hk}")
+async def sendSubject(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select
@@ -543,7 +653,7 @@ async def sendSubject(user: UserSemester, request: Request):
                         group_concat(gv.ho_ten) as "ten_gv",
                         lh.thoi_gian as "lich_hoc",
                         case
-                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh) then true
+                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh) then true
                             else false
                         end as "disabled"
                     from
@@ -551,7 +661,7 @@ async def sendSubject(user: UserSemester, request: Request):
                         inner join hoc_phan hp on lh.ma_hp = hp.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                    where lh.ma_hk = {user.ma_hk} 
+                    where lh.ma_hk = {ma_hk} 
                     group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
                     order by
                         hp.ten_hp;
@@ -568,8 +678,8 @@ async def sendSubject(user: UserSemester, request: Request):
     return {"dataAll": data}
 
 
-@app.post("/subject_major")
-async def sendSubjectMajor(user: UserSemester, request: Request):
+@app.get("/subject_major/{ma_hk}")
+async def sendSubjectMajor(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
 
     statement = f"""
                     select
@@ -587,7 +697,7 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
                         group_concat(gv.ho_ten) as "ten_gv",
                         lh.thoi_gian as "lich_hoc",
                         case
-                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {user.username} and dk.ma_lh = lh.ma_lh) then true
+                            when lh.ma_hp in (select lh.ma_hp from lich_hoc lh, dang_ky dk where dk.ma_sv = {current_user.username} and dk.ma_lh = lh.ma_lh) then true
                             else false
                         end as "da_hoc"
                     from
@@ -597,7 +707,7 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join chuong_trinh_hoc cth on cth.ma_hp = lh.ma_hp
                         inner join sinh_vien sv on sv.ma_nganh = cth.ma_nganh
-                    where sv.ma_sv = {user.username} and lh.ma_hk = {user.ma_hk}
+                    where sv.ma_sv = {current_user.username} and lh.ma_hk = {ma_hk}
                     group by lh.ma_lh, hp.ten_hp, lh.ma_hp, lh.ma_lop, hp.so_tin, lh.so_luong, lh.thoi_gian
                     order by
                         hp.ten_hp;
@@ -613,8 +723,8 @@ async def sendSubjectMajor(user: UserSemester, request: Request):
     return {"dataMajor": data}
 
 
-@app.post("/registered_subject")
-async def registeredSubject(user: UserSemester):
+@app.get("/registered_subject/{ma_hk}")
+async def registeredSubject(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
 
     statement = f"""
                     select  
@@ -634,7 +744,7 @@ async def registeredSubject(user: UserSemester):
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
 
-                    where dk.ma_sv = {user.username} and dk.diem_tx is null and lh.ma_hk = {user.ma_hk}
+                    where dk.ma_sv = {current_user.username} and dk.diem_tx is null and lh.ma_hk = {ma_hk}
                     group by hp.ten_hp, hp.so_tin, lh.ma_hp, lh.ma_lop, lh.thoi_gian
                     order by 
                         hp.ten_hp asc;
@@ -651,8 +761,11 @@ async def registeredSubject(user: UserSemester):
     return {"subjectRegister": data}
 
 
-@app.post("/teaching_schedule")
-async def sendSchedule(user: UserSemester, request: Request):
+@app.get("/teaching_schedule/{ma_hk}")
+async def sendSchedule(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
+    if current_user.access_level != "GV":
+        return {"detail": "You are not authorized to access this."}
+
     statement = f"""
                     select 
                         lh.ma_lh as "ma_lh",
@@ -672,7 +785,7 @@ async def sendSchedule(user: UserSemester, request: Request):
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
                         inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
-                    where gv.ma_gv = {user.username} and lh.ma_hk = {user.ma_hk}
+                    where gv.ma_gv = {current_user.username} and lh.ma_hk = {ma_hk}
                     group by lh.ma_hp
                     order by hp.ten_hp;
                 """
@@ -687,8 +800,11 @@ async def sendSchedule(user: UserSemester, request: Request):
     return {"schedule": data}
 
 
-@app.post("/student_class")
-async def sendStudentClass(lop: Class):
+@app.get("/student_class/{ma_lh}")
+async def sendStudentClass(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_lh: int):
+
+    if current_user.access_level == "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select 
@@ -702,7 +818,7 @@ async def sendStudentClass(lop: Class):
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
                         inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
                         inner join sinh_vien sv on dk.ma_sv = sv.ma_sv
-                    where dk.ma_lh = {lop.ma_lh}
+                    where dk.ma_lh = {ma_lh}
                 """
 
     cursor.execute(statement)
@@ -711,8 +827,11 @@ async def sendStudentClass(lop: Class):
     return {"studentClass": data}
 
 
-@app.post("/coefficient_subject")
-async def sendCoefficient(lop: Class):
+@app.get("/coefficient_subject/{ma_lh}")
+async def sendCoefficient(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_lh: int):
+
+    if current_user.access_level == "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select 
@@ -721,7 +840,7 @@ async def sendCoefficient(lop: Class):
                         lh.he_so_ck as "he_so_ck"
                     from 
                         lich_hoc lh
-                    where lh.ma_lh = {lop.ma_lh}
+                    where lh.ma_lh = {ma_lh}
                 """
 
     cursor.execute(statement)
@@ -730,7 +849,7 @@ async def sendCoefficient(lop: Class):
     return {"coefficient": data[0]}
 
 
-@app.post("/guide")
+@app.get("/guide")
 async def sendGuide():
 
     # ma_hk = str(getTime()["year"])[-2:] + str(getTime()["semester"])
@@ -744,14 +863,14 @@ async def sendGuide():
 
 # POST: create a new record for a table
 @app.post("/post_dangky")
-async def create_records(newRecord: DANGKY):
+async def create_records(current_user: Annotated[UserInfor, Depends(get_current_active_user)], newRecord: DANGKY):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
+
     try:
         cursor.execute("""insert into dang_ky(ma_lh, ma_sv, diem_tx, diem_gk, diem_ck)
-                          values (%s, %s, %s, %s, %s)""", (newRecord.ma_lh,
-                                                           newRecord.ma_sv,
-                                                           newRecord.diem_tx,
-                                                           newRecord.diem_gk,
-                                                           newRecord.diem_ck))
+                          values (%s, %s, NULL, NULL, NULL)""", (newRecord.ma_lh,
+                                                                 current_user.username))
 
         conn.commit()
         return {"message": "Record created successfully", "Record": newRecord}
@@ -760,25 +879,31 @@ async def create_records(newRecord: DANGKY):
 
 
 # DELETE: delete record
-@app.delete("/delete_dangky/{ma_lh}_{ma_sv}")
-async def delete_record(ma_lh: int, ma_sv: str):
+@app.delete("/delete_dangky/{ma_lh}")
+async def delete_record(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_lh: int):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
+
     try:
         cursor.execute(
-            "select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+            "select * from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, current_user.username))
         deleted_record = cursor.fetchall()
 
         cursor.execute(
-            "delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, ma_sv))
+            "delete from dang_ky where ma_lh = %s and ma_sv = %s", (ma_lh, current_user.username))
         conn.commit()
 
-        return {"message": f"Record with ID {ma_lh, ma_sv} has been deleted", "deleted": deleted_record}
+        return {"message": f"Record with ID {ma_lh, current_user.username} has been deleted", "deleted": deleted_record}
     except Exception as e:
         return e
 
 
 # PUT: update record infomation
 @app.put("/put_coefficient/")
-async def update_record(coeffiecient: COEFFICIENT):
+async def update_record(current_user: Annotated[UserInfor, Depends(get_current_active_user)], coeffiecient: COEFFICIENT):
+    if current_user.access_level == "SV":
+        return {"detail": "You are not authorized to access this."}
+
     try:
         cursor.execute("""update lich_hoc set he_so_tx = %s, he_so_gk = %s, he_so_ck = %s where ma_lh = %s""", (
             coeffiecient.he_so_tx,
@@ -789,24 +914,40 @@ async def update_record(coeffiecient: COEFFICIENT):
         conn.commit()
         return {"message": "Record updated successfully", "Status": True}
     except Exception as e:
+        print(e)
         return {"Status": False}
 
+
+class StudentGrade(BaseModel):
+    ma_lh: int | None = None
+    ma_sv: str | None = None
+    diem_tx: float | None = None
+    # he_so_tx: float | None = None
+    diem_gk: float | None = None
+    # he_so_gk: float | None = None
+    diem_ck: float | None = None
+    # he_so_ck: float | None = None
 
 # PUT: update record infomation
-@app.put("/put_dangky/")
-async def update_record(newRecord: DANGKY):
-    try:
-        cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
-                          diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx,
-                                                                            newRecord.diem_gk,
-                                                                            newRecord.diem_ck,
-                                                                            newRecord.ma_lh,
-                                                                            newRecord.ma_sv))
 
-        conn.commit()
-        return {"message": "Record updated successfully", "Status": True}
-    except Exception as e:
-        return {"Status": False}
+
+@app.put("/put_dangky/")
+async def update_record(current_user: Annotated[UserInfor, Depends(get_current_active_user)], newRecord: StudentGrade):
+    if current_user.access_level == "SV":
+        return {"detail": "You are not authorized to access this."}
+
+    # try:
+    cursor.execute("""update dang_ky set diem_tx = %s, diem_gk = %s,
+                        diem_ck = %s where ma_lh = %s and ma_sv = %s""", (newRecord.diem_tx,
+                                                                          newRecord.diem_gk,
+                                                                          newRecord.diem_ck,
+                                                                          newRecord.ma_lh,
+                                                                          newRecord.ma_sv))
+
+    conn.commit()
+    return {"message": "Record updated successfully", "Status": True}
+    # except Exception as e:
+    #     return {"Status": False}
 
 
 @app.post("/download")
@@ -819,18 +960,23 @@ async def download(id: ID):
 
     ten = result[0]['name'].split(".")
 
-    if os.path.exists(rf"F:\{result[0]['name']}"):
-        file_list = glob.glob(f'F:\\{ten[0]}*')
-        temp_file_path = f"F:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
+    if os.path.exists(rf"D:\{result[0]['name']}"):
+        file_list = glob.glob(f'D:\\{ten[0]}*')
+        temp_file_path = f"D:\{ten[0]} ({str(len(file_list))}).{ten[1]}"
     else:
-        temp_file_path = f"F:\{result[0]['name']}"
+        temp_file_path = f"D:\{result[0]['name']}"
 
     with open(temp_file_path, "wb") as temp_file:
         temp_file.write(base64.b64decode(file_data))
 
+# TODO: Sửa lại ma_hk
 
-@app.post("/schedule_exam")
-async def sendScheduleExam(user: User):
+
+@app.get("/schedule_exam")
+async def sendScheduleExam(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select lh.ma_hk, lh.ma_hp, hp.ten_hp, lh.ma_lop, lh.lich_thi
@@ -841,7 +987,7 @@ async def sendScheduleExam(user: User):
                         inner join dang_ky dk on dk.ma_lh = lh.ma_lh
                     where 
                         lh.ma_hk = {int(getTime()["year"][-2:] + getTime()["semester"])} 
-                        and dk.ma_sv = {user.username} 
+                        and dk.ma_sv = {current_user.username} 
                         and dk.diem_tx is null
                     
                 """
@@ -860,8 +1006,10 @@ async def sendScheduleExam(user: User):
     return {"exam": return_data}
 
 
-@app.post("/info_student")
-async def sendInfoStudent(user: User):
+@app.get("/info_student")
+async def sendInfoStudent(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
 
     statement = f"""
                     select
@@ -871,7 +1019,7 @@ async def sendInfoStudent(user: User):
                         inner join user on user.username = sv.ma_sv
                         inner join nganh on nganh.ma_nganh = sv.ma_nganh
                     where 
-                        sv.ma_sv = {user.username}
+                        sv.ma_sv = {current_user.username}
                 """
 
     cursor.execute(statement)
@@ -900,13 +1048,16 @@ async def sendInfoStudent(user: User):
 
 
 # PUT: update record infomation
-@app.put("/put_image/")
-async def update_record(image: AVATAR):
+@app.put("/put_image")
+async def update_record(current_user: Annotated[UserInfor, Depends(get_current_active_user)], image: AVATAR):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
+
     try:
         cursor.execute("""update user set avatar = %s
                           where username = %s""", (
             image.avatar,
-            image.username
+            current_user.username
         ))
 
         conn.commit()
@@ -916,28 +1067,31 @@ async def update_record(image: AVATAR):
 
 
 # DELETE: delete record
-@app.delete("/delete_avatar/{username}")
-async def delete_record(username: str):
+@app.delete("/delete_avatar")
+async def delete_record(current_user: Annotated[UserInfor, Depends(get_current_active_user)],):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
     try:
-
         cursor.execute(
-            "update user set avatar = null where username = %s", (username,))
+            "update user set avatar = null where username = %s", (current_user.username,))
         conn.commit()
 
-        return {"message": f"Record image with ID {username} has been deleted"}
+        return {"message": f"Record image with ID {current_user.username} has been deleted"}
     except Exception as e:
         return e
 
 
 @app.put("/put_info_student")
-async def updateInfoStudent(record: UPDATEINFO):
+async def updateInfoStudent(current_user: Annotated[UserInfor, Depends(get_current_active_user)], record: UPDATEINFO):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
     try:
 
         cursor.execute(
-            f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {record.username};")
+            f"update sinh_vien set sdt = \"{record.sdt}\" where ma_sv = {current_user.username};")
         conn.commit()
         cursor.execute(
-            f"update user set email = \"{record.email}\" where username = {record.username};")
+            f"update user set email = \"{record.email}\" where username = {current_user.username};")
         conn.commit()
 
         return {"message": "Record updated successfully", "Status": True}
@@ -947,16 +1101,16 @@ async def updateInfoStudent(record: UPDATEINFO):
 
 
 @app.put("/change_pass")
-async def changePassWord(info: UPDATEPASSWORD):
+async def changePassWord(current_user: Annotated[UserInfor, Depends(get_current_active_user)], info: UPDATEPASSWORD):
     try:
         cursor.execute(
-            f"select pass_word from user where username = {info.username}")
+            f"select pass_word from user where username = {current_user.username}")
         data = cursor.fetchall()
         if (len(data) > 0):
             pwd_bytes = info.current_pass.encode('utf-8')
             check_pwd = bcrypt.checkpw(pwd_bytes, bytes(data[0]["pass_word"]))
             if check_pwd:
-                cursor.execute(f"update user set pass_word = %s where username = {info.username}", (
+                cursor.execute(f"update user set pass_word = %s where username = {current_user.username}", (
                     bcrypt.hashpw(info.new_pass.encode('utf8'), bcrypt.gensalt()), ))
                 conn.commit()
                 return {"Status": True, "message": "Update password successfully"}
@@ -969,13 +1123,13 @@ async def changePassWord(info: UPDATEPASSWORD):
         return {"Error": e}
 
 
-@app.post("/get_info_subject_register")
-async def getInfoSubjectRegister(user: UserSemester):
+@app.get("/get_info_subject_register/{ma_hk}")
+async def getInfoSubjectRegister(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk:  int):
     statement1 = f"""
                     select 
-                        {user.ma_hk % 10} as ki,
-                        {f"20{user.ma_hk // 10}"} as nh,
-                        {f"20{user.ma_hk // 10 + 1}"} as nhs,
+                        {ma_hk % 10} as ki,
+                        {f"20{ma_hk // 10}"} as nh,
+                        {f"20{ma_hk // 10 + 1}"} as nhs,
                         day(curdate()) as ngay,
                         month(curdate()) as thang,
                         year(curdate()) as nam,
@@ -991,7 +1145,7 @@ async def getInfoSubjectRegister(user: UserSemester):
                         inner join lich_hoc lh on lh.ma_lh = dk.ma_lh
 
                     where 
-                        lh.ma_hk = {user.ma_hk} and dk.ma_sv = {user.username}
+                        lh.ma_hk = {ma_hk} and dk.ma_sv = {current_user.username}
 
                     group by
                         sv.ma_sv
@@ -1018,7 +1172,7 @@ async def getInfoSubjectRegister(user: UserSemester):
                         inner join sinh_vien sv on sv.ma_sv = dk.ma_sv
 
                     where 
-                        lh.ma_hk = {user.ma_hk} and dk.ma_sv = {user.username} and dk.diem_tx is null
+                        lh.ma_hk = {ma_hk} and dk.ma_sv = {current_user.username} and dk.diem_tx is null
 
                 """
 
@@ -1036,14 +1190,16 @@ async def getInfoSubjectRegister(user: UserSemester):
 
 @app.get("/get_total_student")
 async def getTotalStudent():
-    cursor.execute("SELECT COUNT(username) AS totalStudent FROM user WHERE access_level ='SV'")
+    cursor.execute(
+        "SELECT COUNT(username) AS totalStudent FROM user WHERE access_level ='SV'")
     data = cursor.fetchall()
     return data[0]
 
 
 @app.get("/get_total_teacher")
 async def getTotalTeacher():
-    cursor.execute("SELECT COUNT(username) AS totalTeacher FROM user WHERE access_level ='GV'")
+    cursor.execute(
+        "SELECT COUNT(username) AS totalTeacher FROM user WHERE access_level ='GV'")
     data = cursor.fetchall()
     return data[0]
 
@@ -1069,14 +1225,20 @@ async def getRegis():
 
 
 @app.delete("/delete_regis/{ma_hk}_{dot}")
-async def delRegis(ma_hk: int, dot: int):
+async def delRegis(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int, dot: int):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+
     cursor.execute("DELETE FROM dot_dki WHERE dot = %s AND ma_hk = %s",
                    (dot, ma_hk))
     conn.commit()
 
 
 @app.delete("/delete_semester/{ma_hk}")
-async def delSemes(ma_hk: int):
+async def delSemes(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+
     try:
         cursor.execute(f"DELETE FROM hoc_ki WHERE ma_hk = {ma_hk}")
         conn.commit()
@@ -1099,7 +1261,9 @@ class Regis(BaseModel):
 
 
 @app.post("/add_semes")
-async def addSemes(semes: Semes):
+async def addSemes(current_user: Annotated[UserInfor, Depends(get_current_active_user)], semes: Semes):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
     try:
         cursor.execute(f"INSERT INTO hoc_ki VALUES(%s, %s, %s)",
                        (semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
@@ -1110,8 +1274,9 @@ async def addSemes(semes: Semes):
 
 
 @app.post("/add_regis")
-async def addRegis(semes: Regis):
-
+async def addRegis(current_user: Annotated[UserInfor, Depends(get_current_active_user)], semes: Regis):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
     try:
         cursor.execute(f"INSERT INTO dot_dki VALUES(%s, %s, %s, %s)",
                        (semes.dot, semes.ma_hk, semes.ng_bat_dau, semes.ng_ket_thuc))
@@ -1122,15 +1287,21 @@ async def addRegis(semes: Regis):
 
 
 @app.post("/send_report")
-async def send_report(report: CONTENT):
+async def send_report(current_user: Annotated[UserInfor, Depends(get_current_active_user)], report: CONTENT):
+    if current_user.access_level != "SV":
+        return {"detail": "You are not authorized to access this."}
+
     cursor.execute(
-        f"INSERT INTO report VALUES(NULL, %s, %s, %s, %s)", (report.username, report.email, report.title, report.content))
+        f"INSERT INTO report VALUES(NULL, %s, %s, %s, %s)", (current_user.username, report.email, report.title, report.content))
     conn.commit()
 
 
 @app.put("/reset_pass")
-async def reset(user: User):
-    password = ''.join(random.choice(string.printable) for i in range(8))
+async def reset(current_user: Annotated[UserInfor, Depends(get_current_active_user)], user: User):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+
+    password = generate_random_password()
     cursor.execute(f"UPDATE user SET pass_word = %s WHERE username = %s",
                    (bcrypt.hashpw(password.encode(), bcrypt.gensalt()), user.username))
     conn.commit()
@@ -1138,14 +1309,20 @@ async def reset(user: User):
 
 
 @app.get("/get_all_user")
-async def get_all_user():
+async def get_all_user(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+
     cursor.execute(
         "SELECT username, access_level FROM user WHERE access_level != \'AD\'")
     return cursor.fetchall()
 
 
 @app.delete("/delete_user/{username}_{access_level}")
-async def delete_user(username: str, access_level: str):
+async def delete_user(current_user: Annotated[UserInfor, Depends(get_current_active_user)], username: str, access_level: str):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+
     if (access_level == "SV"):
         cursor.execute(f"DELETE FROM report WHERE ma_sv = {username}")
         cursor.execute(f"DELETE FROM dang_ky WHERE ma_sv = {username}")
@@ -1158,21 +1335,106 @@ async def delete_user(username: str, access_level: str):
     conn.commit()
 
 
-class UserWithLevel(BaseModel):
+class NewStudent(BaseModel):
     username: str
-    access_level: str
+    ho_ten: str
+    gioi_tinh: str
+    ngsinh: str
+    sdt: str
+    ma_nganh: str
+    nam_bat_dau: int
+    lop: str
     email: str
 
 
-@app.post("/add_new_user")
-async def add_new_user(user: UserWithLevel):
+class NewTeacher(BaseModel):
+    username: str
+    ho_ten: str
+    gioi_tinh: str
+    luong: str
+    ngsinh: str
+    sdt: str
+    dia_chi: str
+    ng_bat_dau: str
+    email: str
+
+
+@app.get("/get_all_major")
+async def get_all_major(current_user: Annotated[UserInfor, Depends(get_current_active_user)]):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+    cursor.execute("SELECT ma_nganh AS value, ten_nganh AS label FROM nganh")
+    return cursor.fetchall()
+
+
+@app.post("/add_new_sv")
+async def add_new_user(current_user: Annotated[UserInfor, Depends(get_current_active_user)], user: NewStudent):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
     try:
         cursor.execute("INSERT INTO user VALUES(%s, %s, %s, %s, NULL)",
-                       (user.username, bcrypt.hashpw(user.username.encode(), bcrypt.gensalt()), user.email, user.access_level))
+                       (user.username, bcrypt.hashpw(user.username.encode(), bcrypt.gensalt()), user.email, "SV"))
+        cursor.execute("INSERT INTO sinh_vien VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
+                       (user.username, user.ho_ten, user.gioi_tinh, user.ngsinh, user.sdt, user.ma_nganh, user.nam_bat_dau, user.lop))
+        conn.commit()
+        return True
+    except Exception as e:
+        return False
+
+
+@app.post("/add_new_gv")
+async def add_new_user(current_user: Annotated[UserInfor, Depends(get_current_active_user)], user: NewTeacher):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+    try:
+        cursor.execute("INSERT INTO user VALUES(%s, %s, %s, %s, NULL)",
+                       (user.username, bcrypt.hashpw(user.username.encode(), bcrypt.gensalt()), user.email, "GV"))
+        cursor.execute("INSERT INTO giang_vien VALUES(%s, %s, %s, %s, %s, %s, %s, %s, NULL)",
+                       (user.username, user.ho_ten, user.gioi_tinh, user.luong, user.ngsinh, user.sdt, user.dia_chi, user.ng_bat_dau))
         conn.commit()
         return True
     except Exception as e:
         print(e)
+
+
+@app.get("/all_schedule/{ma_hk}")
+async def sendSchedule(current_user: Annotated[UserInfor, Depends(get_current_active_user)], ma_hk: int):
+    if current_user.access_level != "AD":
+        return {"detail": "You are not authorized to access this."}
+    statement = f"""
+                    select 
+                        lh.ma_lh as "ma_lh",
+                        hp.ten_hp as "ten_hp",
+                        lh.ma_hp as "ma_hp",
+                        lh.ma_lop as "ma_lop",
+                        lh.ma_hk as "ma_hk",
+                        group_concat(gv.ho_ten) as "ten_gv",
+                        (
+                            select count(*) 
+                            from dang_ky dk 
+                            where dk.ma_lh = lh.ma_lh
+                        ) as "da_dk",
+                        lh.thoi_gian as "lich_hoc"
+                    
+                    from 
+                        lich_hoc lh
+                        inner join hoc_phan hp on hp.ma_hp = lh.ma_hp
+                        inner join lh_gv on lh.ma_lh = lh_gv.ma_lh
+                        inner join giang_vien gv on lh_gv.ma_gv = gv.ma_gv
+                    where lh.ma_hk = {ma_hk}
+                    group by lh.ma_hp
+                    order by hp.ten_hp;
+                """
+
+    cursor.execute(statement)
+    data = cursor.fetchall()
+
+    for subject in data:
+        # unicode_data = subject["lich_hoc"].decode('utf-8')
+        subject["lich_hoc"] = json.loads(subject["lich_hoc"])
+        subject["ten_gv"] = [gv for gv in subject["ten_gv"].split(",")]
+
+    return {"schedule": data}
 
 
 # @app.post("/send_support")

@@ -21,16 +21,16 @@ import Guide from "../components/Student/Guide";
 import Form from "../components/Student/Form";
 import StudentProfile from "../components/Student/UserProfile";
 import axios from "axios";
-import { useContentContext } from "../components/Notification/ContentContext";
+import { useContentContext } from "../context/UserContext";
 import TeamLogo from "../assets/logo/logo.png";
 import Contact from "../components/Student/Contact";
 
-const Student = ({ user }) => {
+const Student = () => {
   axios.defaults.withCredentials = true;
   const [collapsed, setCollapsed] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
 
-  let { openSuccessNotification } = useContentContext();
+  let { openSuccessNotification, handleLogout, user } = useContentContext();
 
   const handleResize = () => {
     if (window.innerWidth >= 768) {
@@ -59,7 +59,7 @@ const Student = ({ user }) => {
   const handleMenuClick = (e) => {
     if (e.key === "2") {
       //Logout
-      axios.get("http://localhost:8000/logout");
+      handleLogout();
       openSuccessNotification(
         "Bạn đã đăng xuất!",
         `Trang sẽ chuyển hướng sau vài giây...`,
@@ -135,28 +135,16 @@ const Student = ({ user }) => {
 
         <Content className="m-[24px] h-full overflow-auto rounded-md bg-white p-[24px]">
           <Routes>
-            <Route exact path="/" element={<Dashboard user={user} />} />
-            <Route
-              exact
-              path="/dashboard"
-              element={<Dashboard user={user} />}
-            />
-            <Route
-              exact
-              path="/calendar"
-              element={<MyCalendar user={user} />}
-            />
-            <Route exact path="/register" element={<Register user={user} />} />
-            <Route exact path="/exam" element={<Exam user={user} />} />
-            <Route exact path="/guide" element={<Guide user={user} />} />
-            <Route exact path="/form" element={<Form user={user} />} />
-            <Route exact path="/contact" element={<Contact user={user} />} />
+            <Route exact path="/" element={<Dashboard />} />
+            <Route exact path="/dashboard" element={<Dashboard />} />
+            <Route exact path="/calendar" element={<MyCalendar />} />
+            <Route exact path="/register" element={<Register />} />
+            <Route exact path="/exam" element={<Exam />} />
+            <Route exact path="/guide" element={<Guide />} />
+            <Route exact path="/form" element={<Form />} />
+            <Route exact path="/contact" element={<Contact />} />
 
-            <Route
-              exact
-              path="/setting"
-              element={<StudentProfile user={user} />}
-            />
+            <Route exact path="/setting" element={<StudentProfile />} />
           </Routes>
           {/* <Dashboard /> */}
         </Content>

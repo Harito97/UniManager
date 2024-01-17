@@ -24,7 +24,7 @@ const Guide = ({user}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.post('http://localhost:8000/guide').then((res) => setGuide(res.data.guide));
+        await axios.get('http://localhost:8000/guide').then((res) => setGuide(res.data.guide));
         
       } catch (error) {
         console.log(error);

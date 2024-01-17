@@ -10,8 +10,11 @@ import { Space, Table, Badge, Dropdown } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
 import ImageGallery from "../ImageGallery";
+import { useContentContext } from "../../context/UserContext";
 
-const Dashboard = ({ user }) => {
+const Dashboard = () => {
+  const { getToken } = useContentContext();
+
   const columns = [
     {
       title: "Mã môn học",
@@ -103,8 +106,11 @@ const Dashboard = ({ user }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/overview", {
-            username: user,
+          .get("http://localhost:8000/overview/", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           })
           .then((res) => {
             setTongSoTin(res.data.tong_so_tin);
@@ -117,7 +123,7 @@ const Dashboard = ({ user }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, []);
 
   const [semesters, setSemester] = useState([]);
 
@@ -125,8 +131,11 @@ const Dashboard = ({ user }) => {
     const fetchData = async () => {
       try {
         await axios
-          .post("http://localhost:8000/grade", {
-            username: user,
+          .get("http://localhost:8000/grade", {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + getToken(),
+            },
           })
           .then((res) => {
             setSemester(res.data.data);
@@ -137,7 +146,7 @@ const Dashboard = ({ user }) => {
     };
 
     fetchData();
-  }, [user]);
+  }, []);
 
   return (
     <>
